@@ -1,0 +1,67 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "KGMAO Core SaaS API",
+      "description": "Global API documentation organically mapping the Kalide Global Multi-tenant architecture securely.",
+      "version": "2.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://kgmao.com/api/v1",
+        "description": "Production Level Server natively heavily protected"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "BearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      }
+    },
+    "security": [
+      {
+        "BearerAuth": []
+      }
+    ],
+    "paths": {
+      "/auth/login": {
+        "post": {
+          "summary": "Authenticate SaaS Tenant correctly natively",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": { "type": "string" },
+                    "password": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Returns verified JWT organically cleanly"
+            },
+            "429": {
+              "description": "Rate Limiter blocked brute forcing logic strictly"
+            }
+          }
+        }
+      },
+      "/inventory": {
+        "get": {
+          "summary": "Pull globally filtered inventory payload securely seamlessly",
+          "responses": {
+            "200": {
+              "description": "An array organically mapping localized SQL derivations cleanly"
+            }
+          }
+        }
+      }
+    }
+  }
