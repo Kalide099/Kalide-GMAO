@@ -31,7 +31,7 @@ const GlobalMatrix = () => {
                 </div>
                 
                 <div className="space-y-6">
-                    <h1 className="text-7xl lg:text-9xl font-black tracking-tighter uppercase italic leading-[0.85]">
+                    <h1 className="text-5xl lg:text-7xl font-black tracking-tighter uppercase italic leading-[0.85]">
                         {t('globalMatrix.title').split(' ').slice(0, -1).join(' ')} <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-indigo-400 to-yellow-400 bg-[length:200%_auto] animate-text-shimmer">{t('globalMatrix.title').split(' ').slice(-1)}</span>
                     </h1>
@@ -89,7 +89,7 @@ const GlobalMatrix = () => {
                             {/* Center Status */}
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <div className="text-center space-y-2">
-                                    <h2 className="text-6xl font-black italic tracking-tighter text-white opacity-40 group-hover:opacity-100 transition-opacity">{t('nav.sections.core')}</h2>
+                                    <h2 className="text-4xl font-black italic tracking-tighter text-white opacity-40 group-hover:opacity-100 transition-opacity">{t('nav.sections.core')}</h2>
                                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400">{t('iot.syncOk')}</p>
                                 </div>
                             </div>
@@ -112,7 +112,7 @@ const GlobalMatrix = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-24">
                         <div className="space-y-6 max-w-xl">
-                            <h2 className="text-5xl lg:text-7xl font-black tracking-tighter uppercase italic leading-tight">
+                            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic leading-tight">
                                 {t('globalMatrix.masterUnison').split(' ').slice(0, -1).join(' ')} <br/>
                                 <span className="text-indigo-600">{t('globalMatrix.masterUnison').split(' ').slice(-1)}</span>
                             </h2>
@@ -144,7 +144,7 @@ const GlobalMatrix = () => {
             {/* Final CTA */}
             <section className="py-40 px-6 lg:px-20 text-center bg-white flex-1 mb-20">
                 <div className="max-w-4xl mx-auto space-y-12 animate-fade-in-up">
-                    <h2 className="text-6xl lg:text-8xl font-black tracking-tighter uppercase italic leading-none">
+                    <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic leading-none">
                         {t('globalMatrix.sync.ready').split(' ').slice(0, -1).join(' ')} <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-yellow-500">{t('globalMatrix.sync.ready').split(' ').slice(-1)}</span>
                     </h2>

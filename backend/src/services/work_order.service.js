@@ -18,12 +18,12 @@ exports.createWorkOrder = async (companyId, creatorId, data) => {
         const [asset] = await connection.query('SELECT id FROM assets WHERE id = ? AND company_id = ? AND deleted_at IS NULL', [assetId, companyId]);
         if (asset.length === 0) throw new Error('Invalid asset ID');
 
-        // 1. Insert Base Work Order
+        // 1. Insert Base Work Order (with direct bilingual fields)
         await connection.query(
             `INSERT INTO work_orders 
-            (id, company_id, asset_id, creator_id, assigned_to, type, priority, status, scheduled_date) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
-            [id, companyId, assetId, creatorId, assignedTo || null, type, priority || 'medium', scheduledDate || null]
+            (id, company_id, asset_id, creator_id, assigned_to, type, priority, status, scheduled_date, title_en, title_fr, description_en, description_fr) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)`,
+            [id, companyId, assetId, creatorId, assignedTo || null, type, priority || 'medium', scheduledDate || null, title_en, title_fr, description_en || null, description_fr || null]
         );
 
         // 2. Insert Translations
@@ -57,17 +57,16 @@ exports.getWorkOrders = async (companyId, languageCode, filters = {}) => {
     let query = `
         SELECT 
             wo.*, 
-            wot.title,
-            wot.description,
+            CASE WHEN ? = 'fr' THEN wo.title_fr ELSE wo.title_en END AS title,
+            CASE WHEN ? = 'fr' THEN wo.description_fr ELSE wo.description_en END AS description,
             CASE WHEN ? = 'fr' THEN a.name_fr ELSE a.name_en END AS asset_name,
             u.first_name as assignee_first_name, u.last_name as assignee_last_name 
         FROM work_orders wo 
-        INNER JOIN work_order_translations wot ON wo.id = wot.work_order_id AND wot.language_code = ?
         LEFT JOIN assets a ON wo.asset_id = a.id 
         LEFT JOIN users u ON wo.assigned_to = u.id 
         WHERE wo.company_id = ? AND wo.deleted_at IS NULL
     `;
-    const params = [languageCode, languageCode, companyId];
+    const params = [languageCode, languageCode, languageCode, companyId];
 
     if (filters.status) {
         query += ' AND wo.status = ?';
@@ -89,16 +88,15 @@ exports.getWorkOrderById = async (companyId, id, languageCode) => {
     const query = `
         SELECT 
             wo.*, 
-            wot.title,
-            wot.description,
+            CASE WHEN ? = 'fr' THEN wo.title_fr ELSE wo.title_en END AS title,
+            CASE WHEN ? = 'fr' THEN wo.description_fr ELSE wo.description_en END AS description,
             a.name_en AS asset_name_en, a.name_fr AS asset_name_fr
         FROM work_orders wo 
-        INNER JOIN work_order_translations wot ON wo.id = wot.work_order_id AND wot.language_code = ?
         LEFT JOIN assets a ON wo.asset_id = a.id 
         WHERE wo.company_id = ? AND wo.id = ? AND wo.deleted_at IS NULL
     `;
     
-    const [rows] = await pool.query(query, [languageCode, companyId, id]);
+    const [rows] = await pool.query(query, [languageCode, languageCode, companyId, id]);
     if (rows.length === 0) return null;
 
     // Fetch comments and history in parallel

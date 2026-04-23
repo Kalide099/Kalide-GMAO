@@ -54,7 +54,7 @@ const GlobalPricing = () => {
                         <Terminal className="text-yellow-400" size={14} />
                         <span className="text-[9px] font-black text-yellow-400 uppercase tracking-widest">{t('globalPricingPage.matrixVersion')}</span>
                     </div>
-                    <h1 className="text-6xl lg:text-8xl font-black text-slate-900 tracking-tighter leading-none uppercase italic">
+                    <h1 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tighter leading-none uppercase italic">
                         {t('globalPricingPage.title').split(' ').slice(0, -1).join(' ')} <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500">{t('globalPricingPage.title').split(' ').slice(-1)}</span>
                     </h1>

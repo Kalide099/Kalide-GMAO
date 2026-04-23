@@ -12,6 +12,10 @@
     --brand-slate: #f1f5f9;
   }
 
+  html {
+    font-size: 15px;
+  }
+
   body {
     @apply antialiased text-slate-900 bg-white selection:bg-yellow-200 selection:text-yellow-900;
   }

@@ -81,7 +81,7 @@ const LandingPage = () => {
                         {slides[activeSlide].tagline}
                     </span>
                     
-                    <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] max-w-6xl uppercase italic mb-8 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
+                    <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-[0.9] max-w-6xl uppercase italic mb-8 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
                         {t('marketing.heroTitle')} <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-200">
                             {t('marketing.heroTitleHighlight')}
@@ -177,7 +177,7 @@ const LandingPage = () => {
                 
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center mb-24 space-y-4">
-                        <h2 className="text-4xl lg:text-6xl font-black text-slate-900 tracking-tighter uppercase italic">{t('globalMatrix.masterUnison')}</h2>
+                        <h2 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tighter uppercase italic">{t('globalMatrix.masterUnison')}</h2>
                         <p className="text-slate-500 font-medium uppercase tracking-[0.3em] text-sm">{t('marketing.heroTitleHighlight')}</p>
                     </div>
 

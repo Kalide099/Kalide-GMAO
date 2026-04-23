@@ -24,8 +24,25 @@ api.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
-// Response interceptor to handle Global Auth Errors securely
-api.interceptors.response.use((response) => response, (error) => {
+import { queueAction } from '../../utils/offlineSync';
+
+// Response interceptor to handle Global Auth Errors and Offline Persistence
+api.interceptors.response.use((response) => response, async (error) => {
+    const originalRequest = error.config;
+
+    // Handle Network Errors (Offline)
+    if (!error.response && !navigator.onLine) {
+        if (['post', 'put', 'delete'].includes(originalRequest.method.toLowerCase())) {
+            console.warn('📡 System Offline: Queuing transaction for later synchronization...');
+            await queueAction(
+                originalRequest.method.toUpperCase(), 
+                originalRequest.url, 
+                JSON.parse(originalRequest.data)
+            );
+            return Promise.resolve({ data: { success: true, message: 'Queued for offline sync' } });
+        }
+    }
+
     if (error.response && error.response.status === 401) {
         // Token expired or invalid, forcibly clear and eject to login
         localStorage.removeItem('kgmao_token');

@@ -423,6 +423,29 @@ const WorkOrders = () => {
                                 />
                             </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        {t('workOrders.field_description')} (EN)
+                                    </label>
+                                    <textarea 
+                                        value={formData.description_en}
+                                        onChange={(e) => setFormData({...formData, description_en: e.target.value})}
+                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        {t('workOrders.field_description')} (FR)
+                                    </label>
+                                    <textarea 
+                                        value={formData.description_fr}
+                                        onChange={(e) => setFormData({...formData, description_fr: e.target.value})}
+                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
+                                    />
+                                </div>
+                            </div>
+
                             <div className="flex gap-6 pt-10">
                                 <button 
                                     type="button"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, Package, Briefcase, Activity, Zap, TrendingUp, Globe, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Wrench, Package, Briefcase, Activity, Zap, TrendingUp, Globe, ShoppingCart, ArrowRight, Layers } from 'lucide-react';
 import useIndustryIndustry from '../hooks/useIndustryIndustry';
 
 const Dashboard = () => {
@@ -17,9 +17,9 @@ const Dashboard = () => {
 
     const strategyCards = [
         { title: t('nav.global'), desc: t('dashboard.desc.global'), icon: <Globe size={32} />, path: '/app/global', color: 'from-slate-800 to-slate-900', accent: 'text-teal-400' },
+        { title: t('nexus.title'), desc: t('nexus.subtitle'), icon: <Layers size={32} />, path: '/app/nexus', color: 'from-indigo-600 to-indigo-900', accent: 'text-yellow-400' },
         { title: t('nav.energy'), desc: t('dashboard.desc.energy'), icon: <Zap size={32} />, path: '/app/energy', color: 'from-slate-800 to-slate-900', accent: 'text-yellow-400' },
         { title: t('nav.performance'), desc: t('dashboard.desc.performance'), icon: <TrendingUp size={32} />, path: '/app/performance', color: 'from-slate-800 to-slate-900', accent: 'text-indigo-400' },
-        { title: t('nav.procurement'), desc: t('dashboard.desc.procurement'), icon: <ShoppingCart size={32} />, path: '/app/procurement', color: 'from-slate-800 to-slate-900', accent: 'text-slate-200' },
     ];
 
     return (
@@ -27,7 +27,7 @@ const Dashboard = () => {
             {/* Ultra High-Fidelity Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
                 <div className="space-y-2">
-                   <h1 className="text-6xl font-black text-slate-900 tracking-tighter uppercase italic">{t('dashboard.overview')}</h1>
+                   <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase italic">{t('dashboard.overview')}</h1>
                    <div className="flex items-center gap-3">
                        <span className="h-1 w-12 bg-yellow-400 rounded-full"></span>
                        <p className="text-slate-400 font-black uppercase tracking-[0.4em] text-[10px]">{t('dashboard.subtitle')}</p>
@@ -53,7 +53,7 @@ const Dashboard = () => {
                         </div>
                         
                         <div>
-                            <p className="text-6xl font-black text-slate-900 tracking-tighter leading-none">{metric.value}</p>
+                            <p className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{metric.value}</p>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-4 flex items-center gap-2">
                                 <span className={`w-1 h-3 ${metric.accent} rounded-full`}></span>
                                 {metric.title}

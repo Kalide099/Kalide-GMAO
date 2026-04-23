@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
 import { 
     Building2, Power, UserCheck, Settings2, ShieldAlert, Cpu, BrainCircuit, Globe,
-    Package, Radio, Boxes, Link, Leaf, Eye, X, Award, DollarSign
+    Package, Radio, Boxes, Link, Leaf, Eye, X, Award, DollarSign, Search, Layers, Thermometer, FileText, Box, Zap
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -72,6 +72,18 @@ const AdminCompanies = () => {
         }
     };
 
+    const updatePlan = async (id, plan) => {
+        try {
+            const res = await api.patch(`/admin/company/${id}/plan`, { plan });
+            if (res.data.success) {
+                setCompanies(companies.map(c => c.id === id ? {...c, plan} : c));
+                setSelectedCompany({...selectedCompany, plan});
+            }
+        } catch (e) {
+            alert(t('admin.planUpdateError'));
+        }
+    };
+
     if (loading) return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
             <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
@@ -126,6 +138,17 @@ const AdminCompanies = () => {
                                     <td className="px-8 py-6">
                                         <div className="flex flex-wrap gap-1.5 max-w-[320px]">
                                             {[
+                                                // Nexus Modules
+                                                { id: 'rca', icon: <Search size={14} />, label: t('nexus.rca.title') || 'RCA' },
+                                                { id: 'fmea', icon: <Layers size={14} />, label: t('nexus.fmea.title') || 'FMEA' },
+                                                { id: 'loto', icon: <ShieldAlert size={14} />, label: t('nexus.loto.title') || 'LOTO' },
+                                                { id: 'calibration', icon: <Thermometer size={14} />, label: t('nexus.calibration.title') || 'Calibration' },
+                                                { id: 'dms', icon: <FileText size={14} />, label: t('nexus.dms.title') || 'DMS' },
+                                                { id: 'tpm', icon: <Settings2 size={14} />, label: t('nexus.tpm.title') || 'TPM' },
+                                                { id: 'inventory', icon: <Box size={14} />, label: t('nexus.inventory.title') || 'Inventory' },
+                                                { id: 'bim', icon: <Zap size={14} />, label: t('nexus.bim.title') || 'BIM' },
+                                                { id: 'offline', icon: <Power size={14} />, label: t('nexus.offline.title') || 'Offline' },
+                                                // Global Matrix Modules
                                                 { id: 'safety', icon: <ShieldAlert size={14} />, label: t('roadmap.safety.title') },
                                                 { id: 'iot', icon: <Cpu size={14} />, label: t('iot.title') },
                                                 { id: 'predictive', icon: <BrainCircuit size={14} />, label: t('predictive.title') },
@@ -138,22 +161,31 @@ const AdminCompanies = () => {
                                                 { id: 'hub', icon: <Link size={14} />, label: t('nav.integration_hub') },
                                                 { id: 'esg', icon: <Leaf size={14} />, label: t('roadmap.esg.title') },
                                                 { id: 'finance', icon: <DollarSign size={14} />, label: t('roadmap.finance.title') }
-                                            ].map(mod => (
+                                            ].map(mod => {
+                                                let currentMods = c.enabled_modules;
+                                                if (typeof currentMods === 'string') {
+                                                    try { currentMods = JSON.parse(currentMods); } catch (e) { currentMods = []; }
+                                                }
+                                                if (!Array.isArray(currentMods)) {
+                                                    currentMods = [];
+                                                }
+                                                return (
                                                 <button
                                                     key={mod.id}
-                                                    onClick={() => toggleModule(c.id, mod.id, c.enabled_modules)}
+                                                    onClick={() => toggleModule(c.id, mod.id, currentMods)}
                                                     className={`p-2 rounded-xl transition-all border ${
-                                                        (c.enabled_modules || []).includes(mod.id)
+                                                        currentMods.includes(mod.id)
                                                             ? 'bg-slate-950 text-yellow-500 border-slate-950 shadow-lg shadow-yellow-500/10'
-                                                                : 'bg-white text-slate-300 border-slate-100 hover:border-slate-300 hover:text-slate-500 shadow-sm'
-                                                        }`}
-                                                        title={mod.label}
-                                                    >
-                                                        {mod.icon}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </td>
+                                                            : 'bg-white text-slate-300 border-slate-100 hover:border-slate-300 hover:text-slate-500 shadow-sm'
+                                                    }`}
+                                                    title={mod.label}
+                                                >
+                                                    {mod.icon}
+                                                </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </td>
                                         <td className="px-8 py-6">
                                             <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
                                                 <button 
@@ -224,14 +256,34 @@ const AdminCompanies = () => {
                                     </div>
                                 </div>
     
-                                <div className="space-y-8 text-right md:text-left">
+                                <div className="space-y-8">
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 text-right md:text-left">{t('admin.status')}</p>
-                                        <span className={`inline-block px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                            selectedCompany.subscription_status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                                        }`}>
-                                            {t(`common.status.${selectedCompany.subscription_status}`)}
-                                        </span>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 text-right md:text-left">{t('admin.status')}</p>
+                                        <div className="flex justify-end md:justify-start gap-4">
+                                            <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                                selectedCompany.subscription_status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                                            }`}>
+                                                {t(`common.status.${selectedCompany.subscription_status}`)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 text-right md:text-left">{t('admin.operationalTier')}</p>
+                                        <div className="flex justify-end md:justify-start gap-2">
+                                            {['basic', 'pro', 'enterprise'].map(p => (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => updatePlan(selectedCompany.id, p)}
+                                                    className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
+                                                        selectedCompany.plan === p 
+                                                            ? 'bg-slate-950 text-yellow-500 border-slate-950 shadow-lg' 
+                                                            : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
+                                                    }`}
+                                                >
+                                                    {p}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 text-right md:text-left">{t('admin.registrationDate')}</p>

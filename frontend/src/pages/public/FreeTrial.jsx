@@ -27,7 +27,7 @@ const FreeTrial = () => {
                         </div>
                         
                         <div className="space-y-6">
-                            <h1 className="text-6xl lg:text-8xl font-black tracking-tighter uppercase italic leading-[0.9]">
+                            <h1 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
                                 {t('freeTrialPage.title').split(' ').slice(0, -1).join(' ')} <br/>
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-100">{t('freeTrialPage.title').split(' ').slice(-1)}</span>
                             </h1>

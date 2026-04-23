@@ -78,6 +78,16 @@ const DashboardLayout = () => {
       { icon: <Leaf size={20} />, label: t('roadmap.esg.title'), path: '/app/esg', module: 'esg' },
       { icon: <Leaf size={20} />, label: t('nav.carbon_ledger'), path: '/app/carbon-ledger', module: 'carbon_ledger' },
     ]},
+    { id: 'nexus_suite', items: [
+      { icon: <ShieldCheck size={20} />, label: t('nexus.rca.title') || 'RCA Analysis', path: '/app/nexus/rca', module: 'rca' },
+      { icon: <Activity size={20} />, label: t('nexus.fmea.title') || 'FMEA Logic', path: '/app/nexus/fmea', module: 'fmea' },
+      { icon: <Siren size={20} />, label: t('nexus.loto.title') || 'LOTO Safety', path: '/app/nexus/loto', module: 'loto' },
+      { icon: <Zap size={20} />, label: t('nexus.calibration.title') || 'Calibration', path: '/app/nexus/calibration', module: 'calibration' },
+      { icon: <FileText size={20} />, label: t('nexus.dms.title') || 'DMS Vault', path: '/app/nexus/dms', module: 'dms' },
+      { icon: <Wrench size={20} />, label: t('nexus.tpm.title') || 'Autonomous TPM', path: '/app/nexus/tpm', module: 'tpm' },
+      { icon: <Boxes size={20} />, label: t('nav.digital_twin') || 'BIM Explorer', path: '/app/nexus/bim', module: 'bim' },
+      { icon: <Activity size={20} />, label: 'Offline Matrix', path: '/app/nexus/offline' },
+    ]},
     { id: 'administration', role: ['admin', 'super_admin', 'system_admin'], items: [
       { icon: <Users size={20} />, label: t('nav.subcontracting'), path: '/app/subcontracting' },
       { icon: <Layers size={20} />, label: t('nav.finance_matrix'), path: '/app/finance-matrix' },
@@ -86,6 +96,16 @@ const DashboardLayout = () => {
       { icon: <ShieldCheck size={20} />, label: t('nav.audit'), path: '/app/audit' },
     ]}
   ];
+
+  // Map sections to minimum plan required
+  const tierMapping = {
+    'core': ['basic', 'pro', 'enterprise'],
+    'intelligence': ['pro', 'enterprise'],
+    'nexus_suite': ['pro', 'enterprise'],
+    'global_matrix': ['enterprise'],
+    'enterprise_roadmap': ['enterprise'],
+    'administration': ['enterprise']
+  };
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
@@ -121,20 +141,15 @@ const DashboardLayout = () => {
           {menuItems.map((section) => {
             const userPlan = user?.plan || 'enterprise'; // Default for existing users
             
-            // Tier-based section filtering
-            const tierMapping = {
-              'core': ['basic', 'pro', 'enterprise'],
-              'intelligence': ['pro', 'enterprise'],
-              'global_matrix': ['enterprise'],
-              'enterprise_roadmap': ['enterprise'],
-              'administration': ['enterprise']
-            };
-
             // If section is not allowed for this tier, skip it
             if (tierMapping[section.id] && !tierMapping[section.id].includes(userPlan)) return null;
 
             const visibleItems = section.items.filter(item => {
-              const modules = Array.isArray(user?.enabled_modules) ? user.enabled_modules : [];
+              let modules = user?.enabled_modules;
+              if (typeof modules === 'string') {
+                  try { modules = JSON.parse(modules); } catch (e) { modules = []; }
+              }
+              if (!Array.isArray(modules)) modules = [];
               
               // Role check for full section
               if (section.role && !section.role.includes(user?.role)) return false;

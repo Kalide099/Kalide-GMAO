@@ -8,6 +8,9 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedUserAudit, setSelectedUserAudit] = useState(null);
+    const [auditLogs, setAuditLogs] = useState([]);
+    const [auditLoading, setAuditLoading] = useState(false);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -18,6 +21,35 @@ const AdminUsers = () => {
             console.error(t('admin.userPullError'), err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleStatus = async (user) => {
+        const newStatus = user.status === 'active' ? 'suspended' : 'active';
+        if (!window.confirm(t('admin.confirmStatusUpdate', { status: newStatus }))) return;
+
+        try {
+            const response = await api.patch(`/admin/user/${user.id}/status`, { status: newStatus });
+            if (response.data.success) {
+                fetchUsers();
+            }
+        } catch (err) {
+            console.error('Failed to update user status', err);
+        }
+    };
+
+    const handleViewAudit = async (user) => {
+        setSelectedUserAudit(user);
+        setAuditLoading(true);
+        try {
+            const response = await api.get(`/admin/user/${user.id}/audit`);
+            if (response.data.success) {
+                setAuditLogs(response.data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch user audit logs', err);
+        } finally {
+            setAuditLoading(false);
         }
     };
 
@@ -126,13 +158,23 @@ const AdminUsers = () => {
                                                 </span>
                                             </td>
                                             <td className="px-12 py-10">
-                                                <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                                                    <button className="px-6 py-3 bg-white border border-slate-100 text-slate-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                                <div className="flex justify-end gap-3 transition-all duration-300 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto">
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleViewAudit(u); }}
+                                                        className="px-6 py-3 bg-white border border-slate-100 text-slate-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+                                                    >
                                                         {t('admin.auditProfile')}
                                                     </button>
-                                                    <button className="px-6 py-3 bg-rose-50 text-rose-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm">
-                                                        {t('admin.revoke')}
-                                                    </button>
+                                                    {u.role !== 'super_admin' && (
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); handleToggleStatus(u); }}
+                                                            className={`px-6 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all shadow-sm ${
+                                                                u.status === 'suspended' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white' : 'bg-rose-50 text-rose-500 hover:bg-rose-600 hover:text-white'
+                                                            }`}
+                                                        >
+                                                            {u.status === 'suspended' ? t('admin.restore') : t('admin.revoke')}
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -157,6 +199,51 @@ const AdminUsers = () => {
                                 <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
                                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t('admin.suspendedNodes')}: {filteredUsers.filter(u => u.status === 'suspended').length}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Audit Modal */}
+            {selectedUserAudit && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in">
+                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <div>
+                                <h2 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{t('admin.auditProfile')}</h2>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{selectedUserAudit.email}</p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedUserAudit(null)}
+                                className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
+                            >
+                                <Zap className="rotate-45" size={20} />
+                            </button>
+                        </div>
+                        <div className="p-10 max-h-[60vh] overflow-y-auto space-y-6">
+                            {auditLoading ? (
+                                <div className="py-20 text-center animate-pulse text-slate-300 font-black uppercase text-[10px] tracking-widest">{t('admin.decodingStream')}</div>
+                            ) : auditLogs.length === 0 ? (
+                                <div className="py-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest">{t('admin.noAuditRecords')}</div>
+                            ) : (
+                                auditLogs.map(log => (
+                                    <div key={log.id} className="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest">{log.action}</span>
+                                            <span className="text-[8px] text-slate-400 font-bold">{new Date(log.created_at).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-xs font-bold text-slate-600 line-clamp-2">{JSON.stringify(log.details)}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className="p-10 bg-slate-50 border-t border-slate-100">
+                            <button 
+                                onClick={() => setSelectedUserAudit(null)}
+                                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-indigo-600 transition-all"
+                            >
+                                {t('common.close')}
+                            </button>
                         </div>
                     </div>
                 </div>

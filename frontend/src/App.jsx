@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -64,9 +64,35 @@ import Subcontracting from './pages/Subcontracting';
 import FinanceMatrix from './pages/FinanceMatrix';
 import CustomForms from './pages/CustomForms';
 import SSOConfig from './pages/SSOConfig';
+import NexusHub from './pages/NexusHub';
+import RootCauseAnalysis from './pages/nexus/RootCauseAnalysis';
+import FmeaAnalytics from './pages/nexus/FmeaAnalytics';
+import LotoProtocol from './pages/nexus/LotoProtocol';
+import CalibrationRegistry from './pages/nexus/CalibrationRegistry';
+import DocumentVault from './pages/nexus/DocumentVault';
+import AutonomousTPM from './pages/nexus/AutonomousTPM';
+import PredictiveInventory from './pages/nexus/PredictiveInventory';
+import BimExplorer from './pages/nexus/BimExplorer';
+import OfflineMatrix from './pages/nexus/OfflineMatrix';
+import { syncOfflineActions } from './utils/offlineSync';
+import api from './services/api/axiosConfig';
 
 const App = () => {
     const { t } = useTranslation();
+
+    useEffect(() => {
+        const handleOnline = () => {
+            console.log('🌐 Connection restored. Initializing Industrial Sync...');
+            syncOfflineActions(api);
+        };
+
+        window.addEventListener('online', handleOnline);
+        // Initial check on load
+        if (navigator.onLine) syncOfflineActions(api);
+
+        return () => window.removeEventListener('online', handleOnline);
+    }, []);
+
     return (
         <React.Suspense fallback={
             <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center space-y-6">
@@ -133,6 +159,16 @@ const App = () => {
                 <Route path="finance-matrix" element={<FinanceMatrix />} />
                 <Route path="custom-forms" element={<CustomForms />} />
                 <Route path="sso-config" element={<SSOConfig />} />
+                <Route path="nexus" element={<NexusHub />} />
+                <Route path="nexus/rca" element={<RootCauseAnalysis />} />
+                <Route path="nexus/fmea" element={<FmeaAnalytics />} />
+                <Route path="nexus/loto" element={<LotoProtocol />} />
+                <Route path="nexus/calibration" element={<CalibrationRegistry />} />
+                <Route path="nexus/dms" element={<DocumentVault />} />
+                <Route path="nexus/tpm" element={<AutonomousTPM />} />
+                <Route path="nexus/inventory" element={<PredictiveInventory />} />
+                <Route path="nexus/bim" element={<BimExplorer />} />
+                <Route path="nexus/offline" element={<OfflineMatrix />} />
               </Route>
             </Route>
 

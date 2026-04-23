@@ -75,7 +75,7 @@ const TeamPerformance = () => {
                         <Award className="text-rose-400" />
                      </div>
                      <div>
-                        <span className="text-7xl font-black tracking-tighter">{(stats.qualityScore/10).toFixed(1)}</span>
+                        <span className="text-5xl font-black tracking-tighter">{(stats.qualityScore/10).toFixed(1)}</span>
                         <p className="text-slate-400 font-bold uppercase text-xs mt-2 tracking-widest">{t('performance.globalBenchmark')}</p>
                      </div>
                 </div>
@@ -86,7 +86,7 @@ const TeamPerformance = () => {
                         <Clock className="text-indigo-500" />
                      </div>
                      <div>
-                        <span className="text-7xl font-black text-slate-800 tracking-tighter">{stats.avgRepairTime}h</span>
+                        <span className="text-5xl font-black text-slate-800 tracking-tighter">{stats.avgRepairTime}h</span>
                         <p className="text-slate-500 font-bold uppercase text-xs mt-2 tracking-widest">{t('performance.cycleComp')}</p>
                      </div>
                 </div>
@@ -98,7 +98,7 @@ const TeamPerformance = () => {
                      </div>
                      <div className="space-y-4">
                          <div className="flex justify-between items-end">
-                            <span className="text-5xl font-black text-slate-800 tracking-tighter">{stats.completionRate}%</span>
+                            <span className="text-4xl font-black text-slate-800 tracking-tighter">{stats.completionRate}%</span>
                             <span className="text-emerald-500 font-black text-xs uppercase tracking-widest">{t('common.status.optimal')}</span>
                          </div>
                          <div className="w-full bg-slate-50 h-3 rounded-full overflow-hidden">

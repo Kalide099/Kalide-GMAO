@@ -98,6 +98,8 @@
         "platformAnalyticsSub": "Vue d'ensemble de la performance multi-tenant globale",
         "industrialNode": "Nœud d'Identité Industrielle",
         "oversight": "Surveillance Globale des Nœuds d'Entreprise",
+        "operationalTier": "Niveau Opérationnel",
+        "planUpdateError": "Échec de la mise à jour du protocole d'opération.",
         "zeroModules": "Zéro Module Activé",
         "totalCompanies": "Total des Entreprises",
         "totalUsers": "Total des Utilisateurs",
@@ -171,7 +173,11 @@
         "moduleConfigError": "Erreur de configuration du module.",
         "activeSeats": "Sièges Actifs",
         "suspendedNodes": "Nœuds Suspendus",
-        "syncingClusters": "Syncing Identity Clusters..."
+        "syncingClusters": "Synchronisation des clusters d'identité...",
+        "restore": "Restaurer l'accès",
+        "confirmStatusUpdate": "Autorisation de sécurité requise : Procéder au protocole {{status}} du nœud utilisateur ?",
+        "decodingStream": "Décodage du flux médico-légal de l'utilisateur...",
+        "noAuditRecords": "Aucun enregistrement médico-légal trouvé pour ce nœud."
     },
     "app": {
         "title": "KGMAO Entreprise",
@@ -207,14 +213,183 @@
         "carbon_ledger": "Registre Carbone",
         "subcontracting": "Sous-traitance",
         "neural_ar": "Laboratoires RA Neuraux",
-        "unidentified_node": "nœud_non_identifié",
+        "unidentified_node": "Nœud Non Identifié",
         "sections": {
             "core": "CŒUR",
             "intelligence": "INTELLIGENCE",
+            "nexus_suite": "SUITE INDUSTRIELLE NEXUS",
             "global_matrix": "MATRICE GLOBALE",
             "enterprise_roadmap": "FEUILLE DE ROUTE",
             "governance": "GOUVERNANCE",
             "administration": "ADMINISTRATION"
+        }
+    },
+    "nexus": {
+        "title": "Industrial Nexus",
+        "subtitle": "Centre de Commande & Intelligence Spatiale",
+        "version": "v3.0.1 Stable",
+        "encrypted": "Chiffré",
+        "rca": {
+            "title": "Analyse Cause Racine (RCA)",
+            "subtitle": "Enquête médico-légale sur les défaillances",
+            "whys": "Matrice Logique des 5 Pourquoi",
+            "ishikawa": "Analyse par Diagramme d'Ishikawa",
+            "export_protocol": "Exporter Protocole",
+            "initial_problem": "Énoncé Initial du Problème",
+            "why_num": "Pourquoi n°",
+            "analyze_factors": "Analyser facteurs {{key}}...",
+            "root_found": "Cause Racine Identifiée ?"
+        },
+        "rcm": {
+            "title": "Maintenance Centrée Fiabilité",
+            "subtitle": "Cartographie de Criticité AMDEC",
+            "risk": "Indice de Priorité de Risque (RPN)",
+            "fault_modes_active": "Modes de Défaillance Critiques Actifs",
+            "risk_index": "Indice de Risque Global",
+            "mitigations": "Atténuations Actives",
+            "reliability_score": "Score de Fiabilité",
+            "failure_mode": "Mode de Défaillance",
+            "severity": "Gravité (G)",
+            "occurrence": "Occurrence (O)",
+            "detection": "Détection (D)",
+            "rpn_score": "Score IPR/RPN",
+            "actions": "Actions",
+            "analyze_details": "Analyser Détails",
+            "modes": {
+                "m1": "Surchauffe Roulement",
+                "m2": "Fuite d'Étanchéité"
+            }
+        },
+        "loto": {
+            "title": "Consignation (LOTO)",
+            "subtitle": "Protocole d'Isolation d'Énergie Numérique",
+            "isolate": "Isoler le Nœud",
+            "reenergize": "Ré-énergiser le Nœud",
+            "danger_zone": "Danger : Zone Haute Énergie",
+            "source": "Source",
+            "isolated": "Isolé",
+            "locked": "Verrouillé",
+            "auth_title": "Autorisation Numérique",
+            "auth_desc": "En signant ci-dessous, vous certifiez que toutes les sources d'énergie sont isolées et vérifiées.",
+            "signed": "Signature Certifiée Injectée",
+            "draw_here": "Dessinez votre signature ici",
+            "verify_lock": "Vérifier et Verrouiller le Protocole",
+            "pending": "En attente",
+            "isolation_steps": "étapes d'isolation",
+            "steps": {
+                "s1": "Isolation du Panneau Principal",
+                "s2": "Relâchement de la Pression",
+                "s3": "Vérification de l'État Zéro"
+            },
+            "energy": {
+                "elec": "Électrique",
+                "pneu": "Pneumatique",
+                "resid": "Résiduelle"
+            }
+        },
+        "calibration": {
+            "title": "Étalonnage de Précision",
+            "subtitle": "Registre de Précision des Instruments",
+            "drift": "Surveillance de la Dérive de Précision",
+            "tag_prefix": "ETL",
+            "enroll_instrument": "Enregistrer Instrument",
+            "compliance_rate": "Taux de Conformité",
+            "expired_drift": "Expiré / Dérive",
+            "logs_processed": "Logs Traités",
+            "tag": "Tag de l'Instrument",
+            "last_cal": "Dernier Étalonnage",
+            "next_due": "Prochaine Échéance",
+            "drift_analysis": "Analyse de Dérive",
+            "status": "Statut",
+            "actions": "Actions",
+            "recalibrate": "Recalibrer",
+            "add_title": "Enregistrer Instrument",
+            "add_subtitle": "Initialisation du Nœud de Métrologie",
+            "tag_id": "Identifiant du Tag",
+            "frequency": "Fréquence (Jours)",
+            "name_en": "Nom (EN)",
+            "name_fr": "Nom (FR)",
+            "cancel": "Annuler",
+            "init_node": "Initialiser le Nœud",
+            "form": {
+                "tag_placeholder": "ex: CAL-900",
+                "asset_id_placeholder": "Lien ID de l'Actif"
+            }
+        },
+        "dms": {
+            "title": "Coffre-fort Documentaire",
+            "subtitle": "Référentiel de Plans et CAO d'Actifs",
+            "upload": "Téléverser CAO/PDF",
+            "total_storage": "Stockage Total",
+            "total_files": "Total Fichiers",
+            "gen_qr": "Générer Accès QR",
+            "shared": "Partagé avec l'Équipe",
+            "open_preview": "Ouvrir Aperçu"
+        },
+        "tpm": {
+            "title": "TPM Autonome",
+            "subtitle": "Grille de Maintenance Niveau Opérateur",
+            "routine_matrix": "Matrice de Routine Quotidienne",
+            "inspection_title": "Inspection de l'Opérateur (Shift)",
+            "anomaly_title": "Preuves d'Anomalie",
+            "capture_image": "Capturer Image",
+            "voice_note": "Note Vocale",
+            "problem_detected": "Problème Détecté ?",
+            "trigger_request": "Lancer Ordre de Travail Immédiatement",
+            "tasks": {
+                "t1": "Vérifier contamination niveaux d'huile",
+                "t2": "Écouter bruits anormaux (roulements)",
+                "t3": "Nettoyer filtres d'admission d'air",
+                "t4": "Vérifier réactivité arrêt d'urgence"
+            }
+        },
+        "inventory": {
+            "title": "Réapprovisionnement Prédictif",
+            "subtitle": "Prévision des Pièces via IA",
+            "retrain": "Ré-entraîner le Modèle IA",
+            "accuracy": "Précision du Modèle",
+            "risk": "Risque de Rupture",
+            "orders": "Commandes Prédictives",
+            "auto_purchase": "Achat Auto Activé",
+            "forecast_title": "Prévisions de Consommation (30 jours)",
+            "current_stock": "Stock Actuel",
+            "min_threshold": "Seuil Minimum",
+            "forecast_need": "Besoin Prévu IA",
+            "stable": "Stable",
+            "auth_order": "Autoriser Commande",
+            "parts": {
+                "p1": "Joint Magnétique #88",
+                "p2": "Courroie en V 1200mm",
+                "p3": "Kit de Roulement K7"
+            }
+        },
+        "bim": {
+            "title": "Explorateur 3D BIM",
+            "subtitle": "Intelligence Spatiale des Actifs",
+            "reality_capture": "Mode Capture de Réalité",
+            "spatial_intelligence": "Intelligence Spatiale",
+            "machine_node": "Nœud Machine",
+            "health_score": "Score de Santé",
+            "active_layer": "Couche BIM Active",
+            "digital_twin_data": "Données Jumeau Numérique",
+            "telemetry_stream": "Flux de télémétrie en temps réel.",
+            "examine_diagnostics": "Examiner le Diagnostic"
+        },
+        "offline": {
+            "title": "Matrice Hors-Ligne",
+            "subtitle": "Moteur de Persistance Locale",
+            "force_sync": "Forcer Sync Cloud",
+            "engine": "Moteur de Persistance",
+            "cached_assets": "Actifs en Cache",
+            "pending_sync": "Sync en Attente",
+            "latency": "Latence Locale",
+            "integrity": "Intégrité de Sync",
+            "topology": "Topologie Relay",
+            "hq_relay": "Relais HQ Principal",
+            "hq_status": "Connecté • Stockholm (AWS)",
+            "edge_relay": "Relais Edge Secondaire",
+            "edge_status": "Hors-ligne • Nœud Mesh Local",
+            "diag_feed": "Flux de Diagnostic"
         }
     },
     "cmms": {

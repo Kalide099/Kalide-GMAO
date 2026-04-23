@@ -98,6 +98,8 @@
         "platformAnalyticsSub": "Global Multi-Tenant Performance Overview",
         "industrialNode": "Industrial Identity Node",
         "oversight": "Global Enterprise Node Oversight",
+        "operationalTier": "Operational Tier",
+        "planUpdateError": "Failed to update operation protocol.",
         "zeroModules": "Zero Modules Activated",
         "totalCompanies": "Total Companies",
         "totalUsers": "Total Users",
@@ -171,7 +173,11 @@
         "suspensionError": "Suspension Override Fault.",
         "moduleConfigError": "Module configuration error.",
         "activeSeats": "Active Seats",
-        "suspendedNodes": "Suspended Nodes"
+        "suspendedNodes": "Suspended Nodes",
+        "restore": "Restore Access",
+        "confirmStatusUpdate": "Security Authorization Required: Proceed with user node {{status}} protocol?",
+        "decodingStream": "Decoding User Forensic Stream...",
+        "noAuditRecords": "Zero forensic records found for this node."
     },
     "app": {
         "title": "KGMAO Enterprise",
@@ -210,12 +216,181 @@
         "sections": {
             "core": "CORE",
             "intelligence": "INTELLIGENCE",
+            "nexus_suite": "NEXUS INDUSTRIAL SUITE",
             "global_matrix": "GLOBAL MATRIX",
             "enterprise_roadmap": "ENTERPRISE ROADMAP",
             "governance": "GOVERNANCE",
             "administration": "ADMINISTRATION"
         },
-        "unidentified_node": "nœud_non_identifié"
+        "unidentified_node": "Unidentified Node"
+    },
+    "nexus": {
+        "title": "Industrial Nexus",
+        "subtitle": "Command & Spatial Intelligence Center",
+        "version": "v3.0.1 Stable",
+        "encrypted": "Encrypted",
+        "rca": {
+            "title": "Root Cause Analysis (RCA)",
+            "subtitle": "Forensic Failure Investigation",
+            "whys": "5 Whys Logic Matrix",
+            "ishikawa": "Fishbone Diagram Analysis",
+            "export_protocol": "Export Protocol",
+            "initial_problem": "Initial Problem Statement",
+            "why_num": "Why #",
+            "analyze_factors": "Analyze {{key}} factors...",
+            "root_found": "Root Cause Found?"
+        },
+        "rcm": {
+            "title": "Reliability Centered Maintenance",
+            "subtitle": "FMEA Criticality Mapping",
+            "risk": "Risk Priority Number (RPN)",
+            "fault_modes_active": "Critical Fault Modes Active",
+            "risk_index": "Global Risk Index",
+            "mitigations": "Active Mitigations",
+            "reliability_score": "Reliability Score",
+            "failure_mode": "Failure Mode",
+            "severity": "Severity (S)",
+            "occurrence": "Occurrence (O)",
+            "detection": "Detection (D)",
+            "rpn_score": "RPN Score",
+            "actions": "Actions",
+            "analyze_details": "Analyze Details",
+            "modes": {
+                "m1": "Bearing Overheat",
+                "m2": "Seal Leakage"
+            }
+        },
+        "loto": {
+            "title": "Lockout Tagout (LOTO)",
+            "subtitle": "Digital Energy Isolation Protocol",
+            "isolate": "Isolate Node",
+            "reenergize": "Re-energize Node",
+            "danger_zone": "Danger: High Energy Zone",
+            "source": "Source",
+            "isolated": "Isolated",
+            "locked": "Locked",
+            "auth_title": "Digital Authorization",
+            "auth_desc": "By signing below, you certify that all energy sources are isolated and verified.",
+            "signed": "Certified Signature Injected",
+            "draw_here": "Draw Signature Here",
+            "verify_lock": "Verify & Lock Protocol",
+            "pending": "Pending",
+            "isolation_steps": "isolation steps",
+            "steps": {
+                "s1": "Main Panel Isolation",
+                "s2": "Pressure Release",
+                "s3": "Verification of Zero State"
+            },
+            "energy": {
+                "elec": "Electrical",
+                "pneu": "Pneumatic",
+                "resid": "Residual"
+            }
+        },
+        "calibration": {
+            "title": "Precision Calibration",
+            "subtitle": "Instrument Accuracy Registry",
+            "drift": "Accuracy Drift Monitoring",
+            "tag_prefix": "CAL",
+            "enroll_instrument": "Enroll Instrument",
+            "compliance_rate": "Compliance Rate",
+            "expired_drift": "Expired / Drift",
+            "logs_processed": "Logs Processed",
+            "tag": "Instrument Tag",
+            "last_cal": "Last Calibration",
+            "next_due": "Next Due Date",
+            "drift_analysis": "Drift Analysis",
+            "status": "Status",
+            "actions": "Actions",
+            "recalibrate": "Recalibrate",
+            "add_title": "Enroll Instrument",
+            "add_subtitle": "Metrology Node Initialization",
+            "tag_id": "Tag Identifier",
+            "frequency": "Frequency (Days)",
+            "name_en": "Name (EN)",
+            "name_fr": "Name (FR)",
+            "cancel": "Cancel",
+            "init_node": "Initialize Node",
+            "form": {
+                "tag_placeholder": "e.g. CAL-900",
+                "asset_id_placeholder": "Asset ID Linkage"
+            }
+        },
+        "dms": {
+            "title": "Document Vault",
+            "subtitle": "Asset Blueprint & CAD Repository",
+            "upload": "Upload CAD/PDF",
+            "total_storage": "Total Storage",
+            "total_files": "Total Files",
+            "gen_qr": "Gen QR Access",
+            "shared": "Shared with Team",
+            "open_preview": "Open Preview"
+        },
+        "tpm": {
+            "title": "Autonomous TPM",
+            "subtitle": "Operator-Level Maintenance Grid",
+            "routine_matrix": "Daily Routine Matrix",
+            "inspection_title": "Shift Operator Inspection",
+            "anomaly_title": "Anomaly Evidence",
+            "capture_image": "Capture Image",
+            "voice_note": "Voice Note",
+            "problem_detected": "Problem Detected?",
+            "trigger_request": "Trigger Work Request Immediately",
+            "tasks": {
+                "t1": "Check oil levels for contamination",
+                "t2": "Listen for unusual bearing noise",
+                "t3": "Clean air intake filters",
+                "t4": "Verify emergency stop responsiveness"
+            }
+        },
+        "inventory": {
+            "title": "Predictive Replenishment",
+            "subtitle": "AI-Driven Spare Parts Forecasting",
+            "retrain": "Re-Train AI Model",
+            "accuracy": "Model Accuracy",
+            "risk": "Stockout Risk",
+            "orders": "Predictive Orders",
+            "auto_purchase": "Auto-Purchase Enabled",
+            "forecast_title": "Consumption Forecast (30 Days)",
+            "current_stock": "Current Stock",
+            "min_threshold": "Min Threshold",
+            "forecast_need": "AI Forecast Need",
+            "stable": "Stable",
+            "auth_order": "Authorize Order",
+            "parts": {
+                "p1": "Magnetic Seal #88",
+                "p2": "V-Belt 1200mm",
+                "p3": "Bearing Kit K7"
+            }
+        },
+        "bim": {
+            "title": "BIM 3D Explorer",
+            "subtitle": "Spatial Asset Intelligence",
+            "reality_capture": "Reality Capture Mode",
+            "spatial_intelligence": "Spatial Intelligence",
+            "machine_node": "Machine Node",
+            "health_score": "Health Score",
+            "active_layer": "Active BIM Layer",
+            "digital_twin_data": "Digital Twin Data",
+            "telemetry_stream": "Streaming telemetry from sensors.",
+            "examine_diagnostics": "Examine Diagnostics"
+        },
+        "offline": {
+            "title": "Offline Matrix",
+            "subtitle": "Local Persistence Engine",
+            "force_sync": "Force Cloud Sync",
+            "engine": "Persistence Engine",
+            "cached_assets": "Cached Assets",
+            "pending_sync": "Pending Sync",
+            "latency": "Local Latency",
+            "integrity": "Sync Integrity",
+            "topology": "Relay Topology",
+            "hq_relay": "Primary HQ Relay",
+            "hq_status": "Connected • Stockholm (AWS)",
+            "edge_relay": "Secondary Edge Relay",
+            "edge_status": "Offline • Local Mesh Node",
+            "diag_feed": "Diagnostics Feed"
+        }
     },
     "cmms": {
         "subcontracting": {
@@ -711,8 +886,7 @@
             }
         },
         "healthBoost": "Health Logic Matrix Included",
-        "ssoAudit": "SSO & Multi-Tenant Audit Active",
-        "custom": "Custom"
+        "ssoAudit": "SSO & Multi-Tenant Audit Active"
     },
     "predictive": {
         "title": "Predictive Intelligence Ops",

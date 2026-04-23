@@ -31,6 +31,7 @@ const startServer = async () => {
                 industry_en VARCHAR(100),
                 industry_fr VARCHAR(100),
                 subscription_status ENUM('trial', 'active', 'suspended', 'expired', 'cancelled') DEFAULT 'trial',
+                plan ENUM('basic', 'pro', 'enterprise') DEFAULT 'basic',
                 enabled_modules JSON NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -111,6 +112,140 @@ const startServer = async () => {
         try {
             await connection.query('ALTER TABLE companies ADD COLUMN enabled_modules JSON NULL AFTER subscription_status');
         } catch (err) {}
+
+        // --- 11. FINANCE & SUBCONTRACTING ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS subcontractor_matrix (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                name VARCHAR(255),
+                category VARCHAR(100),
+                rating DECIMAL(3,2),
+                contact_email VARCHAR(255),
+                status ENUM('active', 'inactive', 'blacklisted') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 12. NEXUS MODULE: ROOT CAUSE ANALYSIS (RCA) ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS rca_reports (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                work_order_id VARCHAR(36),
+                asset_id VARCHAR(36),
+                title_en VARCHAR(255),
+                title_fr VARCHAR(255),
+                status ENUM('draft', 'under_review', 'finalized') DEFAULT 'draft',
+                whys_json JSON,
+                ishikawa_json JSON,
+                fta_json JSON,
+                created_by VARCHAR(36),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 13. NEXUS MODULE: RCM + FMEA (AMDEC) ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS fmea_analysis (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                asset_id VARCHAR(36),
+                failure_mode_en TEXT,
+                failure_mode_fr TEXT,
+                effects_en TEXT,
+                effects_fr TEXT,
+                severity INT DEFAULT 1,
+                occurrence INT DEFAULT 1,
+                detection INT DEFAULT 1,
+                rpn INT GENERATED ALWAYS AS (severity * occurrence * detection) STORED,
+                recommended_action TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 14. NEXUS MODULE: LOTO (LOCKOUT TAGOUT) ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS loto_procedures (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                asset_id VARCHAR(36),
+                title_en VARCHAR(255),
+                title_fr VARCHAR(255),
+                steps_json JSON,
+                energy_sources JSON,
+                required_approvals INT DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS loto_logs (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                procedure_id VARCHAR(36),
+                user_id VARCHAR(36),
+                action ENUM('isolated', 'verified', 'reenergized'),
+                signature_data TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 15. NEXUS MODULE: CALIBRATION ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS instruments (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                asset_id VARCHAR(36),
+                tag_number VARCHAR(100),
+                range_min DECIMAL(15,2),
+                range_max DECIMAL(15,2),
+                unit VARCHAR(20),
+                calibration_cycle_days INT,
+                last_calibration_date DATE,
+                next_calibration_due DATE,
+                status ENUM('nominal', 'drift_detected', 'expired') DEFAULT 'nominal',
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 16. NEXUS MODULE: DMS (DOCUMENT MANAGEMENT) ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS document_vault (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                entity_type ENUM('asset', 'work_order', 'rca', 'contract'),
+                entity_id VARCHAR(36),
+                file_name VARCHAR(255),
+                file_type VARCHAR(50),
+                file_url TEXT,
+                storage_provider ENUM('local', 's3', 'azure_blob'),
+                uploaded_by VARCHAR(36),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
+
+        // --- 17. NEXUS MODULE: TPM (AUTONOMOUS MAINTENANCE) ---
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS tpm_checklists (
+                id VARCHAR(36) PRIMARY KEY,
+                company_id VARCHAR(36),
+                asset_id VARCHAR(36),
+                operator_id VARCHAR(36),
+                items_json JSON,
+                anomaly_detected BOOLEAN DEFAULT FALSE,
+                image_evidence_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (company_id)
+            )
+        `);
 
         // 10. AUDIT & LOGGING
         await connection.query(`
@@ -402,6 +537,42 @@ const startServer = async () => {
             )
         `);
         
+        // --- GLOBAL BILINGUAL ENFORCEMENT PATCH ---
+        try {
+            // Work Orders
+            await connection.query('ALTER TABLE work_orders ADD COLUMN title_en VARCHAR(255) NULL AFTER assigned_to');
+            await connection.query('ALTER TABLE work_orders ADD COLUMN title_fr VARCHAR(255) NULL AFTER title_en');
+            await connection.query('ALTER TABLE work_orders ADD COLUMN description_en TEXT NULL AFTER title_fr');
+            await connection.query('ALTER TABLE work_orders ADD COLUMN description_fr TEXT NULL AFTER description_en');
+            
+            // Instruments
+            await connection.query('ALTER TABLE instruments ADD COLUMN name_en VARCHAR(255) NULL AFTER asset_id');
+            await connection.query('ALTER TABLE instruments ADD COLUMN name_fr VARCHAR(255) NULL AFTER name_en');
+            
+            // Document Vault
+            await connection.query('ALTER TABLE document_vault ADD COLUMN description_en TEXT NULL AFTER file_name');
+            await connection.query('ALTER TABLE document_vault ADD COLUMN description_fr TEXT NULL AFTER description_en');
+            
+            // TPM
+            await connection.query('ALTER TABLE tpm_checklists ADD COLUMN title_en VARCHAR(255) NULL AFTER asset_id');
+            await connection.query('ALTER TABLE tpm_checklists ADD COLUMN title_fr VARCHAR(255) NULL AFTER title_en');
+            
+            // FMEA (Extend existing)
+            await connection.query('ALTER TABLE fmea_analysis ADD COLUMN recommended_action_en TEXT NULL AFTER detection');
+            await connection.query('ALTER TABLE fmea_analysis ADD COLUMN recommended_action_fr TEXT NULL AFTER recommended_action_en');
+            
+            // LOTO Logs
+            await connection.query('ALTER TABLE loto_logs ADD COLUMN notes_en TEXT NULL AFTER signature_data');
+            await connection.query('ALTER TABLE loto_logs ADD COLUMN notes_fr TEXT NULL AFTER notes_en');
+
+            // Companies
+            await connection.query('ALTER TABLE companies ADD COLUMN plan ENUM("basic", "pro", "enterprise") DEFAULT "basic" AFTER subscription_status');
+
+            console.log("🛠️ INTELLIGENT PATCH: Global Bilingual Alignment SUCCESS.");
+        } catch (err) {
+            // Ignoring errors if columns already exist
+        }
+
         connection.release();
 
         app.listen(PORT, () => {

@@ -37,7 +37,7 @@ exports.getAllCompanies = async (req, res, next) => {
         const query = `
             SELECT 
                 c.id, c.name_en, c.name_fr, c.industry_en, c.industry_fr, 
-                c.subscription_status, c.enabled_modules, c.created_at,
+                c.subscription_status, c.plan, c.enabled_modules, c.created_at,
                 COUNT(u.id) as user_count
             FROM companies c
             LEFT JOIN users u ON c.id = u.company_id
@@ -179,6 +179,31 @@ exports.updateCompanyModules = async (req, res, next) => {
     }
 };
 
+exports.updateCompanyPlan = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { plan } = req.body; // basic, pro, enterprise
+
+        const validPlans = ['basic', 'pro', 'enterprise'];
+        if (!validPlans.includes(plan)) {
+            return errorResponse(res, 400, 'Invalid plan selection.');
+        }
+
+        await pool.query('UPDATE companies SET plan = ? WHERE id = ?', [plan, id]);
+
+        // Audit Log
+        await pool.query(
+            `INSERT INTO audit_logs (id, company_id, user_id, action, entity_type, entity_id, details)
+             VALUES (UUID(), ?, ?, ?, ?, ?, ?)`,
+             [id, req.user.id, 'admin_update_plan', 'companies', id, JSON.stringify({ new_plan: plan })]
+        );
+
+        return successResponse(res, 200, `Company plan upgraded to ${plan.toUpperCase()}`);
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.seedDemoData = async (req, res) => {
     const { companyId } = req.body;
     if (!companyId) return res.status(400).json({ success: false, message: 'companyId required' });
@@ -226,5 +251,51 @@ exports.seedDemoData = async (req, res) => {
         res.json({ success: true, message: 'Mega Seed successful' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.updateUserStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // active, inactive, suspended
+
+        const validStatuses = ['active', 'inactive', 'suspended'];
+        if (!validStatuses.includes(status)) {
+            return errorResponse(res, 400, 'Invalid user status command.');
+        }
+
+        const [result] = await pool.query('UPDATE users SET status = ? WHERE id = ?', [status, id]);
+        
+        if (result.affectedRows === 0) {
+            return errorResponse(res, 404, 'User not found structurally.');
+        }
+
+        // Audit Log
+        await pool.query(
+            `INSERT INTO audit_logs (id, company_id, user_id, action, entity_type, entity_id, details)
+             VALUES (UUID(), NULL, ?, ?, ?, ?, ?)`,
+             [req.user.id, 'admin_update_user_status', 'users', id, JSON.stringify({ new_status: status })]
+        );
+
+        return successResponse(res, 200, `User identity forcefully ${status === 'active' ? 'restored' : 'revoked'}.`);
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.getUserAuditLogs = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const [logs] = await pool.query(`
+            SELECT al.*, u.email as action_user
+            FROM audit_logs al
+            LEFT JOIN users u ON al.user_id = u.id
+            WHERE al.user_id = ?
+            ORDER BY al.created_at DESC
+            LIMIT 50
+        `, [id]);
+        return successResponse(res, 200, 'User specific audit stream decoded.', logs);
+    } catch (err) {
+        next(err);
     }
 };
