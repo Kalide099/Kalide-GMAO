@@ -97,8 +97,9 @@ const LandingPage = () => {
                             {t('marketing.startTrialBtn')}
                             <ArrowRight size={18} />
                         </Link>
-                        <Link to="/login" className="px-12 py-6 bg-transparent border-2 border-white/20 hover:border-yellow-400 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] backdrop-blur-md transition-all flex items-center justify-center">
-                            {t('marketing.bookDemo')}
+                        <Link to="/login" className="px-12 py-6 bg-transparent border-2 border-white/20 hover:border-yellow-400 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] backdrop-blur-md transition-all flex items-center justify-center gap-3 group">
+                            {t('marketing.login')}
+                            <Zap size={14} className="text-yellow-400 opacity-50 group-hover:opacity-100 transition-opacity" />
                         </Link>
                     </div>
 

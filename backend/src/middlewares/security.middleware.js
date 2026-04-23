@@ -19,7 +19,7 @@ exports.globalLimiter = rateLimit({
  */
 exports.authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, 
-    max: 10,
+    max: 100, // Increased for smoother dev/testing flow
     handler: (req, res) => {
         errorResponse(res, 429, 'Excessive authentication attempts detected. This IP is blocked for 15 minutes.');
     }

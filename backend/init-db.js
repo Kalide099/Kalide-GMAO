@@ -82,8 +82,8 @@ async function initLocalXamppDatabase() {
         console.log(`Creating Bilingual Tenant [Kalide Solutions]...`);
 
         await connection.query(
-            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [companyId, 'Kalide Solutions', 'Solutions Kalide', 'Technology', 'Technologie', 'active', JSON.stringify(['safety', 'iot', 'predictive', 'global', 'finance', 'map', 'skills', 'warehouse', 'command', 'twin', 'ar', 'hub', 'esg'])]
+            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [companyId, 'Kalide Solutions', 'Solutions Kalide', 'Technology', 'Technologie', 'active', 'pro', JSON.stringify(['safety', 'iot', 'predictive', 'global', 'finance', 'map', 'skills', 'warehouse', 'command', 'twin', 'ar', 'hub', 'esg'])]
         );
 
         await connection.query(

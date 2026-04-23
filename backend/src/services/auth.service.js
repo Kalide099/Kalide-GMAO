@@ -25,8 +25,8 @@ exports.registerCompanyAndAdmin = async (data) => {
 
         // 2. Create Company
         await connection.query(
-            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status) VALUES (?, ?, ?, ?, ?, ?)',
-            [companyId, companyName, companyName, industry, industry, 'active']
+            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [companyId, companyName, companyName, industry, industry, 'active', 'basic']
         );
 
         // 3. Hash password and Create User (Admin of the company)
@@ -56,7 +56,7 @@ exports.registerCompanyAndAdmin = async (data) => {
 
 exports.loginUser = async (email, password) => {
     const [users] = await pool.query(`
-        SELECT u.*, c.industry_en as industry, c.enabled_modules
+        SELECT u.*, c.industry_en as industry, c.enabled_modules, c.plan
         FROM users u 
         LEFT JOIN companies c ON u.company_id = c.id 
         WHERE u.email = ?
@@ -99,6 +99,7 @@ exports.loginUser = async (email, password) => {
         company_id: user.company_id,
         role: user.role,
         industry: user.industry,
+        plan: user.plan || 'enterprise', // Default for system admins
         enabled_modules: enabledModules
     };
 

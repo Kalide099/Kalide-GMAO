@@ -793,7 +793,7 @@
         "adminLastName": "Admin Last Name",
         "submitApplication": "Submit Application for Review",
         "applicationSent": "Application Sent",
-        "applicationReceived": "Your application for <0>{{companyName}}</0> has been received. Our SuperAdmin will review your profile and send activation credentials shortly.",
+        "applicationReceived": "Your application for <0>{{companyName}}</0> has been submitted to the admin; you will receive a response shortly.",
         "returnHome": "Return to HQ Home",
         "strategicOverviewDesc": "Strategic monitoring of global asset clusters with real-time health flux tracking.",
         "predictiveLogicDesc": "Advanced forensic AI to identify hardware fatigue before critical failure occurs.",

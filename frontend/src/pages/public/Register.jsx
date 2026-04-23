@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Mail, Briefcase, User, Loader2, Building2, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Mail, Briefcase, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api/axiosConfig';
-
 const Register = () => {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
@@ -15,7 +14,8 @@ const Register = () => {
         industry: 'manufacturing',
         adminFirstName: '',
         adminLastName: '',
-        adminEmail: ''
+        adminEmail: '',
+        password: ''
     });
 
     const industries = [
@@ -24,12 +24,22 @@ const Register = () => {
         { id: 'oil_gas', label: t('marketing.industries.oil_gas'), icon: '🛢️' },
         { id: 'logistics', label: t('marketing.industries.logistics'), icon: '🚚' },
         { id: 'mining', label: t('marketing.industries.mining'), icon: '⛏️' },
-        { id: 'hospitality', label: t('marketing.industries.hospitality'), icon: '🏨' }
+        { id: 'hospitality', label: t('marketing.industries.hospitality'), icon: '🏨' },
+        { id: 'healthcare', label: t('marketing.industries.healthcare'), icon: '🏥' },
+        { id: 'environment', label: t('marketing.industries.environment'), icon: '🌿' },
+        { id: 'education', label: t('marketing.industries.education'), icon: '🎓' },
+        { id: 'agrifood', label: t('marketing.industries.agrifood'), icon: '🍱' },
+        { id: 'construction', label: t('marketing.industries.construction'), icon: '🏗️' },
+        { id: 'retail', label: t('marketing.industries.retail'), icon: '🛒' },
+        { id: 'public_works', icon: '🏛️', label: t('marketing.industries.public_works') }
     ];
+
+    const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
         try {
             const res = await api.post('/registrations/apply', formData);
             if (res.data.success) {
@@ -37,7 +47,7 @@ const Register = () => {
             }
         } catch (err) {
             console.error(err);
-            alert(t('common.error'));
+            setError(err.response?.data?.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -66,6 +76,18 @@ const Register = () => {
                                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic mt-6">{t('marketing.getStarted')}</h1>
                                     <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em] mt-3">{t('marketing.platformApplication')}</p>
                                 </div>
+                                
+                                {error && (
+                                    <div className="bg-rose-50 border border-rose-100 p-4 rounded-[1.5rem] mb-8 animate-shake flex items-start gap-3">
+                                        <div className="mt-0.5 shrink-0">
+                                            <Lock className="text-rose-400 w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{t('common.error')}</p>
+                                            <p className="text-rose-900 text-xs font-semibold">{error}</p>
+                                        </div>
+                                    </div>
+                                )}
                                 
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -147,6 +169,22 @@ const Register = () => {
                                             />
                                         </div>
                                     </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('auth.password')}</label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                                            <input 
+                                                name="password"
+                                                type="password" 
+                                                required
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                className="input-field pl-14"
+                                                placeholder="••••••••"
+                                            />
+                                        </div>
+                                    </div>
                                     
                                     <button 
                                         type="submit" 
@@ -174,9 +212,12 @@ const Register = () => {
                                     <CheckCircle2 className="w-12 h-12" />
                                 </div>
                                 <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic mb-4">{t('marketing.applicationSent')}</h2>
-                                <p className="text-slate-500 font-medium max-w-sm mx-auto leading-relaxed">
-                                    <Trans i18nKey="marketing.applicationReceived" values={{ companyName: formData.companyName }}>
-                                        {t('marketing.applicationReceived', { companyName: formData.companyName })}
+                                <p className="text-slate-500 font-medium max-w-md mx-auto leading-relaxed">
+                                    <Trans 
+                                        i18nKey="marketing.applicationReceived" 
+                                        values={{ companyName: formData.companyName }}
+                                    >
+                                        Votre demande pour <span className="text-slate-900 font-black uppercase italic">{{companyName}}</span> a été soumise à l'administrateur ; vous recevrez une réponse sous peu.
                                     </Trans>
                                 </p>
                                 <div className="mt-12">

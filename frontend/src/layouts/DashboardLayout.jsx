@@ -85,7 +85,7 @@ const DashboardLayout = () => {
       { icon: <Zap size={20} />, label: t('nexus.calibration.title') || 'Calibration', path: '/app/nexus/calibration', module: 'calibration' },
       { icon: <FileText size={20} />, label: t('nexus.dms.title') || 'DMS Vault', path: '/app/nexus/dms', module: 'dms' },
       { icon: <Wrench size={20} />, label: t('nexus.tpm.title') || 'Autonomous TPM', path: '/app/nexus/tpm', module: 'tpm' },
-      { icon: <Boxes size={20} />, label: t('nav.digital_twin') || 'BIM Explorer', path: '/app/nexus/bim', module: 'bim' },
+      { icon: <Boxes size={20} />, label: t('nexus.bim.title') || 'BIM Explorer', path: '/app/nexus/bim', module: 'bim' },
       { icon: <Activity size={20} />, label: 'Offline Matrix', path: '/app/nexus/offline' },
     ]},
     { id: 'administration', role: ['admin', 'super_admin', 'system_admin'], items: [
@@ -139,7 +139,7 @@ const DashboardLayout = () => {
         
         <nav className="flex-1 px-4 space-y-8 mt-10 overflow-y-auto custom-scrollbar pb-10">
           {menuItems.map((section) => {
-            const userPlan = user?.plan || 'enterprise'; // Default for existing users
+            const userPlan = (user?.plan || 'enterprise').toLowerCase(); // Default for existing users and case insensitivity
             
             // If section is not allowed for this tier, skip it
             if (tierMapping[section.id] && !tierMapping[section.id].includes(userPlan)) return null;

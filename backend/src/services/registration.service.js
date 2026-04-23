@@ -1,13 +1,17 @@
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
 
 exports.createRequest = async (data) => {
-    const { companyName, industry, adminFirstName, adminLastName, adminEmail } = data;
+    const { companyName, industry, adminFirstName, adminLastName, adminEmail, password } = data;
     const id = uuidv4();
     
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+    
     await pool.query(
-        'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email) VALUES (?, ?, ?, ?, ?, ?)',
-        [id, companyName, industry, adminFirstName, adminLastName, adminEmail]
+        'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash]
     );
     
     return { id };
@@ -43,15 +47,10 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
                 [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active']
             );
 
-            // 4. Create Admin User (Temp password needs to be sent via email in real app)
-            // For this demo, we use a default password 'Welcome123!'
-            const bcrypt = require('bcrypt');
-            const salt = await bcrypt.genSalt(10);
-            const passwordHash = await bcrypt.hash('Welcome123!', salt);
-
+            // 4. Create Admin User (Using the stored hash from application)
             await connection.query(
                 'INSERT INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [userId, companyId, r.admin_first_name, r.admin_last_name, r.admin_email, passwordHash, 'admin', 'active']
+                [userId, companyId, r.admin_first_name, r.admin_last_name, r.admin_email, r.password_hash, 'admin', 'active']
             );
             
             await connection.commit();

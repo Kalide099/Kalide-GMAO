@@ -793,7 +793,7 @@
         "adminLastName": "Nom de l'Admin",
         "submitApplication": "Soumettre la Demande pour Révision",
         "applicationSent": "Demande Envoyée",
-        "applicationReceived": "Votre demande pour <0>{{companyName}}</0> a été reçue. Notre SuperAdmin examinera votre profil et vous enverra vos identifiants d'activation sous peu.",
+        "applicationReceived": "Votre demande pour <0>{{companyName}}</0> a été soumise à l'administrateur ; vous recevrez une réponse sous peu.",
         "returnHome": "Retour à l'Accueil HQ",
         "strategicOverviewDesc": "Surveillance stratégique des clusters d'actifs mondiaux avec suivi du flux de santé en temps réel.",
         "predictiveLogicDesc": "IA forensique avancée pour identifier la fatigue du matériel avant qu'une défaillance critique ne survienne.",
