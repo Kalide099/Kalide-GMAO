@@ -74,6 +74,7 @@ import AutonomousTPM from './pages/nexus/AutonomousTPM';
 import PredictiveInventory from './pages/nexus/PredictiveInventory';
 import BimExplorer from './pages/nexus/BimExplorer';
 import OfflineMatrix from './pages/nexus/OfflineMatrix';
+import AICopilot from './pages/AICopilot';
 import { syncOfflineActions } from './utils/offlineSync';
 import api from './services/api/axiosConfig';
 
@@ -181,6 +182,7 @@ const App = () => {
                 <Route path="/admin/payments" element={<AdminPayments />} />
                 <Route path="/admin/logs" element={<AdminLogs />} />
                 <Route path="/admin/registrations" element={<AdminRegistrations />} />
+                <Route path="/admin/ai-copilot" element={<AICopilot />} />
               </Route>
             </Route>
 

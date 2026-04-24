@@ -216,9 +216,8 @@ const Register = () => {
                                     <Trans 
                                         i18nKey="marketing.applicationReceived" 
                                         values={{ companyName: formData.companyName }}
-                                    >
-                                        Votre demande pour <span className="text-slate-900 font-black uppercase italic">{{companyName}}</span> a été soumise à l'administrateur ; vous recevrez une réponse sous peu.
-                                    </Trans>
+                                        components={[<span key="0" className="text-slate-900 font-black uppercase italic" />]}
+                                    />
                                 </p>
                                 <div className="mt-12">
                                     <Link to="/" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-slate-900 transition-colors">{t('marketing.returnHome')}</Link>

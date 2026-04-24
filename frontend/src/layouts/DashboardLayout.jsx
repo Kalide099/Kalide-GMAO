@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Wrench, Package, ArrowRightLeft, LogOut, Menu, X, 
   BrainCircuit, Activity, ShieldCheck, ShoppingCart, Zap, TrendingUp, 
   Globe, ShieldAlert, DollarSign, Map, Truck, Award, Radio, Boxes, 
-  Link, Leaf, Eye, Siren, Ship, FileText, Users, Layers, Fingerprint
+  Link, Leaf, Eye, Siren, Ship, FileText, Users, Layers, Fingerprint, Bot
 } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuth } from '../contexts/AuthContext';

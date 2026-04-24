@@ -10,7 +10,8 @@ import {
     ShieldAlert,
     LogOut,
     Languages,
-    UserPlus
+    UserPlus,
+    Bot
 } from 'lucide-react';
 
 const SuperAdminLayout = () => {
@@ -29,6 +30,7 @@ const SuperAdminLayout = () => {
         { path: '/admin/payments', icon: <CreditCard size={20} />, label: t('admin.payments') },
         { path: '/admin/logs', icon: <ShieldAlert size={20} />, label: t('admin.logs') },
         { path: '/admin/registrations', icon: <UserPlus size={20} />, label: t('admin.onboarding') },
+        { path: '/admin/ai-copilot', icon: <Bot size={20} />, label: 'AI Copilot' },
     ];
 
     return (
