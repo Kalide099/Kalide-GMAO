@@ -1,7 +1,9 @@
 -- KGMAO Multi-tenant Enterprise Database Schema with Strong i18n Translation Tables & SaaS Billing
 
-CREATE DATABASE IF NOT EXISTS kgmao_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE kgmao_db;
+-- Clean Purge for Shared Hosting (where DROP DATABASE is restricted)
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS integration_webhooks, system_plugins, inventory_transactions, warehouse_locations, ot_security_alerts, sla_contracts, blockchain_ledger, esg_telemetry, digital_twin_snapshots, ai_prescriptions, user_certifications, certifications, expert_sessions, asset_telemetrics, asset_financial_models, safety_permits, registration_requests, technician_kpis, energy_readings, purchase_orders, iot_readings, asset_sensor_configs, role_permissions, permissions, audit_logs, notifications, work_order_parts, failure_predictions, maintenance_schedules, work_order_history, work_order_comments, work_order_translations, work_orders, inventory_items, suppliers, assets, users, subscriptions, zones, sites, companies, subscription_plan_translations, subscription_plans;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- ==========================================
 -- SAAS BILLING INFRASTRUCTURE
@@ -141,7 +143,8 @@ CREATE TABLE IF NOT EXISTS assets (
     deleted_at TIMESTAMP NULL,
 
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
-    INDEX idx_company_asset_status (company_id, status)
+    INDEX idx_company_asset_status (company_id, status),
+    required_certification_id CHAR(36) NULL
 );
 
 
@@ -527,8 +530,8 @@ CREATE TABLE IF NOT EXISTS user_certifications (
     FOREIGN KEY (certification_id) REFERENCES certifications(id) ON DELETE CASCADE
 );
 
--- Link Assets to required certifications for maintenance
-ALTER TABLE assets ADD COLUMN required_certification_id CHAR(36) NULL;
+-- Link Assets to required certifications for maintenance (Moved to assets table definition)
+-- ALTER TABLE assets ADD COLUMN required_certification_id CHAR(36) NULL;
 -- 7. AUTONOMOUS AI ENGINE & PRESCRIPTIVE LOGIC
 CREATE TABLE IF NOT EXISTS ai_prescriptions (
     id CHAR(36) PRIMARY KEY,

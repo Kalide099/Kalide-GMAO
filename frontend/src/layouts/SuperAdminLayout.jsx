@@ -38,9 +38,7 @@ const SuperAdminLayout = () => {
             {/* Crimson Sidebar for Master UI distinction */}
             <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shadow-2xl">
                 <div className="h-16 flex items-center px-6 border-b border-slate-800">
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent">
-                        {t('admin.title')}
-                    </h1>
+                    <img src="/logo.png" alt="KGMAO Admin" className="h-8 w-auto drop-shadow-md" />
                 </div>
                 
                 <nav className="flex-1 py-6 px-3 space-y-1">

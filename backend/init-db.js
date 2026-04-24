@@ -10,39 +10,40 @@ async function initLocalXamppDatabase() {
         console.log("Attempting native XAMPP MySQL Authentication...");
         
         const connection = await mysql.createConnection({
-            host: process.env.DB_HOST || '127.0.0.1',
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || '',
+            host: process.env.DB_HOST || 'srv1319.hstgr.io',
+            user: process.env.DB_USER || 'u633695266_gmaouser',
+            password: process.env.DB_PASSWORD || 'Kgmao123',
+            database: process.env.DB_NAME || 'u633695266_kgmao',
+            port: process.env.DB_PORT || 3306,
             multipleStatements: true 
         });
 
         console.log("✅ Authenticated with XAMPP MySQL Server Successfully.");
 
-        const dbName = process.env.DB_NAME || 'kgmao_db';
+        const dbName = process.env.DB_NAME || 'u633695266_kgmao';
 
-        console.log(`⚠️  PURGING AND REBUILDING SCHEMA [${dbName}] for i18n Compliance...`);
-        await connection.query(`DROP DATABASE IF EXISTS \`${dbName}\`;`);
-        await connection.query(`CREATE DATABASE \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
-        await connection.query(`USE \`${dbName}\`;`);
+        console.log(`⚠️  REBUILDING SCHEMA [${dbName}] for i18n Compliance...`);
 
         const schemaLocation = path.join(__dirname, 'database', 'schema.sql');
         const schemaSQL = fs.readFileSync(schemaLocation, 'utf8');
 
         console.log("Executing core SaaS architectural SQL schemas...");
+        await connection.query('SET FOREIGN_KEY_CHECKS = 0;');
         await connection.query(schemaSQL);
+        await connection.query('SET FOREIGN_KEY_CHECKS = 1;');
 
         const salt = await bcrypt.genSalt(10);
 
         // ==========================================
         // 1. RECONSTRUCT SUPER ADMIN
         // ==========================================
-        const adminEmail = 'admin@kalideglobal.com';
+        const adminEmail = 'admin@kgmao.com';
         const adminPass = 'admin123';
         const adminHash = await bcrypt.hash(adminPass, salt);
         const adminId = '00000000-0000-0000-0000-000000000000';
 
         await connection.query(
-            'INSERT INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [adminId, null, 'Kalide', 'Root', adminEmail, adminHash, 'super_admin', 'active']
         );
 
@@ -53,27 +54,27 @@ async function initLocalXamppDatabase() {
         const entPlanId = uuidv4();
 
         await connection.query(
-            'INSERT INTO subscription_plans (id, price, currency, features) VALUES (?, ?, ?, ?)',
+            'INSERT IGNORE INTO subscription_plans (id, price, currency, features) VALUES (?, ?, ?, ?)',
             [proPlanId, 99.00, 'USD', JSON.stringify({ max_assets: 50, max_users: 10, reporting: true })]
         );
         await connection.query(
-            'INSERT INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT IGNORE INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
             [uuidv4(), proPlanId, 'en', 'Pro Plan', uuidv4(), proPlanId, 'fr', 'Plan Pro']
         );
 
         await connection.query(
-            'INSERT INTO subscription_plans (id, price, currency, features) VALUES (?, ?, ?, ?)',
+            'INSERT IGNORE INTO subscription_plans (id, price, currency, features) VALUES (?, ?, ?, ?)',
             [entPlanId, 499.00, 'USD', JSON.stringify({ max_assets: 1000, max_users: 100, reporting: true, predictive: true })]
         );
         await connection.query(
-            'INSERT INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT IGNORE INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
             [uuidv4(), entPlanId, 'en', 'Enterprise Plan', uuidv4(), entPlanId, 'fr', 'Plan Entreprise']
         );
 
         // ==========================================
         // 3. CREATE SAMPLE BILINGUAL TENANT
         // ==========================================
-        const tenantEmail = 'tenant@kalide.com';
+        const tenantEmail = 'tenant@kgmao.com';
         const tenantPass = 'tenant123';
         const tenantHash = await bcrypt.hash(tenantPass, salt);
         const companyId = uuidv4();
@@ -82,18 +83,18 @@ async function initLocalXamppDatabase() {
         console.log(`Creating Bilingual Tenant [Kalide Solutions]...`);
 
         await connection.query(
-            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [companyId, 'Kalide Solutions', 'Solutions Kalide', 'Technology', 'Technologie', 'active', 'pro', JSON.stringify(['safety', 'iot', 'predictive', 'global', 'finance', 'map', 'skills', 'warehouse', 'command', 'twin', 'ar', 'hub', 'esg'])]
         );
 
         await connection.query(
-            'INSERT INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [tenantUserId, companyId, 'John', 'Tenant', tenantEmail, tenantHash, 'admin', 'active']
         );
 
         // Link company to Pro Plan
         await connection.query(
-            'INSERT INTO subscriptions (id, company_id, plan_id, start_date, end_date, status) VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 YEAR), ?)',
+            'INSERT IGNORE INTO subscriptions (id, company_id, plan_id, start_date, end_date, status) VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 YEAR), ?)',
             [uuidv4(), companyId, proPlanId, 'active']
         );
 
@@ -102,13 +103,13 @@ async function initLocalXamppDatabase() {
         // ==========================================
         const assetId = uuidv4();
         await connection.query(
-            'INSERT INTO assets (id, company_id, name_en, name_fr, description_en, description_fr, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO assets (id, company_id, name_en, name_fr, description_en, description_fr, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [assetId, companyId, 'Industrial HVAC 01', 'CVC Industriel 01', 'Main production floor cooling', 'Refroidissement de l\'étage de production principal', 'active']
         );
 
         // Configure IoT Anomaly Detection: Trigger if Temp > 80C
         await connection.query(
-            'INSERT INTO asset_sensor_configs (id, asset_id, sensor_type, max_threshold, unit) VALUES (?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO asset_sensor_configs (id, asset_id, sensor_type, max_threshold, unit) VALUES (?, ?, ?, ?, ?)',
             [uuidv4(), assetId, 'temperature', 80.00, '°C']
         );
 
@@ -117,12 +118,12 @@ async function initLocalXamppDatabase() {
         // ==========================================
         const woId = uuidv4();
         await connection.query(
-            'INSERT INTO work_orders (id, company_id, asset_id, creator_id, type, priority, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO work_orders (id, company_id, asset_id, creator_id, type, priority, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [woId, companyId, assetId, tenantUserId, 'corrective', 'high', 'pending']
         );
 
         await connection.query(
-            'INSERT INTO work_order_translations (id, work_order_id, language_code, title, description) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
+            'INSERT IGNORE INTO work_order_translations (id, work_order_id, language_code, title, description) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
                 uuidv4(), woId, 'en', 'Check strange noise in motor', 'Vibration detected by field operator.',
                 uuidv4(), woId, 'fr', 'Vérifier bruit moteur', 'Vibration détectée par l\'opérateur.'
@@ -131,8 +132,8 @@ async function initLocalXamppDatabase() {
 
         // Standard Suppliers
         await connection.query(
-            'INSERT INTO suppliers (id, company_id, name_en, name_fr, email) VALUES (?, ?, ?, ?, ?)',
-            [uuidv4(), companyId, 'Kalide Parts', 'Kalide Pièces', 'parts@kalide.com']
+            'INSERT IGNORE INTO suppliers (id, company_id, name_en, name_fr, email) VALUES (?, ?, ?, ?, ?)',
+            [uuidv4(), companyId, 'Kalide Parts', 'Kalide Pièces', 'parts@kgmao.com']
         );
 
         console.log("============ SUCCESS ============");

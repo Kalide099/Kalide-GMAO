@@ -124,13 +124,7 @@ const DashboardLayout = () => {
       `}>
         <div className="p-10 flex items-center justify-between border-b border-white/5">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(250,204,21,0.3)] group cursor-pointer hover:rotate-12 transition-transform">
-                <Zap className="text-slate-950 w-7 h-7" fill="currentColor" />
-            </div>
-            <div>
-                <h1 className="text-3xl font-black tracking-tighter text-white uppercase italic leading-none">KGMAO</h1>
-                <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.4em] mt-1.5 opacity-60">{t('common.industrialOS')}</p>
-            </div>
+            <img src="/logo.png" alt="KGMAO Logo" className="h-12 w-auto drop-shadow-xl" />
           </div>
           <button className="lg:hidden p-2 text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
             <X size={28} />
