@@ -1,7 +1,13 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  
+  # Do not rewrite API requests to index.html (let Node.js handle them)
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
+  
   RewriteRule ^index\.html$ - [L]
+  
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
