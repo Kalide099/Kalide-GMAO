@@ -2,8 +2,10 @@
   RewriteEngine On
   RewriteBase /
   
-  # Do not rewrite API requests to index.html (let Node.js handle them)
-  RewriteCond %{REQUEST_URI} !^/api/ [NC]
+  # Proxy API requests to Node.js backend (running on port 3000)
+  RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
+  
+  # Serve frontend SPA
   
   RewriteRule ^index\.html$ - [L]
   

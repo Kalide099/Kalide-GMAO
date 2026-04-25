@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'kgmao-backend',
-      script: 'src/server.js',
+      script: 'backend/src/server.js',
       instances: 'max',       // Utilize all available CPU cores for clustering
       exec_mode: 'cluster',   // Cluster mode for load balancing
       watch: false,
