@@ -54,8 +54,8 @@ const GlobalPricing = () => {
                         <Terminal className="text-yellow-400" size={14} />
                         <span className="text-[9px] font-black text-yellow-400 uppercase tracking-widest">{t('globalPricingPage.matrixVersion')}</span>
                     </div>
-                    <h1 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tighter leading-none uppercase italic">
-                        {t('globalPricingPage.title').split(' ').slice(0, -1).join(' ')} <br/>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tighter leading-none uppercase italic">
+                        {t('globalPricingPage.title').split(' ').slice(0, -1).join(' ')} <br className="hidden md:block"/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500">{t('globalPricingPage.title').split(' ').slice(-1)}</span>
                     </h1>
                     <p className="text-xl text-slate-400 font-medium uppercase tracking-[0.2em] leading-relaxed">
@@ -78,7 +78,7 @@ const GlobalPricing = () => {
                     {plans.map((plan, i) => (
                         <div 
                             key={i} 
-                            className={`relative group bg-white rounded-[4rem] p-12 border transition-all duration-500 hover:-translate-y-4 animate-fade-in-up ${
+                            className={`relative group bg-white rounded-[3rem] lg:rounded-[4rem] p-8 lg:p-12 border transition-all duration-500 hover:-translate-y-4 animate-fade-in-up ${
                                 plan.isPopular ? 'border-emerald-400 shadow-[0_40px_100px_-20px_rgba(16,185,129,0.2)]' : (plan.color === 'yellow' ? 'border-amber-400 shadow-[0_40px_100px_-20px_rgba(245,158,11,0.1)]' : 'border-slate-100 shadow-sm hover:shadow-2xl')
                             }`}
                             style={{ animationDelay: `${i * 0.2}s` }}
@@ -104,7 +104,7 @@ const GlobalPricing = () => {
 
                                 <div className="text-left border-y border-slate-50 py-10">
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-6xl font-black text-slate-900 italic tracking-tighter">
+                                        <span className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 italic tracking-tighter">
                                             {typeof plan.price === 'number' ? `$${plan.price}` : plan.price}
                                         </span>
                                         {typeof plan.price === 'number' && <span className="text-xs font-black text-slate-400 uppercase tracking-widest">/ {t('globalPricingPage.monthly')}</span>}
@@ -154,8 +154,8 @@ const GlobalPricing = () => {
             <section className="py-40 bg-slate-50 px-6 lg:px-20 border-t border-slate-100 mb-20">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-24 items-center">
                     <div className="lg:w-1/2 space-y-12 animate-fade-in-up">
-                        <h2 className="text-5xl font-black text-slate-900 tracking-tighter uppercase italic leading-tight">
-                            {t('globalPricingPage.scaleTitle').split(' ').slice(0, -1).join(' ')} <br/>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter uppercase italic leading-tight">
+                            {t('globalPricingPage.scaleTitle').split(' ').slice(0, -1).join(' ')} <br className="hidden lg:block"/>
                             <span className="text-indigo-600">{t('globalPricingPage.scaleTitle').split(' ').slice(-1)}</span>
                         </h2>
                         <div className="space-y-8">
@@ -174,8 +174,8 @@ const GlobalPricing = () => {
                         </div>
                     </div>
                     <div className="lg:w-1/2 relative animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                        <div className="bg-slate-950 rounded-[3rem] p-12 text-white shadow-3xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-12 opacity-5"><Server size={140} /></div>
+                        <div className="bg-slate-950 rounded-[2rem] lg:rounded-[3rem] p-8 lg:p-12 text-white shadow-3xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 lg:p-12 opacity-5"><Server size={140} /></div>
                             <Terminal className="text-yellow-400 mb-8" size={32} />
                             <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-8">{t('globalPricingPage.infraPayload')}</h3>
                             <div className="space-y-8">
