@@ -57,18 +57,18 @@ const AICopilot = () => {
                         <Terminal className="w-7 h-7 text-slate-950" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">AI Copilot</h1>
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">Generative Nexus Engine</p>
+                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">{t('copilot.title', 'AI Copilot')}</h1>
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">{t('copilot.subtitle', 'Generative Nexus Engine')}</p>
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-4 text-slate-400 z-10">
                     <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Model: GPT-4.5 Nexus</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.model', 'Model: GPT-4.5 Nexus')}</span>
                     </div>
                     <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <Activity className="w-4 h-4 text-indigo-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Telemetry: Active</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.telemetry', 'Telemetry: Active')}</span>
                     </div>
                 </div>
                 
@@ -80,7 +80,7 @@ const AICopilot = () => {
             <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-slate-50 space-y-8 custom-scrollbar">
                 <div className="text-center mb-8">
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 bg-white px-6 py-2 rounded-full shadow-sm border border-slate-100 inline-block">
-                        Secure Enterprise Session Initialized
+                        {t('copilot.secure_session', 'Secure Enterprise Session Initialized')}
                     </span>
                 </div>
                 
@@ -100,7 +100,7 @@ const AICopilot = () => {
                     <div className="flex justify-start">
                         <div className="bg-white border border-slate-100 p-6 rounded-[2rem] rounded-tl-sm shadow-sm flex items-center gap-4">
                             <Loader2 className="w-6 h-6 animate-spin text-yellow-500" />
-                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">Parsing Industrial Data...</span>
+                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">{t('copilot.parsing', 'Parsing Industrial Data...')}</span>
                         </div>
                     </div>
                 )}
@@ -114,7 +114,7 @@ const AICopilot = () => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask AI Copilot for diagnostics, ESG insights, or draft work orders..."
+                        placeholder={t('copilot.placeholder', 'Ask AI Copilot for diagnostics, ESG insights, or draft work orders...')}
                         className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-base rounded-[2rem] pl-8 pr-16 py-6 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium font-medium shadow-inner"
                     />
                     <button 
@@ -127,7 +127,7 @@ const AICopilot = () => {
                 </form>
                 <div className="text-center mt-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">
-                        AI-generated insights must be verified before physical asset intervention.
+                        {t('copilot.disclaimer', 'AI-generated insights must be verified before physical asset intervention.')}
                     </p>
                 </div>
             </div>
