@@ -11,7 +11,7 @@ package-lock.json
 .env.production.local
 
 # Build
-dist/
+# dist/
 build/
 .next/
 out/
