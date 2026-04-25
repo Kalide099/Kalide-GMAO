@@ -37,8 +37,8 @@ async function initLocalXamppDatabase() {
         // ==========================================
         // 1. RECONSTRUCT SUPER ADMIN
         // ==========================================
-        const adminEmail = 'admin@kgmao.com';
-        const adminPass = 'admin123';
+        const adminEmail = 'root@kgmao.com';
+        const adminPass = 'RootMaster2026!';
         const adminHash = await bcrypt.hash(adminPass, salt);
         const adminId = '00000000-0000-0000-0000-000000000000';
 
@@ -74,8 +74,8 @@ async function initLocalXamppDatabase() {
         // ==========================================
         // 3. CREATE SAMPLE BILINGUAL TENANT
         // ==========================================
-        const tenantEmail = 'tenant@kgmao.com';
-        const tenantPass = 'tenant123';
+        const tenantEmail = 'demo@kgmao.com';
+        const tenantPass = 'DemoUser2026!';
         const tenantHash = await bcrypt.hash(tenantPass, salt);
         const companyId = uuidv4();
         const tenantUserId = uuidv4();
