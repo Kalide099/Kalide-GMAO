@@ -39,6 +39,8 @@ const nexusRoutes = require('./routes/nexus.routes');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Global Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
