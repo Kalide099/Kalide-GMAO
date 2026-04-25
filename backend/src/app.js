@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -47,6 +48,12 @@ app.use(xssSanitizer);
 app.use(globalLimiter); 
 app.use(extractLanguage);
 app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, '../../dist')));
+
+// Serve React App for any non-API routes
+const serveFrontend = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+};
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -87,11 +94,14 @@ app.use('/api/v1/custom-forms', customFormRoutes);
 app.use('/api/v1/attachments', attachmentRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
 
-// Undefined Routes handler
-app.use((req, res, next) => {
-    const err = new Error(`Route Not Found - ${req.originalUrl}`);
-    err.statusCode = 404;
-    next(err);
+// Handle React Routing - Serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+        const err = new Error(`API Route Not Found - ${req.originalUrl}`);
+        err.statusCode = 404;
+        return next(err);
+    }
+    serveFrontend(req, res);
 });
 
 // Global Error Handler
