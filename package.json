@@ -7,7 +7,9 @@
     "dev": "npm run i18n-check && concurrently -n \"BACKEND,FRONTEND\" -c \"green,blue\" --kill-others \"npm run backend\" \"npm run frontend\"",
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev",
-    "init-db": "npm --prefix backend run init-db"
+    "init-db": "npm --prefix backend run init-db",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix backend start"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
