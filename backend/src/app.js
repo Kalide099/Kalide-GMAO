@@ -50,11 +50,11 @@ app.use(xssSanitizer);
 app.use(globalLimiter); 
 app.use(extractLanguage);
 app.use('/uploads', express.static('uploads'));
-app.use(express.static(path.join(__dirname, '../../dist')));
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 // Serve React App for any non-API routes
 const serveFrontend = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 };
 
 if (process.env.NODE_ENV === 'development') {
