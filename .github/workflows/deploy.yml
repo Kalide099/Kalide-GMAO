@@ -16,7 +16,7 @@ jobs:
           password: Kalide@123
           port: 65002
           script: |
-            source $HOME/.bashrc
+            export PATH=/opt/alt/alt-nodejs20/root/usr/bin:$PATH
             cd /home/u633695266/domains/kgmao.com/public_html/.builds/last-source
             echo "Current Path: $(pwd)"
             echo "Pulling latest code..."
