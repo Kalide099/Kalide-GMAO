@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kgmao-v1';
+const CACHE_NAME = 'kgmao-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
