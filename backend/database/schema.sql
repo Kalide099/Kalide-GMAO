@@ -437,7 +437,7 @@ CREATE TABLE IF NOT EXISTS technician_kpis (
 CREATE TABLE IF NOT EXISTS registration_requests (
     id CHAR(36) PRIMARY KEY,
     company_name VARCHAR(255) NOT NULL,
-    industry ENUM('manufacturing', 'energy', 'oil_gas', 'logistics', 'mining', 'hospitality') NOT NULL,
+    industry VARCHAR(100) NOT NULL,
     admin_first_name VARCHAR(100) NOT NULL,
     admin_last_name VARCHAR(100) NOT NULL,
     admin_email VARCHAR(255) NOT NULL,

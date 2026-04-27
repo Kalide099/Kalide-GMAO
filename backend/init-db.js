@@ -12,7 +12,7 @@ async function initLocalXamppDatabase() {
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST || 'srv1319.hstgr.io',
             user: process.env.DB_USER || 'u633695266_gmaouser',
-            password: process.env.DB_PASSWORD || 'Kgmao123',
+            password: process.env.DB_PASSWORD || undefined,
             database: process.env.DB_NAME || 'u633695266_kgmao',
             port: process.env.DB_PORT || 3306,
             multipleStatements: true 
