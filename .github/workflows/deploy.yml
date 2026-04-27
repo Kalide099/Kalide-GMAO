@@ -17,8 +17,10 @@ jobs:
           port: 65002
           script: |
             cd /home/u633695266/domains/kgmao.com/public_html/.builds/last-source
+            echo "Current Path: $(pwd)"
             echo "Pulling latest code..."
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "Installing backend dependencies..."
             npm install
@@ -29,7 +31,10 @@ jobs:
             npm run build
             cd ..
 
-            echo "Restarting Node.js PM2 process seamlessly..."
+            echo "Restarting Node.js PM2 process..."
             npx pm2 reload ecosystem.config.js --update-env
+            npx pm2 status
+
+            echo "Deployment completed successfully!"
 
             echo "Deployment completed successfully!"
