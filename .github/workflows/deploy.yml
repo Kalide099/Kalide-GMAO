@@ -36,6 +36,7 @@ jobs:
             echo "Restarting Node.js PM2 process..."
             npx pm2 reload ecosystem.config.js --update-env
             npx pm2 status
+            npx pm2 logs kgmao-backend --lines 100 --nostream
 
             echo "Deployment completed successfully!"
 
