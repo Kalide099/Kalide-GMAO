@@ -15,13 +15,23 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Skip caching for API requests
+  if (event.request.url.includes('/api/v1')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        return fetch(event.request).catch(err => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+          throw err;
+        });
       }
     )
   );

@@ -27,9 +27,24 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+  // Skip caching for API requests to ensure real-time data
+  if (event.request.url.includes('/api/v1')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+      if (response) {
+        return response;
+      }
+
+      return fetch(event.request).catch((err) => {
+        // If navigation request fails, return cached index.html for SPA support
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+        throw err;
+      });
     })
   );
 });
