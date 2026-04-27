@@ -11,7 +11,7 @@ jobs:
       - name: Deploying KGMAO via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: srv1319.hstgr.io
+          host: 153.92.9.196
           username: u633695266
           password: Kalide@123
           port: 65002
