@@ -8,7 +8,9 @@
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev",
     "init-db": "npm --prefix backend run init-db",
-    "build": "npm install --prefix frontend && npm --prefix frontend run build && cp -r frontend/dist ./dist",
+    "extract-locales": "node scripts/extract-missing.js",
+    "sync-locales": "node sync_locales.js",
+    "build": "npm install --prefix frontend && npm --prefix frontend run build",
     "start": "npm --prefix backend start"
   },
   "devDependencies": {

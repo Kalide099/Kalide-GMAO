@@ -124,7 +124,7 @@ const ESGCyber = () => {
                                     <h3 className="text-4xl font-black italic tracking-tighter">{t('roadmap.esg.threatCore')}</h3>
                                 </div>
                                 <p className="text-slate-400 font-black text-[10px] tracking-widest leading-loose max-w-2xl italic">
-                                    "{t('roadmap.esg.threatMsg')}"
+                                    &quot;{t('roadmap.esg.threatMsg')}&quot;
                                 </p>
                             </div>
                          </div>
@@ -155,7 +155,7 @@ const ESGCyber = () => {
                                 <div className="space-y-4">
                                     <div className="text-[9px] font-black text-slate-400 tracking-widest border-b border-slate-200 pb-2 uppercase">{t('common.lastUpdate')}: {t('roadmap.esg.systemBoot')}</div>
                                     <p className="text-[10px] font-black text-slate-600 tracking-widest leading-loose italic">
-                                        "{t('roadmap.esg.auditPass')}"
+                                        &quot;{t('roadmap.esg.auditPass')}&quot;
                                     </p>
                                 </div>
                             </div>

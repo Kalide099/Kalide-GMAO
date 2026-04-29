@@ -75,7 +75,7 @@ async function diagnose() {
 
     } catch (err) {
         console.error("\n❌ CRITICAL SYSTEM ERROR:");
-        console.error(err.message);
+        console.error(err.stack);
         process.exit(1);
     }
 }

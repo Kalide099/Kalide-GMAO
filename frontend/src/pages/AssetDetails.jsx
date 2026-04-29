@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { Wrench, MapPin, Hash, ShieldCheck, Clock, BrainCircuit, Activity, ChevronLeft, Plus, History, Paperclip, File, Upload } from 'lucide-react';
+import { Wrench, MapPin, Hash, ShieldCheck, Clock, BrainCircuit, Activity, ChevronLeft, Plus, History, Paperclip, File, Upload, ExternalLink } from 'lucide-react';
 
 const AssetDetails = () => {
     const { id } = useParams();

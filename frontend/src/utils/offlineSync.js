@@ -40,19 +40,22 @@ export const syncOfflineActions = async (api) => {
   for (const item of allActions) {
     try {
       let response;
-      if (item.action === 'CREATE') {
+      const method = item.action.toLowerCase();
+      
+      if (method === 'post') {
         response = await api.post(item.entity, item.data);
-      } else if (item.action === 'UPDATE') {
-        response = await api.put(`${item.entity}/${item.data.id}`, item.data);
+      } else if (method === 'put' || method === 'patch') {
+        response = await api[method](item.entity, item.data);
+      } else if (method === 'delete') {
+        response = await api.delete(item.entity);
       }
       
       if (response && response.status < 300) {
         await db.delete(STORE_NAME, item.id);
+        console.log(`✅ Offline action ${item.id} (${item.action}) synchronized successfully.`);
       }
     } catch (err) {
-      console.error(`❌ Sync failed for action ${item.id}:`, err);
-      // Logic for conflict resolution could be added here
-      // Standard: Keep in pending if it's a transient server error, or log as conflict if 409
+      console.error(`❌ Sync failed for action ${item.id} (${item.action}):`, err);
     }
   }
 };
