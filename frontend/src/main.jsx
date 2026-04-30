@@ -6,6 +6,7 @@ import './index.css';
 // Initialize i18n
 import './i18n';
 
+/* 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(registration => {
@@ -15,6 +16,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+*/
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

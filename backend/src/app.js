@@ -66,6 +66,11 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'active', message: 'KGMAO SaaS Operating Securely' });
 });
 
+// Root route for Hostinger verification
+app.get('/', (req, res) => {
+    res.status(200).send('API is running');
+});
+
 // API Routes
 // Protect Authentication flows densely using the auth limiting block explicitly
 app.use('/api/v1/auth', authLimiter, authRoutes);

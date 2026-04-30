@@ -62,9 +62,13 @@ exports.login = async (req, res, next) => {
 };
 
 exports.getProfile = async (req, res, next) => {
-    const lang = req.lang || 'en';
-    // The user object is injected by the auth middleware
-    return successResponse(res, 200, t('auth.profile_retrieved', lang), {
-        user: req.user
-    });
+    try {
+        const lang = req.lang || 'en';
+        // The user object is injected by the auth middleware
+        return successResponse(res, 200, t('auth.profile_retrieved', lang), {
+            user: req.user
+        });
+    } catch (err) {
+        next(err);
+    }
 };

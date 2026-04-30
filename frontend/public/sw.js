@@ -28,7 +28,8 @@ self.addEventListener('activate', (event) => {
 // Fetch Event
 self.addEventListener('fetch', (event) => {
   // Skip caching for API requests to ensure real-time data
-  if (event.request.url.includes('/api/v1')) {
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith('/api')) {
     return;
   }
 
