@@ -24,11 +24,8 @@ jobs:
             git fetch https://kalide009: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@github.com/Kalide099/Kalide-GMAO.git main
             git reset --hard FETCH_HEAD
 
-            echo "Installing backend dependencies..."
-            cd backend
-            npm install
-            npm prune --production
-            cd ..
+            echo "Installing root dependencies..."
+            npm install --production
 
             echo "Installing frontend dependencies & building Vite..."
             cd frontend
