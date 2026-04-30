@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 

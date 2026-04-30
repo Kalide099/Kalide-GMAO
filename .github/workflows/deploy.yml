@@ -27,6 +27,7 @@ jobs:
             echo "Installing backend dependencies..."
             cd backend
             npm install
+            npm prune --production
             cd ..
 
             echo "Installing frontend dependencies & building Vite..."

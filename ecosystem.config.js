@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'kgmao-backend',
       script: 'backend/src/server.js',
-      instances: 'max',       // Utilize all available CPU cores for clustering
+      instances: 1,       // Single instance for stability on shared/limited hosting
       exec_mode: 'cluster',   // Cluster mode for load balancing
       watch: false,
       max_memory_restart: '1G', // Prevent memory leaks from destroying the server
