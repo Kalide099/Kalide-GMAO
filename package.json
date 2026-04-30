@@ -14,7 +14,7 @@
     "build": "npm run install-all && npm --prefix frontend run build && node scripts/copy-dist.js",
     "start": "node server.js"
   },
-  "main": "backend/src/server.js",
+  "main": "server.js",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
