@@ -21,7 +21,7 @@ const dbConfig = {
     keepAliveInitialDelay: 0
 };
 
-console.log(`📡 Initializing DB Pool for host: ${dbConfig.host}`);
+console.log(`📡 DB Connection Configured for: ${dbConfig.host}`);
 
 const pool = mysql.createPool(dbConfig);
 
