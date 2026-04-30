@@ -77,12 +77,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 app.use(xssSanitizer);
-app.use(globalLimiter); 
+// app.use(globalLimiter); // Removed to prevent blocking all requests
 app.use(extractLanguage);
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -99,7 +98,7 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
-app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/companies', companyRoutes);
 app.use('/api/v1/assets', assetRoutes);
 app.use('/api/v1/work-orders', workOrderRoutes);
@@ -127,14 +126,11 @@ app.use('/api/v1/custom-forms', customFormRoutes);
 app.use('/api/v1/attachments', attachmentRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
 
-// Handle React Routing - Serve index.html for non-API routes
-app.get('*', (req, res, next) => {
-    if (req.originalUrl.startsWith('/api')) {
-        return res.status(404).json({
-            message: `API Route Not Found - ${req.originalUrl}`
-        });
-    }
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+// Handle unknown API routes
+app.use('*', (req, res) => {
+    res.status(404).json({
+        message: `API Route Not Found - ${req.originalUrl}`
+    });
 });
 
 // Global Error Handler

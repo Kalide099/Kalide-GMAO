@@ -57,15 +57,11 @@ exports.login = async (req, res, next) => {
         const result = await authService.loginUser(value.email, value.password, lang);
         return successResponse(res, 200, t('auth.login_success', lang), result);
     } catch (err) {
-        // If DB connection fails or other server issues occur
         console.error('❌ Login Process Error:', err.message);
-        if (err.code === 'ECONNREFUSED' || err.code === 'PROTOCOL_CONNECTION_LOST') {
-            return res.status(503).json({ 
-                success: false, 
-                message: "Database service temporarily unavailable. Please try again in a few moments." 
-            });
-        }
-        next(err);
+        return res.status(503).json({ 
+            success: false, 
+            message: "Database unavailable" 
+        });
     }
 };
 
