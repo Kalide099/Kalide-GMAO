@@ -103,7 +103,7 @@ exports.loginUser = async (email, password) => {
         enabled_modules: enabledModules
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'kgmao_development_secret_321', {
         expiresIn: process.env.JWT_EXPIRES_IN || '24h'
     });
 
