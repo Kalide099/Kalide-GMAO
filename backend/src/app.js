@@ -49,7 +49,7 @@ app.use(helmet());
 app.use(xssSanitizer);
 app.use(globalLimiter); 
 app.use(extractLanguage);
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 // Serve React App for any non-API routes
