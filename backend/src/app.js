@@ -41,6 +41,11 @@ const app = express();
 
 app.set('trust proxy', 1);
 
+// Runtime check for JWT_SECRET
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+    console.warn('⚠️ CRITICAL WARNING: JWT_SECRET is not set in production. Using fallback secret.');
+}
+
 // Global Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

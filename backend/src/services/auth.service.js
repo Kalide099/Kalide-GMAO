@@ -55,68 +55,90 @@ exports.registerCompanyAndAdmin = async (data) => {
 };
 
 exports.loginUser = async (email, password) => {
-    const [users] = await pool.query(`
-        SELECT u.*, c.industry_en as industry, c.enabled_modules, c.plan
-        FROM users u 
-        LEFT JOIN companies c ON u.company_id = c.id 
-        WHERE u.email = ?
-    `, [email]);
-    
-    if (users.length === 0) {
-        const err = new Error('Invalid email or password');
-        err.statusCode = 401;
-        throw err;
-    }
-
-    const user = users[0];
-
-    if (user.status !== 'active' || user.deleted_at !== null) {
-        const err = new Error('Account is inactive or suspended.');
-        err.statusCode = 401;
-        throw err;
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-        const err = new Error('Invalid email or password');
-        err.statusCode = 401;
-        throw err;
-    }
-
-    // Parse enabled_modules if it exists
-    let enabledModules = [];
+    let connection;
     try {
-        enabledModules = typeof user.enabled_modules === 'string' 
-            ? JSON.parse(user.enabled_modules) 
-            : (user.enabled_modules || []);
-    } catch (e) {
-        console.error("Failed to parse modules for user", user.id);
-    }
+        console.log(`🔍 [LOGIN TRACE] Starting login for: ${email}`);
+        connection = await pool.getConnection();
+        console.log(`✅ [LOGIN TRACE] DB Connection Acquired`);
 
-    // Generate JWT Token
-    const payload = {
-        id: user.id,
-        company_id: user.company_id,
-        role: user.role,
-        industry: user.industry,
-        plan: user.plan || 'enterprise', // Default for system admins
-        enabled_modules: enabledModules
-    };
+        const [users] = await connection.query(`
+            SELECT u.*, c.industry_en as industry, c.enabled_modules, c.plan
+            FROM users u 
+            LEFT JOIN companies c ON u.company_id = c.id 
+            WHERE u.email = ?
+        `, [email]);
+        
+        console.log(`📊 [LOGIN TRACE] Query completed. Users found: ${users.length}`);
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'kgmao_development_secret_321', {
-        expiresIn: process.env.JWT_EXPIRES_IN || '24h'
-    });
-
-    return {
-        token,
-        user: {
-            id: user.id,
-            email: user.email,
-            firstName: user.first_name,
-            lastName: user.last_name,
-            role: user.role,
-            companyId: user.company_id,
-            industry: user.industry
+        if (users.length === 0) {
+            const err = new Error('Invalid email or password');
+            err.statusCode = 401;
+            throw err;
         }
-    };
+
+        const user = users[0];
+
+        if (user.status !== 'active' || user.deleted_at !== null) {
+            const err = new Error('Account is inactive or suspended.');
+            err.statusCode = 401;
+            throw err;
+        }
+
+        console.log(`🔐 [LOGIN TRACE] Starting password verification...`);
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        console.log(`🗝️ [LOGIN TRACE] Password match: ${isMatch}`);
+
+        if (!isMatch) {
+            const err = new Error('Invalid email or password');
+            err.statusCode = 401;
+            throw err;
+        }
+
+        // Parse enabled_modules if it exists
+        let enabledModules = [];
+        try {
+            enabledModules = typeof user.enabled_modules === 'string' 
+                ? JSON.parse(user.enabled_modules) 
+                : (user.enabled_modules || []);
+        } catch (e) {
+            console.error("Failed to parse modules for user", user.id);
+        }
+
+        // Generate JWT Token
+        const payload = {
+            id: user.id,
+            company_id: user.company_id,
+            role: user.role,
+            industry: user.industry,
+            plan: user.plan || 'enterprise', 
+            enabled_modules: enabledModules
+        };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET || 'kgmao_development_secret_321', {
+            expiresIn: process.env.JWT_EXPIRES_IN || '24h'
+        });
+
+        console.log(`🚀 [LOGIN TRACE] Login successful for: ${email}`);
+
+        return {
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                role: user.role,
+                companyId: user.company_id,
+                industry: user.industry
+            }
+        };
+    } catch (error) {
+        console.error(`❌ [LOGIN TRACE] Failure at login step:`, error.message);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+            console.log(`🚿 [LOGIN TRACE] Connection released`);
+        }
+    }
 };

@@ -1,7 +1,14 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Ensure the app doesn't crash if env vars are missing
+// Safety Guards for Hostinger Production
+const requiredEnv = ['DB_HOST', 'DB_USER', 'DB_NAME', 'JWT_SECRET'];
+requiredEnv.forEach(key => {
+    if (!process.env[key]) {
+        console.warn(`⚠️ WARNING: Missing environment variable [${key}]. App may fail during operations.`);
+    }
+});
+
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
