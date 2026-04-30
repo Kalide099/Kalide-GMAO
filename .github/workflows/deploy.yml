@@ -18,7 +18,7 @@ jobs:
           command_timeout: 30m
           script: |
             export PATH=/opt/alt/alt-nodejs20/root/usr/bin:$PATH
-            cd /home/u633695266/domains/kgmao.com/public_html/.builds/last-source
+            cd /home/u633695266/domains/kgmao.com/public_html
             echo "Current Path: $(pwd)"
             echo "Pulling latest code..."
             git fetch https://kalide009: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@github.com/Kalide099/Kalide-GMAO.git main

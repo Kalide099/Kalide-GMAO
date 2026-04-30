@@ -3,6 +3,7 @@ module.exports = {
     {
       name: 'kgmao-backend',
       script: 'server.js',
+      cwd: '/home/u633695266/domains/kgmao.com/public_html',
       instances: 1,       // Single instance for stability on shared/limited hosting
       exec_mode: 'cluster',   // Cluster mode for load balancing
       watch: false,
@@ -11,8 +12,7 @@ module.exports = {
         NODE_ENV: 'development'
       },
       env_production: {
-        NODE_ENV: 'production',
-        PORT: 3000
+        NODE_ENV: 'production'
       },
       log_date_format: 'YYYY-MM-DD HH:mm Z',
       error_file: 'logs/pm2-error.log',
