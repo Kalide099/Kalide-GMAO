@@ -82,6 +82,7 @@ app.use(extractLanguage);
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -90,11 +91,6 @@ if (process.env.NODE_ENV === 'development') {
 // Health Check Endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'active', message: 'KGMAO SaaS Operating Securely' });
-});
-
-// Root route for Hostinger verification
-app.get('/', (req, res) => {
-    res.status(200).send('API is running ✅');
 });
 
 // API Routes
@@ -126,11 +122,14 @@ app.use('/api/v1/custom-forms', customFormRoutes);
 app.use('/api/v1/attachments', attachmentRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
 
-// Handle unknown API routes
-app.use('*', (req, res) => {
-    res.status(404).json({
-        message: `API Route Not Found - ${req.originalUrl}`
-    });
+// Handle React Routing - Serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+        return res.status(404).json({
+            message: `API Route Not Found - ${req.originalUrl}`
+        });
+    }
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 });
 
 // Global Error Handler
