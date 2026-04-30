@@ -54,13 +54,22 @@ exports.login = async (req, res, next) => {
             return errorResponse(res, 400, error.details[0].message);
         }
 
-        const result = await authService.loginUser(value.email, value.password, lang);
+        // Enforce strict 4-second timeout to prevent Hostinger 503 HTML from taking over
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('DATABASE_TIMEOUT: Database unreachable or taking too long.')), 4000)
+        );
+
+        const result = await Promise.race([
+            authService.loginUser(value.email, value.password, lang),
+            timeoutPromise
+        ]);
+
         return successResponse(res, 200, t('auth.login_success', lang), result);
     } catch (err) {
         console.error('❌ Login Process Error:', err.message, err.stack);
         return res.status(503).json({ 
             success: false, 
-            message: "Login failed due to an internal error.",
+            message: "The database took too long to respond. Please check your DB credentials in Hostinger.",
             errorDetails: err.message,
             stack: err.stack
         });
