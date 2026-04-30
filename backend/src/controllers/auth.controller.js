@@ -57,10 +57,12 @@ exports.login = async (req, res, next) => {
         const result = await authService.loginUser(value.email, value.password, lang);
         return successResponse(res, 200, t('auth.login_success', lang), result);
     } catch (err) {
-        console.error('❌ Login Process Error:', err.message);
+        console.error('❌ Login Process Error:', err.message, err.stack);
         return res.status(503).json({ 
             success: false, 
-            message: "Database unavailable" 
+            message: "Login failed due to an internal error.",
+            errorDetails: err.message,
+            stack: err.stack
         });
     }
 };
