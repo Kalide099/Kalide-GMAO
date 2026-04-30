@@ -10,7 +10,8 @@ const dbConfig = {
     connectionLimit: 10,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    keepAliveInitialDelay: 0,
+    connectTimeout: 5000 // 🚀 FAIL FAST: Force error before Hostinger's 15s limit
 };
 
 const pool = mysql.createPool(dbConfig);
