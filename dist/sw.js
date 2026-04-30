@@ -1,49 +1,33 @@
-const CACHE_NAME = 'kgmao-v2';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
+const CACHE_NAME = 'kgmao-cache-v2';
 
-// Install Event
+// Install Event - Force Skip Waiting
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+  self.skipWaiting();
 });
 
-// Activate Event
+// Activate Event - Claim Clients
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
-  );
+  event.waitUntil(self.clients.claim());
 });
 
-// Fetch Event
+// Fetch Event - Strict API Bypass
 self.addEventListener('fetch', (event) => {
-  // Skip caching for API requests to ensure real-time data
-  if (event.request.url.includes('/api/v1')) {
-    return;
+  const url = new URL(event.request.url);
+
+  // 1. CRITICAL: Do NOT intercept or cache any API calls
+  if (url.pathname.startsWith('/api')) {
+    return; // Pass through to network
   }
+
+  // 2. Only handle GET requests for static assets
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
-
-      return fetch(event.request).catch((err) => {
-        // If navigation request fails, return cached index.html for SPA support
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-        throw err;
+      // Return cache if found, else fetch from network
+      return response || fetch(event.request).catch((err) => {
+        // Fail gracefully
+        console.warn('SW: Network fetch failed for:', url.pathname);
       });
     })
   );
