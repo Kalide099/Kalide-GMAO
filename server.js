@@ -5,9 +5,8 @@ const pool = require('./backend/src/config/db');
 const PORT = process.env.PORT || 3000;
 
 // CRITICAL: Ensure server starts BEFORE DB connection to prevent 503 boot loops
-const server = app.listen(PORT, "0.0.0.0", () => {
+const server = app.listen(PORT, () => {
     console.log(`🚀 KGMAO Production Server is ACTIVE on port ${PORT}`);
-    console.log(`📡 Binding: 0.0.0.0:${PORT}`);
 });
 
 // Non-blocking background database initialization

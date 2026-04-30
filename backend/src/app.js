@@ -41,6 +41,12 @@ const nexusRoutes = require('./routes/nexus.routes');
 
 const app = express();
 
+// 🔍 High-Priority Request Logger for Production Debugging
+app.use((req, res, next) => {
+    console.log(`📡 [INCOMING] ${req.method} ${req.url} - ${new Date().toISOString()}`);
+    next();
+});
+
 // ======================
 // TRUST PROXY (IMPORTANT FOR HOSTINGER)
 // ======================
