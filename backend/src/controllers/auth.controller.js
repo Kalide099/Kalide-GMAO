@@ -67,7 +67,7 @@ exports.login = async (req, res, next) => {
         return successResponse(res, 200, t('auth.login_success', lang), result);
     } catch (err) {
         console.error('❌ Login Process Error:', err.message, err.stack);
-        return res.status(503).json({ 
+        return res.status(400).json({ 
             success: false, 
             message: "The database took too long to respond. Please check your DB credentials in Hostinger.",
             errorDetails: err.message,

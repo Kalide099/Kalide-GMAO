@@ -143,7 +143,16 @@ app.get('*', (req, res, next) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.message);
-    return res.status(err.statusCode || 500).json({
+    
+    // Hostinger intercepts 5xx errors and replaces them with an HTML page.
+    // To ensure the frontend receives our JSON error, we convert critical 5xx server errors 
+    // (like database timeouts) to a 400 Bad Request if it contains our specific keywords.
+    let statusCode = err.statusCode || 500;
+    if (statusCode >= 500 || err.message.includes('DATABASE_TIMEOUT')) {
+        statusCode = 400; // Force 400 so Hostinger doesn't block the JSON payload
+    }
+
+    return res.status(statusCode).json({
         message: err.message || "Internal Server Error"
     });
 });
