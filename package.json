@@ -6,8 +6,8 @@
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"green,blue\" --kill-others \"npm run backend\" \"npm run frontend\"",
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev",
-    "postinstall": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
+    "build": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
     "start": "node server.js"
   },
   "main": "server.js",
