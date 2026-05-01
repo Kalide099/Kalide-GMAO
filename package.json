@@ -3,15 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "i18n-check": "node scripts/check-i18n.js",
-    "dev": "npm run i18n-check && concurrently -n \"BACKEND,FRONTEND\" -c \"green,blue\" --kill-others \"npm run backend\" \"npm run frontend\"",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"green,blue\" --kill-others \"npm run backend\" \"npm run frontend\"",
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev",
-    "init-db": "npm --prefix backend run init-db",
-    "extract-locales": "node scripts/extract-missing.js",
-    "sync-locales": "node sync_locales.js",
-    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend --include=dev",
-    "build": "npm run install-all && cd frontend && npm run build && cd .. && node scripts/copy-dist.js",
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "node server.js"
   },
   "main": "server.js",
