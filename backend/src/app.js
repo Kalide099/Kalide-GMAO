@@ -80,9 +80,17 @@ app.use(xssSanitizer);
 // app.use(globalLimiter); // Removed to prevent blocking all requests
 app.use(extractLanguage);
 
-// Static files
+// Static files - Disable CDN caching to ensure the latest React build is always served
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+app.use(express.static(path.join(__dirname, '../../frontend/dist'), {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.html') || path.endsWith('.js') || path.endsWith('.css')) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+    }
+}));
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
