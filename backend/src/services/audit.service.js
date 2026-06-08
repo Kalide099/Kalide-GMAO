@@ -12,6 +12,19 @@ exports.getLogs = async (companyId) => {
     return rows;
 };
 
+exports.getLogsForExport = async (companyId) => {
+    // Get up to 10000 logs for compliance export to prevent memory issues
+    const [rows] = await pool.query(
+        `SELECT a.action, CONCAT(u.first_name, ' ', u.last_name) as user_name, u.email, a.entity_type, a.entity_id, a.details, a.created_at 
+         FROM audit_logs a
+         LEFT JOIN users u ON a.user_id = u.id
+         WHERE a.company_id = ?
+         ORDER BY a.created_at DESC LIMIT 10000`,
+        [companyId]
+    );
+    return rows;
+};
+
 exports.logAction = async (companyId, userId, action, entityType, entityId, details) => {
     const { v4: uuidv4 } = require('uuid');
     const id = uuidv4();

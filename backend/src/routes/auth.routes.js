@@ -3,11 +3,13 @@ const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
-router.post('/logout', authenticate, authController.logout);
+const { idempotency } = require('../middlewares/idempotency.middleware');
+
+router.post('/register', idempotency, authController.register);
+router.post('/login', idempotency, authController.login);
+router.post('/forgot-password', idempotency, authController.forgotPassword);
+router.post('/reset-password', idempotency, authController.resetPassword);
+router.post('/logout', authenticate, idempotency, authController.logout);
 router.post('/mfa/setup', authenticate, authController.setupMfa);
 router.post('/mfa/verify', authenticate, authController.verifyMfa);
 router.post('/mfa/disable', authenticate, authController.disableMfa);

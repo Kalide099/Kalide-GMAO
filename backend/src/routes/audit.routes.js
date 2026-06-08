@@ -5,5 +5,6 @@ const { authenticate } = require('../middlewares/auth.middleware');
 
 router.use(authenticate);
 router.get('/', auditController.getLogs);
+router.get('/export', auditController.exportLogs);
 
 module.exports = router;
