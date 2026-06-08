@@ -315,6 +315,25 @@ const Login = () => {
                                 </>
                             ) : null}
 
+                            <div className="flex items-start gap-3 mt-4">
+                                <div className="relative flex items-start pt-0.5">
+                                    <input
+                                        type="checkbox"
+                                        required
+                                        className="sr-only peer"
+                                        id="termsAgreement"
+                                    />
+                                    <label htmlFor="termsAgreement" className="w-5 h-5 rounded-md border border-white/20 bg-white/5 peer-checked:bg-yellow-400 peer-checked:border-yellow-400 transition-all flex items-center justify-center cursor-pointer">
+                                        <svg className="w-3 h-3 text-slate-950 opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </label>
+                                </div>
+                                <label htmlFor="termsAgreement" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed cursor-pointer select-none">
+                                    {t('compliance.termsAgreeText')} <Link to="/terms" className="text-yellow-400 hover:text-yellow-300 hover:underline">{t('compliance.termsOfUse')}</Link> {t('compliance.and')} <Link to="/privacy" className="text-yellow-400 hover:text-yellow-300 hover:underline">{t('compliance.privacyPolicy')}</Link>.
+                                </label>
+                            </div>
+
                             <button type="submit" 
                                 disabled={isLoading}
                                 className="w-full h-14 mt-4 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-950 font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_30px_rgba(250,204,21,0.4)] hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 relative overflow-hidden group"

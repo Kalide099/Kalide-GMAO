@@ -230,6 +230,25 @@ const Register = () => {
                                             />
                                         </div>
                                     </div>
+
+                                    <div className="flex items-start gap-3 mt-8">
+                                        <div className="relative flex items-start pt-0.5">
+                                            <input
+                                                type="checkbox"
+                                                required
+                                                className="sr-only peer"
+                                                id="termsAgreementReg"
+                                            />
+                                            <label htmlFor="termsAgreementReg" className="w-5 h-5 rounded-md border border-slate-300 bg-white peer-checked:bg-yellow-400 peer-checked:border-yellow-400 transition-all flex items-center justify-center cursor-pointer">
+                                                <svg className="w-3 h-3 text-slate-950 opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </label>
+                                        </div>
+                                        <label htmlFor="termsAgreementReg" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed cursor-pointer select-none">
+                                            {t('compliance.termsAgreeText')} <Link to="/terms" className="text-yellow-500 hover:text-yellow-600 hover:underline">{t('compliance.termsOfUse')}</Link> {t('compliance.and')} <Link to="/privacy" className="text-yellow-500 hover:text-yellow-600 hover:underline">{t('compliance.privacyPolicy')}</Link>.
+                                        </label>
+                                    </div>
                                     
                                     <button type="submit" 
                                         disabled={loading}

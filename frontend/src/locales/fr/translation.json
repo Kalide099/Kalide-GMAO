@@ -1790,5 +1790,15 @@
     "placeholder": "Ask AI Copilot for diagnostics, ESG insights, or draft work orders...",
     "disclaimer": "AI-generated insights must be verified before physical asset intervention."
   },
-  "Industrial Evidence: Enter LOTO Photo URL (for demo):": "https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg"
+  "Industrial Evidence: Enter LOTO Photo URL (for demo):": "https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg",
+  "compliance": {
+    "cookieTitle": "Nous respectons votre vie privée",
+    "cookieDesc": "Nous utilisons des cookies pour améliorer votre expérience de navigation, diffuser des contenus personnalisés et analyser notre trafic. En cliquant sur 'Tout accepter', vous consentez à notre utilisation des cookies.",
+    "cookieAccept": "Tout Accepter",
+    "cookieDecline": "Refuser",
+    "termsAgreeText": "J'accepte les",
+    "termsOfUse": "Conditions d'utilisation",
+    "and": "et la",
+    "privacyPolicy": "Politique de confidentialité"
+  }
 }

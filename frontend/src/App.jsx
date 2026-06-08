@@ -11,6 +11,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import { syncOfflineActions } from './utils/offlineSync';
 import api from './services/api/axiosConfig';
+import CookieConsent from './components/CookieConsent';
 
 const LandingPage = React.lazy(() => import('./pages/public/LandingPage'));
 const Pricing = React.lazy(() => import('./pages/public/Pricing'));
@@ -295,6 +296,7 @@ const App = () => {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <CookieConsent />
         </BrowserRouter>
       </AuthProvider>
     </React.Suspense>
