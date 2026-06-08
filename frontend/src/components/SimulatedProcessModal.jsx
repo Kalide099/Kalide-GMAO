@@ -53,7 +53,10 @@ const SimulatedProcessModal = ({
                     <div className="flex items-center gap-4">
                         <Terminal className="text-indigo-500 w-8 h-8" />
                         <div>
-                            <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">{title}</h3>
+                            <div className="flex items-center gap-3">
+                                <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">{title}</h3>
+                                <span className="bg-rose-500/20 text-rose-400 text-[9px] px-2 py-1 rounded-sm border border-rose-500/30 uppercase tracking-widest font-black">Roadmap Preview</span>
+                            </div>
                             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mt-1">{t('simulatedProcess.processing')}</p>
                         </div>
                     </div>

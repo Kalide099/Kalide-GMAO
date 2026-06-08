@@ -12,8 +12,8 @@ const dbConfig = {
     database: getEnv('DB_NAME', 'kgmao_db'),
     port: Number(getEnv('DB_PORT', 3306)),
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+    connectionLimit: 5, // Tightened for Hostinger shared DB limits
+    queueLimit: 100, // Explicit queue limit to fail fast under extreme load rather than crash
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,
     connectTimeout: 5000 // 🚀 FAIL FAST: Force error before Hostinger's 15s limit

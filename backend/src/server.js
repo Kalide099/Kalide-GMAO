@@ -28,6 +28,12 @@ const connectDB = async (retries = config.dbConnectRetries, delay = config.dbCon
             const connection = await db.getConnection();
             logger.info('Connected to MySQL database');
             connection.release();
+            
+            // Start background job worker
+            const queueService = require('./services/queue.service');
+            require('./services/processors'); // Load all job processors
+            queueService.startWorker();
+            
             return;
         } catch (error) {
             logger.warn('DB connection failed', { retriesLeft: retries - 1, error });

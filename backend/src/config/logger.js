@@ -8,6 +8,14 @@ const serializeError = (err) => {
     };
 };
 
+const fs = require('fs');
+const path = require('path');
+
+const logDir = path.join(__dirname, '../../logs');
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+}
+
 const log = (level, message, meta = {}) => {
     const payload = {
         ts: new Date().toISOString(),
@@ -18,7 +26,13 @@ const log = (level, message, meta = {}) => {
 
     const line = JSON.stringify(payload);
 
+    // Write to file asynchronously
+    fs.appendFile(path.join(logDir, 'combined.log'), line + '\n', (err) => {
+        if (err) console.error('Failed to write to log file', err);
+    });
+
     if (level === 'error') {
+        fs.appendFile(path.join(logDir, 'error.log'), line + '\n', () => {});
         console.error(line);
         return;
     }
