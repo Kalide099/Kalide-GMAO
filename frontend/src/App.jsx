@@ -249,6 +249,7 @@ const App = () => {
                 {/* Enterprise Autonomy & Advanced Features (Mapped from Admin) */}
                 <Route path="ai-copilot" element={<AICopilot />} />
                 <Route path="settings" element={<TenantSettings />} />
+                <Route path="mfa-security" element={<MfaSecurity />} />
                 <Route path="workflows" element={<WorkflowAutomation />} />
                 <Route path="reports" element={<ReportGenerator />} />
                 <Route path="drone-fleet" element={<DroneFleetCommander />} />

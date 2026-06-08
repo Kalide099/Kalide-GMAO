@@ -1,8 +1,9 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const SuperAdminRoute = () => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const token = localStorage.getItem('kgmao_token');
 
   if (loading) return null;
@@ -18,6 +19,11 @@ const SuperAdminRoute = () => {
   
   if (user.role !== 'super_admin' || user.is_impersonating) {
     return <Navigate to="/" replace />;
+  }
+
+  const isMfaProtectedRoute = location.pathname.includes('/mfa-security');
+  if (!user?.mfa_enabled && !isMfaProtectedRoute) {
+      return <Navigate to="/admin/mfa-security" replace />;
   }
 
   return <Outlet />;
