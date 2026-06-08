@@ -100,7 +100,8 @@ const SLAAgreement = () => {
                                     {t('legal.commitments.c3.title')}
                                 </h3>
                                 <div className="overflow-hidden border border-slate-100 rounded-3xl shadow-sm bg-white">
-                                    <table className="w-full text-left">
+                                    <div className="overflow-x-auto">
+<table className="w-full text-left">
                                         <thead className="bg-slate-50 border-b border-slate-100">
                                             <tr>
                                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{t('legal.commitments.c3.severity')}</th>
@@ -126,6 +127,7 @@ const SLAAgreement = () => {
                                             </tr>
                                         </tbody>
                                     </table>
+</div>
                                 </div>
                             </div>
                         </div>

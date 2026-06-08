@@ -13,8 +13,8 @@ const AboutUs = () => {
             <PublicNavbar />
             
             {/* Ambient Background Elements */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-50/50 rounded-full -translate-y-1/2 translate-x-1/2 blur-[120px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-yellow-50/50 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px] pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-full max-w-[800px] h-[800px] bg-indigo-50/50 rounded-full -translate-y-1/2 translate-x-1/2 blur-[120px] pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full max-w-[600px] h-[600px] bg-yellow-50/50 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px] pointer-events-none"></div>
 
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 px-6 lg:px-20 max-w-7xl mx-auto text-center lg:text-left flex-1">

@@ -31,7 +31,8 @@ const AdminPayments = () => {
             </h2>
             
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 mt-8 overflow-hidden">
-                <table className="w-full text-left">
+                <div className="overflow-x-auto">
+<table className="w-full text-left">
                     <thead className="bg-slate-50 border-b border-slate-100 uppercase text-xs font-bold text-slate-500 tracking-wider">
                         <tr>
                             <th className="px-6 py-4">{t('admin.transactionId')}</th>
@@ -68,6 +69,7 @@ const AdminPayments = () => {
                         )}
                     </tbody>
                 </table>
+</div>
             </div>
         </div>
     );

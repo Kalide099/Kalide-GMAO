@@ -309,7 +309,7 @@ const DashboardLayout = () => {
               </button>
 
               {isNotifOpen && (
-                <div className="absolute right-0 mt-8 w-[28rem] bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-fade-in-up z-50 ring-1 ring-slate-900/5">
+                <div className="absolute right-0 mt-8 w-[calc(100vw-4rem)] sm:w-[28rem] bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-fade-in-up z-50 ring-1 ring-slate-900/5">
                   <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em]">{t('notifications.title')}</span>
                     <span className="text-[10px] font-black bg-yellow-400 text-slate-950 px-4 py-1.5 rounded-full uppercase tracking-widest shadow-xl shadow-yellow-400/20">{unreadCount} {t('notifications.new')}</span>

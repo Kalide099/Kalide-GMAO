@@ -64,7 +64,8 @@ const ProcurementSLA = () => {
                                 <Users className="text-indigo-600" /> {t('roadmap.supplier_reliability', 'Supplier Reliability Matrix')}
                             </h2>
                             <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden">
-                                <table className="w-full text-left">
+                                <div className="overflow-x-auto">
+<table className="w-full text-left">
                                     <thead className="bg-slate-50 text-[10px] font-black text-slate-400 tracking-widest border-b border-slate-100 uppercase">
                                         <tr>
                                             <th className="px-10 py-6">{t('roadmap.vendor', 'Vendor')}</th>
@@ -84,6 +85,7 @@ const ProcurementSLA = () => {
                                         ))}
                                     </tbody>
                                 </table>
+</div>
                             </div>
                         </div>
                     </div>

@@ -33,7 +33,7 @@ const HelpCenter = () => {
             
             {/* Hero Search Section */}
             <section className="bg-slate-950 py-24 px-6 lg:px-24 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-yellow-400/5 rounded-full blur-[120px]"></div>
+                <div className="absolute top-0 right-0 w-full max-w-[600px] h-[600px] bg-yellow-400/5 rounded-full blur-[120px]"></div>
                 <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
                     <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tighter uppercase italic">
                         {t('help.title').split(' ')[0]} <span className="text-yellow-400">{t('help.title').split(' ')[1]}</span>

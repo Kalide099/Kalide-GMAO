@@ -58,7 +58,8 @@ const FmeaAnalytics = () => {
 
             {/* FMEA Table */}
             <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <div className="overflow-x-auto">
+<table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50">
                             <th className="p-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('nexus.rcm.failure_mode')}</th>
@@ -92,6 +93,7 @@ const FmeaAnalytics = () => {
                         ))}
                     </tbody>
                 </table>
+</div>
             </div>
 
             <SimulatedProcessModal 

@@ -36,7 +36,7 @@ const BimExplorer = () => {
             <div className="relative group rounded-[5rem] overflow-hidden bg-slate-900 h-[700px] border-[12px] border-white shadow-3xl">
                 {/* 3D Visual Rendering (Simplified Representation) */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-pulse"></div>
+                    <div className="w-full max-w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-pulse"></div>
                     <div className="relative">
                         <Box size={300} className="text-white/10 animate-spin-slow" />
                         <div className="absolute inset-0 flex items-center justify-center">

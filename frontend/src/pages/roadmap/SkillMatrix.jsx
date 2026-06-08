@@ -56,7 +56,8 @@ const SkillMatrix = () => {
             </div>
 
             <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
+                <div className="overflow-x-auto">
+<table className="w-full text-left">
                     <thead className="bg-slate-50 text-[10px] font-black text-slate-400 tracking-[0.3em] uppercase border-b border-slate-100">
                         <tr>
                             <th className="px-12 py-8">{t('roadmap.skills.tech')}</th>
@@ -113,6 +114,7 @@ const SkillMatrix = () => {
                         )}
                     </tbody>
                 </table>
+</div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

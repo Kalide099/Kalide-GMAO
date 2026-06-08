@@ -122,7 +122,8 @@ const TenantSettings = () => {
                                 <button onClick={handleInviteUser} className="bg-indigo-600 text-white font-bold uppercase tracking-widest text-[10px] px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">{t('tenantSettings.inviteUser')}</button>
                             </div>
                             <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                                <table className="w-full text-left">
+                                <div className="overflow-x-auto">
+<table className="w-full text-left">
                                     <thead className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-500">
                                         <tr>
                                             <th className="px-6 py-4 font-black">{t('tenantSettings.user')}</th>
@@ -143,6 +144,7 @@ const TenantSettings = () => {
                                         </tr>
                                     </tbody>
                                 </table>
+</div>
                             </div>
                         </div>
                     )}

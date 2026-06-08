@@ -203,7 +203,8 @@ const FinanceMatrix = () => {
                 </div>
             ) : (
                 <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden animate-fade-in-up">
-                    <table className="w-full text-left">
+                    <div className="overflow-x-auto">
+<table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50 border-b border-slate-100">
                                 <th className="p-10 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">{t('cmms.finance.sector_domain')}</th>
@@ -237,6 +238,7 @@ const FinanceMatrix = () => {
                             ))}
                         </tbody>
                     </table>
+</div>
                 </div>
             )}
         </div>

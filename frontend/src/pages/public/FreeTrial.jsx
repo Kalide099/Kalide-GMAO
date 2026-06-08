@@ -22,8 +22,8 @@ const FreeTrial = () => {
             
             {/* Background Effects */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none"></div>
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[150px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-yellow-400/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-[120px] pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-full max-w-[800px] h-[800px] bg-indigo-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[150px] pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full max-w-[600px] h-[600px] bg-yellow-400/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-[120px] pointer-events-none"></div>
 
             <div className="flex-1 flex items-center max-w-7xl mx-auto px-6 lg:px-20 relative z-10 w-full py-20 lg:py-32">
                 <div className="flex flex-col lg:flex-row items-center gap-20">

@@ -178,7 +178,7 @@ const LandingPage = () => {
 
             {/* Industries Matrix Section - Comprehensive Sector Coverage */}
             <section className="py-32 px-6 lg:px-24 bg-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 opacity-50"></div>
+                <div className="absolute top-0 right-0 w-full max-w-[600px] h-[600px] bg-indigo-50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 opacity-50"></div>
                 
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center mb-24 space-y-4">
