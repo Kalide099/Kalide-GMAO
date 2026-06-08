@@ -33,14 +33,14 @@ const SuperAdminLayout = () => {
         { path: '/admin/payments', icon: <CreditCard size={20} />, label: t('admin.payments') },
         { path: '/admin/logs', icon: <ShieldAlert size={20} />, label: t('admin.logs') },
         { path: '/admin/registrations', icon: <UserPlus size={20} />, label: t('admin.onboarding') },
-        { path: '/admin/mfa-security', icon: <ShieldAlert size={20} />, label: 'MFA Security' },
-        { path: '/admin/ai-copilot', icon: <Bot size={20} />, label: 'AI Copilot' },
+        { path: '/admin/mfa-security', icon: <ShieldAlert size={20} />, label: t('nav.mfaSecurity') },
+        { path: '/admin/ai-copilot', icon: <Bot size={20} />, label: t('nav.aiCopilot') },
         { path: '/admin/settings', icon: <Settings size={20} />, label: t('nav.settings') || 'Settings' },
         { path: '/admin/workflows', icon: <Layers size={20} />, label: t('nav.workflows') || 'Workflows' },
         { path: '/admin/reports', icon: <FileText size={20} />, label: t('nav.reports') || 'Reports' },
-        { path: '/admin/drone-fleet', icon: <Navigation size={20} />, label: 'Drone Fleet (Phase 4)' },
-        { path: '/admin/ai-procurement', icon: <Bot size={20} />, label: 'AI Procurement (Phase 4)' },
-        { path: '/admin/vision-defect', icon: <Camera size={20} />, label: 'Vision Detection (Phase 4)' },
+        { path: '/admin/drone-fleet', icon: <Navigation size={20} />, label: t('nav.droneFleet') },
+        { path: '/admin/ai-procurement', icon: <Bot size={20} />, label: t('nav.aiProcurement') },
+        { path: '/admin/vision-defect', icon: <Camera size={20} />, label: t('nav.visionDetection') },
     ];
 
     return (
