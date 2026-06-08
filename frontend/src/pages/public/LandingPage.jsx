@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Zap, ShieldCheck, Globe, ArrowRight, Activity, BrainCircuit, TrendingUp, Building2, HeartPulse, GraduationCap, UtensilsCrossed, ShoppingCart, Truck, Factory, Leaf, Waves } from 'lucide-react';
+import { Zap, ShieldCheck, Globe, ArrowRight, Activity, BrainCircuit, TrendingUp, Building2, HeartPulse, GraduationCap, UtensilsCrossed, ShoppingCart, Truck, Factory, Leaf, Waves, Download } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 
@@ -92,12 +92,16 @@ const LandingPage = () => {
                         {t('marketing.heroSubtitle')}
                     </p>
                     
-                    <div className="mt-12 flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
-                        <Link to="/register" className="px-12 py-6 bg-white hover:bg-yellow-400 text-slate-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3">
+                    <div className="mt-12 flex flex-col md:flex-row md:flex-wrap md:justify-center gap-4 w-full max-w-5xl">
+                        <Link to="/register" className="px-8 lg:px-10 py-5 bg-white hover:bg-yellow-400 text-slate-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 text-center leading-tight">
                             {t('marketing.startTrialBtn')}
                             <ArrowRight size={18} />
                         </Link>
-                        <Link to="/login" className="px-12 py-6 bg-transparent border-2 border-white/20 hover:border-yellow-400 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] backdrop-blur-md transition-all flex items-center justify-center gap-3 group">
+                        <a href="/downloads/KGMAO-Desktop-Setup-1.0.0.exe" download className="px-8 lg:px-10 py-5 bg-yellow-400 hover:bg-white text-slate-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 text-center leading-tight">
+                            {t('marketing.downloadDesktop')}
+                            <Download size={18} />
+                        </a>
+                        <Link to="/login" className="px-8 lg:px-10 py-5 bg-transparent border-2 border-white/20 hover:border-yellow-400 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] backdrop-blur-md transition-all flex items-center justify-center gap-3 group text-center leading-tight">
                             {t('marketing.login')}
                             <Zap size={14} className="text-yellow-400 opacity-50 group-hover:opacity-100 transition-opacity" />
                         </Link>

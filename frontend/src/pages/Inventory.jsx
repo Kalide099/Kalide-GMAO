@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { 
@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 const Inventory = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,8 +16,7 @@ const Inventory = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const [formData, setFormData] = useState({
-        name_en: '',
-        name_fr: '',
+        name: '',
         sku: '',
         quantity: 0,
         minimumQuantity: 0,
@@ -45,7 +44,7 @@ const Inventory = () => {
 
     const handleOpenCreateModal = () => {
         setIsEditMode(false);
-        setFormData({ name_en: '', name_fr: '', sku: '', quantity: 0, minimumQuantity: 0, price: 0 });
+        setFormData({ name: '', sku: '', quantity: 0, minimumQuantity: 0, price: 0 });
         setIsModalOpen(true);
     };
 
@@ -53,8 +52,7 @@ const Inventory = () => {
         setIsEditMode(true);
         setSelectedItemId(item.id);
         setFormData({
-            name_en: item.name_en || item.name,
-            name_fr: item.name_fr || item.name,
+            name: i18n.language === 'fr' ? (item.name_fr || item.name_en || item.name) : (item.name_en || item.name_fr || item.name),
             sku: item.sku,
             quantity: item.quantity,
             minimumQuantity: item.minimum_quantity,
@@ -72,8 +70,8 @@ const Inventory = () => {
             quantity: Number(formData.quantity),
             minimumQuantity: Number(formData.minimumQuantity),
             price: Number(formData.price),
-            name_en: formData.name_en,
-            name_fr: formData.name_fr
+            name_en: formData.name,
+            name_fr: formData.name
         };
 
         try {
@@ -255,29 +253,16 @@ const Inventory = () => {
                         </div>
                         
                         <form onSubmit={handleCreateOrUpdateItem} className="p-12 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                        <Globe size={14} className="text-blue-500" /> {t('inventory.field_name')} (EN)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.name_en}
-                                        onChange={(e) => setFormData({...formData, name_en: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-emerald-600/5 focus:border-emerald-600 transition-all font-black text-slate-800 uppercase text-xs"
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                        <Globe size={14} className="text-emerald-600" /> {t('inventory.field_name')} (FR)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.name_fr}
-                                        onChange={(e) => setFormData({...formData, name_fr: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-emerald-600/5 focus:border-emerald-600 transition-all font-black text-slate-800 uppercase text-xs"
-                                    />
-                                </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                                    <Globe size={14} className="text-emerald-600" /> {t('inventory.field_name')}
+                                </label>
+                                <input 
+                                    type="text" required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-emerald-600/5 focus:border-emerald-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                />
                             </div>
 
                             <div className="space-y-4">
@@ -338,8 +323,7 @@ const Inventory = () => {
                                 >
                                     {t('common.cancel')}
                                 </button>
-                                <button 
-                                    type="submit"
+                                <button type="submit"
                                     disabled={formLoading}
                                     className="flex-1 px-10 py-6 bg-slate-950 text-yellow-400 font-black rounded-[2rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-[0.2em] text-[10px] border border-white/5"
                                 >

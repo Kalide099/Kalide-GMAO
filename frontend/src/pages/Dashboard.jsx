@@ -1,18 +1,37 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, Package, Briefcase, Activity, Zap, TrendingUp, Globe, ShoppingCart, ArrowRight, Layers } from 'lucide-react';
+import { Wrench, Briefcase, Activity, Zap, TrendingUp, Globe, ArrowRight, Layers } from 'lucide-react';
 import useIndustryIndustry from '../hooks/useIndustryIndustry';
+import api from '../services/api/axiosConfig';
 
 const Dashboard = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const industryTerms = useIndustryIndustry();
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await api.get('/company/my-company/dashboard-stats');
+                if (res.data.success) {
+                    setStats(res.data.data);
+                }
+            } catch (err) {
+                console.error("Failed to load dashboard stats", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
 
     const metrics = [
-        { title: industryTerms.assetName, value: '1,242', icon: <Wrench size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-yellow-400' },
-        { title: industryTerms.throughput, value: '99.8%', icon: <Activity size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-emerald-400' },
-        { title: industryTerms.mainMetric, value: '14', icon: <Briefcase size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-rose-400' },
+        { title: industryTerms.assetName, value: stats ? stats.metrics.totalAssets.toLocaleString() : '0', icon: <Wrench size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-yellow-400' },
+        { title: industryTerms.throughput, value: stats ? stats.metrics.throughput : '0%', icon: <Activity size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-emerald-400' },
+        { title: industryTerms.mainMetric, value: stats ? stats.metrics.activeWorkOrders.toLocaleString() : '0', icon: <Briefcase size={24} />, color: 'bg-slate-900', shadow: 'shadow-slate-100', accent: 'bg-rose-400' },
     ];
 
     const strategyCards = [
@@ -23,7 +42,7 @@ const Dashboard = () => {
     ];
 
     return (
-        <div className="space-y-16 animate-fade-in-up pb-20">
+        <div className="space-y-16 pb-20">
             {/* Ultra High-Fidelity Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
                 <div className="space-y-2">
@@ -110,16 +129,43 @@ const Dashboard = () => {
                         {t('dashboard.viewAuditLog')}
                     </button>
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-20 space-y-6">
-                    <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner group-hover:rotate-12 transition-transform">
-                        <Activity className="text-slate-200" size={48} />
-                    </div>
-                    <div className="space-y-2">
-                        <p className="text-slate-800 font-black uppercase tracking-widest text-xs italic">{t('dashboard.loadingForensic')}</p>
-                        <div className="flex justify-center gap-1">
-                            {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}></div>)}
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 lg:p-20 space-y-6">
+                    {loading ? (
+                        <>
+                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner animate-pulse">
+                                <Activity className="text-slate-200" size={48} />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-slate-800 font-black uppercase tracking-widest text-xs italic">{t('dashboard.loadingForensic')}</p>
+                                <div className="flex justify-center gap-1">
+                                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}></div>)}
+                                </div>
+                            </div>
+                        </>
+                    ) : stats?.recentActivity?.length > 0 ? (
+                        <div className="w-full text-left space-y-4">
+                            {stats.recentActivity.map((activity, idx) => (
+                                <div key={idx} className="flex justify-between items-center bg-slate-50 p-6 rounded-3xl border border-slate-100 transition-all hover:bg-slate-100">
+                                    <div>
+                                        <p className="font-black text-slate-900 uppercase text-sm tracking-widest italic">{activity.action.replace(/_/g, ' ')}</p>
+                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2">{activity.entity_type}</p>
+                                    </div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        {new Date(activity.created_at).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner group-hover:rotate-12 transition-transform">
+                                <Activity className="text-slate-200" size={48} />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-slate-400 font-black uppercase tracking-widest text-xs italic">{t('dashboard.noRecentActivity')}</p>
+                            </div>
+                        </>
+                    )}
                 </div>
                 
                 {/* Decorative Bottom Mesh */}

@@ -1,11 +1,19 @@
-import React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mail, Phone, MapPin, Send, Zap, Globe, Clock, ShieldCheck } from 'lucide-react';
+import { Phone, MapPin, Send, Globe, Clock, ShieldCheck } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const ContactUs = () => {
     const { t } = useTranslation();
+    const [simModalOpen, setSimModalOpen] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSimModalOpen(true);
+    };
 
     return (
         <div className="min-h-screen bg-white font-sans overflow-x-hidden flex flex-col">
@@ -88,7 +96,7 @@ const ContactUs = () => {
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('contact.terminalTitle')}</h2>
                         </div>
 
-                        <form className="space-y-8">
+                        <form onSubmit={handleSubmit} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.fullName')}</label>
@@ -115,7 +123,7 @@ const ContactUs = () => {
                                 <textarea className="w-full h-40 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] p-8 font-bold focus:border-yellow-400 outline-none transition-all resize-none placeholder:text-slate-200" placeholder={t('contact.briefingPlaceholder')}></textarea>
                             </div>
 
-                            <button className="w-full h-20 bg-slate-900 hover:bg-black text-white rounded-[2.5rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group">
+                            <button type="submit" className="w-full h-20 bg-slate-900 hover:bg-black text-white rounded-[2.5rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group">
                                 {t('contact.submit')}
                                 <Send size={20} className="text-yellow-400 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
                             </button>
@@ -126,6 +134,15 @@ const ContactUs = () => {
             </div>
             </div>
             <PublicFooter />
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Transmitting Encrypted Payload" 
+                processingText="Establishing secure handshake with HQ..." 
+                successText="Transmission Confirmed"
+                onSuccessCallback={() => toast.success('Your message has been received by our terminal.')}
+            />
         </div>
     );
 };

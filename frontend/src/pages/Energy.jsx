@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { Zap, Activity, Battery, Leaf, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Zap, Activity, Battery, Leaf, TrendingUp } from 'lucide-react';
 
 const Energy = () => {
     const { t } = useTranslation();

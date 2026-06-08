@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Globe, ShieldCheck, Mail, MapPin, Zap, Radio, Linkedin, Twitter, Youtube, Facebook, Instagram } from 'lucide-react';
+import { Globe, ShieldCheck, MapPin, Zap, Linkedin, Twitter, Youtube, Facebook, Instagram } from 'lucide-react';
 
 const PublicFooter = () => {
     const { t } = useTranslation();
@@ -28,21 +28,21 @@ const PublicFooter = () => {
                     
                     {/* Social Matrix */}
                     <div className="flex items-center gap-3 pt-2">
-                        <a href="javascript:void(0)" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-yellow-400 hover:text-slate-900 transition-all duration-300">
+                        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-yellow-400 hover:text-slate-900 transition-all duration-300">
                             <Linkedin size={18} />
 
                         </a>
-                        <a href="javascript:void(0)" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
                             <Facebook size={18} />
                         </a>
-                        <a href="javascript:void(0)" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600 hover:text-white transition-all duration-300">
+                        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600 hover:text-white transition-all duration-300">
                             <Instagram size={18} />
 
                         </a>
-                        <a href="javascript:void(0)" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-indigo-500 hover:text-white transition-all duration-300">
+                        <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-indigo-500 hover:text-white transition-all duration-300">
                             <Twitter size={18} />
                         </a>
-                        <a href="javascript:void(0)" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-rose-600 hover:text-white transition-all duration-300">
+                        <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-rose-600 hover:text-white transition-all duration-300">
                             <Youtube size={18} />
 
                         </a>

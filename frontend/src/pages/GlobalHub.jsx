@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, MapPin, Shield, Activity, Package, Building2 } from 'lucide-react';
+import { Globe, MapPin, Activity, Package, Building2 } from 'lucide-react';
 import api from '../services/api/axiosConfig';
 
 const GlobalHub = () => {
@@ -28,6 +28,12 @@ const GlobalHub = () => {
     useEffect(() => {
         fetchSites();
     }, []);
+
+    const handleOpenDetails = () => {
+        if (!selectedFacility) return;
+        const query = encodeURIComponent(selectedFacility.name || selectedFacility.city || 'Facility');
+        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank', 'noopener,noreferrer');
+    };
 
     if (loading) return <div className="p-10 text-center font-bold text-slate-400">{t('common.loading')}...</div>;
 
@@ -131,7 +137,7 @@ const GlobalHub = () => {
                                 </div>
                              </div>
 
-                             <button className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200 active:scale-95 transition-all">
+                                      <button onClick={handleOpenDetails} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200 active:scale-95 transition-all">
                                 {t('global.openDetails')}
                              </button>
                         </div>

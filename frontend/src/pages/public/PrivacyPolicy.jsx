@@ -1,8 +1,7 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import { ShieldCheck, Eye, Database, Lock } from 'lucide-react';
+import { ShieldCheck, Eye, Lock } from 'lucide-react';
 
 const PrivacyPolicy = () => {
     const { t } = useTranslation();

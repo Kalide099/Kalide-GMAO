@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { 
-    DollarSign, Briefcase, PieChart, TrendingUp, TrendingDown, 
-    Calendar, CheckCircle2, AlertTriangle, Plus, Search, Layers, ShieldCheck
+    DollarSign, Briefcase, PieChart, TrendingDown, 
+    Layers, ShieldCheck
 } from 'lucide-react';
 
 const FinanceMatrix = () => {
@@ -12,13 +12,20 @@ const FinanceMatrix = () => {
     const [budgets, setBudgets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('contracts');
+    const [statusMessage, setStatusMessage] = useState('');
+    const [statusTone, setStatusTone] = useState('');
+
+    const percentage = (numerator, denominator) => {
+        if (!denominator || Number(denominator) === 0) return 0;
+        return (Number(numerator) / Number(denominator)) * 100;
+    };
 
     const fetchData = async () => {
         try {
             setLoading(true);
             const [contractsRes, budgetsRes] = await Promise.all([
-                api.get('/contracts'),
-                api.get('/budgets')
+                api.get('/finance/contracts'),
+                api.get('/finance/budgets')
             ]);
             if (contractsRes.data.success) setContracts(contractsRes.data.data);
             if (budgetsRes.data.success) setBudgets(budgetsRes.data.data);
@@ -35,6 +42,41 @@ const FinanceMatrix = () => {
 
     const totalBudgetSpent = budgets.reduce((acc, b) => acc + (parseFloat(b.spent_amount) || 0), 0);
     const totalBudgetAllocated = budgets.reduce((acc, b) => acc + (parseFloat(b.allocated_amount) || 0), 0);
+
+    const handleAnalyzeContract = (contract) => {
+        const content = [
+            `Contract: ${contract.title || 'N/A'}`,
+            `Reference: ${contract.id || 'N/A'}`,
+            `Subcontractor: ${contract.subcontractor_name || 'N/A'}`,
+            `Status: ${contract.status || 'N/A'}`,
+            `Start Date: ${contract.start_date || 'N/A'}`,
+            `End Date: ${contract.end_date || 'N/A'}`,
+            `Value: ${contract.value || 0} ${contract.currency || 'USD'}`
+        ].join('\n');
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `contract-${(contract.id || 'summary').toString().slice(0, 8)}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleArchiveContract = async (contractId) => {
+        if (!window.confirm(t('common.confirmDelete') || 'Archive this contract?')) return;
+        try {
+            await api.patch(`/finance/contracts/${contractId}/archive`);
+            setStatusTone('success');
+            setStatusMessage('Contract archived.');
+            await fetchData();
+        } catch (err) {
+            setStatusTone('error');
+            setStatusMessage(err?.response?.data?.message || 'Failed to archive contract.');
+        }
+    };
 
     return (
         <div className="space-y-12 animate-fade-in-up">
@@ -69,6 +111,12 @@ const FinanceMatrix = () => {
                 </div>
             </div>
 
+            {statusMessage && (
+                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                    {statusMessage}
+                </div>
+            )}
+
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl flex flex-col justify-between h-48 border border-white/5">
@@ -78,8 +126,8 @@ const FinanceMatrix = () => {
                     </div>
                     <div>
                         <h4 className="text-4xl font-black italic tracking-tighter">${totalBudgetSpent.toLocaleString()}</h4>
-                        <div className="h-1 bg-white/10 rounded-full mt-4 overflow-hidden">
-                            <div className="h-full bg-rose-500" style={{ width: `${(totalBudgetSpent/totalBudgetAllocated)*100}%` }}></div>
+                            <div className="h-1 bg-white/10 rounded-full mt-4 overflow-hidden">
+                            <div className="h-full bg-rose-500" style={{ width: `${Math.min(100, percentage(totalBudgetSpent, totalBudgetAllocated))}%` }}></div>
                         </div>
                     </div>
                 </div>
@@ -102,7 +150,7 @@ const FinanceMatrix = () => {
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">{t('cmms.finance.utilization_rate')}</span>
                         <PieChart className="text-amber-500" />
                     </div>
-                    <h4 className="text-5xl font-black text-slate-900 tracking-tighter italic">{((totalBudgetSpent/totalBudgetAllocated)*100).toFixed(1)}%</h4>
+                    <h4 className="text-5xl font-black text-slate-900 tracking-tighter italic">{percentage(totalBudgetSpent, totalBudgetAllocated).toFixed(1)}%</h4>
                 </div>
             </div>
 
@@ -137,10 +185,10 @@ const FinanceMatrix = () => {
                             </div>
 
                             <div className="flex gap-6 mt-10">
-                                <button className="flex-1 py-5 bg-slate-950 text-yellow-400 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-slate-200">
+                                <button onClick={() => handleAnalyzeContract(contract)} className="flex-1 py-5 bg-slate-950 text-yellow-400 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-slate-200">
                                     {t('cmms.finance.analyze_pdf')}
                                 </button>
-                                <button className="flex-1 py-5 bg-slate-50 text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-100">
+                                <button onClick={() => handleArchiveContract(contract.id)} className="flex-1 py-5 bg-slate-50 text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-100">
                                     {t('cmms.finance.archive')}
                                 </button>
                             </div>
@@ -177,9 +225,9 @@ const FinanceMatrix = () => {
                                     <td className="p-10 w-64">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                <div className="h-full bg-indigo-600 transition-all duration-1000" style={{ width: `${(b.spent_amount/b.allocated_amount)*100}%` }}></div>
+                                                <div className="h-full bg-indigo-600 transition-all duration-1000" style={{ width: `${Math.min(100, percentage(b.spent_amount, b.allocated_amount))}%` }}></div>
                                             </div>
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{((b.spent_amount/b.allocated_amount)*100).toFixed(0)}%</span>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{percentage(b.spent_amount, b.allocated_amount).toFixed(0)}%</span>
                                         </div>
                                     </td>
                                     <td className="p-10 text-right">

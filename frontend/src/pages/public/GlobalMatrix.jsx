@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { useTranslation } from 'react-i18next';
-import { Globe, Shield, Activity, Zap, Cpu, Server, Radio, Crosshair, Terminal, Database, Layers, Hexagon } from 'lucide-react';
+import { Globe, Shield, Zap, Cpu, Radio, Terminal, Database, Layers, Hexagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';

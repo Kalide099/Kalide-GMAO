@@ -11,33 +11,37 @@ jobs:
       - name: Deploying KGMAO via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 153.92.9.196
-          username: u633695266
-          password: Kalide@123
-          port: 65002
+          host: ${{ secrets.KGMAO_SSH_HOST }}
+          username: ${{ secrets.KGMAO_SSH_USER }}
+          key: ${{ secrets.KGMAO_SSH_KEY }}
+          passphrase: ${{ secrets.KGMAO_SSH_PASSPHRASE }}
+          port: ${{ secrets.KGMAO_SSH_PORT }}
           command_timeout: 30m
           script: |
             export PATH=/opt/alt/alt-nodejs20/root/usr/bin:$PATH
-            cd /home/u633695266/domains/kgmao.com/public_html
+            cd "${{ secrets.KGMAO_DEPLOY_PATH }}"
             echo "Current Path: $(pwd)"
             echo "Pulling latest code..."
-            git fetch https://kalide009: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@github.com/Kalide099/Kalide-GMAO.git main
-            git reset --hard FETCH_HEAD
+            git remote set-url origin "https://x-access-token:${{ secrets.KGMAO_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "Installing root dependencies..."
-            npm install --production
+            npm install --omit=dev
+
+            echo "Installing backend production dependencies..."
+            npm --prefix backend install --omit=dev
 
             echo "Installing frontend dependencies & building Vite..."
-            cd frontend
-            npm install
-            npm run build
-            cd ..
+            npm --prefix frontend install --include=dev
+            npm --prefix frontend run build
+
+            echo "Verifying production quality gate..."
+            npm run quality:backend
+            node backend/src/scripts/verify-migrations.js
 
             echo "Restarting Node.js PM2 process..."
             npx pm2 reload ecosystem.config.js --update-env
             npx pm2 status
             npx pm2 logs kgmao-backend --lines 100 --nostream
-
-            echo "Deployment completed successfully!"
-
             echo "Deployment completed successfully!"

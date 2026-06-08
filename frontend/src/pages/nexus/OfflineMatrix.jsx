@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WifiOff, Database, RefreshCcw, Save, Server, Globe } from 'lucide-react';
+import { WifiOff, Database, RefreshCcw, Server, Globe } from 'lucide-react';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const OfflineMatrix = () => {
     const { t } = useTranslation();
     const [isSyncing, setIsSyncing] = useState(false);
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     return (
         <div className="space-y-12 animate-fade-in-up pb-20">
@@ -94,11 +97,20 @@ const OfflineMatrix = () => {
                         </div>
                     </div>
 
-                    <button className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl shadow-slate-200">
+                    <button onClick={() => setSimModalOpen(true)} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl shadow-slate-200">
                         {t('nexus.offline.diag_feed')}
                     </button>
                 </div>
             </div>
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Pinging Edge Relays" 
+                processingText="Analyzing localized node topology..." 
+                successText="Topology Verified"
+                onSuccessCallback={() => toast.success('Diagnostic feed streamed successfully.')}
+            />
         </div>
     );
 };

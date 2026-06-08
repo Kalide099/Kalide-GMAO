@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Shield, Check, Globe, Zap, Cpu, Server, Radio, Terminal, Activity } from 'lucide-react';
+import { Shield, Check, Zap, Cpu, Server, Terminal, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';

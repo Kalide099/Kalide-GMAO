@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, Gavel, ShieldCheck, AlertCircle, TrendingUp, Truck, Users, Briefcase } from 'lucide-react';
+import { ShoppingCart, Gavel, TrendingUp, Users, Briefcase } from 'lucide-react';
 
 const ProcurementSLA = () => {
     const { t } = useTranslation();
@@ -54,7 +55,7 @@ const ProcurementSLA = () => {
                                 <p className="text-[10px] text-emerald-400 font-black tracking-widest leading-loose max-w-sm">
                                     {t('roadmap._stock_for_hydraulic', '"Stock for \'Hydraulic Filter X\' will reach critical threshold in 7 days. Automatic purchase of 50 units suggested."')}
                                 </p>
-                                <button className="px-8 py-3 bg-yellow-400 text-slate-900 rounded-xl font-black text-[10px] tracking-widest hover:scale-105 transition-all">{t('roadmap.approve_auto_purchas', 'APPROVE AUTO-PURCHASE')}</button>
+
                              </div>
                         </div>
 
@@ -140,9 +141,7 @@ const ProcurementSLA = () => {
                                     <p className="text-[10px] text-slate-600 font-black tracking-widest">{t('roadmap.status_in_negotiatio', 'STATUS: IN NEGOTIATION')}</p>
                                 </div>
                             </div>
-                            <button className="w-full py-6 bg-white/5 border border-white/10 rounded-3xl font-black text-[10px] tracking-widest hover:bg-white hover:text-slate-900 transition-all">
-                                UPLOAD NEW CONTRACT (PDF/SMART)
-                            </button>
+
                         </div>
                      </div>
                 </div>

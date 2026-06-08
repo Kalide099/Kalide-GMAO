@@ -19,7 +19,9 @@ const checkModuleAccess = (moduleName) => {
             }
 
             const company = companies[0];
-            const enabledModules = company.enabled_modules || [];
+            const modulesRaw = company.enabled_modules || [];
+            const enabledModules = typeof modulesRaw === 'string' ? JSON.parse(modulesRaw) : modulesRaw;
+            const safeEnabledModules = Array.isArray(enabledModules) ? enabledModules : [];
             const plan = company.plan || 'basic';
 
             // --- PLAN DEFINITIONS (Defaults) ---
@@ -30,7 +32,8 @@ const checkModuleAccess = (moduleName) => {
             };
 
             // Check if feature is in plan OR explicitly enabled via modules_json (custom override by Super Admin)
-            const hasAccess = planDefaults[plan].includes(moduleName) || enabledModules.includes(moduleName);
+            const defaults = planDefaults[plan] || planDefaults.basic;
+            const hasAccess = defaults.includes(moduleName) || safeEnabledModules.includes(moduleName);
 
             if (!hasAccess) {
                 return errorResponse(res, 403, `Access Violation: Module [${moduleName.toUpperCase()}] is not active for your deployment.`);

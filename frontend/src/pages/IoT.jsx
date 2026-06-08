@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { Activity, Zap, Thermometer, Waves, ShieldCheck, AlertCircle, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
+import { Activity, Zap, ShieldCheck, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
 
 const IoT = () => {
     const { t } = useTranslation();

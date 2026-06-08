@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
@@ -180,7 +180,7 @@ const AssetDetails = () => {
                 <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/10">
                     <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center gap-3">
                         <Paperclip size={24} className="text-indigo-600" /> 
-                        {t('common.attachments') || 'Documents Matrix'}
+                        {t('common.attachments') || 'Documents'}
                     </h3>
                     <label className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest cursor-pointer hover:bg-black transition-all flex items-center gap-2">
                         <Upload size={14} /> {t('common.upload') || 'Upload'}
@@ -226,7 +226,7 @@ const AssetDetails = () => {
                         </div>
                     ))}
                     {attachments.length === 0 && (
-                        <div className="col-span-full py-16 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest italic">{t('common.noFiles') || 'Empty Vault'}</div>
+                        <div className="col-span-full py-16 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest italic">{t('common.noFiles') || 'No files yet'}</div>
                     )}
                 </div>
             </div>
@@ -238,7 +238,7 @@ const AssetDetails = () => {
                 </div>
                 
                 <div className="text-center space-y-4 mb-16">
-                    <h1 className="text-xs font-black uppercase tracking-[0.4em] text-indigo-600">{t('common.brandNameFull') || 'Kalide Global Industrial Intelligence'}</h1>
+                    <h1 className="text-xs font-black uppercase tracking-[0.4em] text-indigo-600">{t('common.brandNameFull') || 'Kalide Global Business Platform'}</h1>
                     <h2 className="text-5xl font-black uppercase tracking-tighter">{t('workOrders.healthCertificate')}</h2>
                     <div className="h-1 w-24 bg-slate-900 mx-auto"></div>
                 </div>

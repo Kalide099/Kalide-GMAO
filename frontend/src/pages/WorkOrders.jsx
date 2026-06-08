@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { 
     ClipboardList, Plus, X, Wrench, AlertTriangle, Clock, ShieldCheck, 
-    Globe, LayoutGrid, List, CheckCircle2, MoreHorizontal, Hammer, 
-    Trash2, Search, Filter, Kanban as KanbanIcon
+    Globe, List, CheckCircle2, MoreHorizontal, Hammer, 
+    Trash2, Search, Kanban as KanbanIcon
 } from 'lucide-react';
+import SimulatedProcessModal from '../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const WorkOrders = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [orders, setOrders] = useState([]);
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [simModalOpen, setSimModalOpen] = useState(false);
     const [viewMode, setViewMode] = useState('kanban'); 
     const [searchQuery, setSearchQuery] = useState('');
     
@@ -21,10 +24,8 @@ const WorkOrders = () => {
         assetId: '',
         type: 'corrective',
         priority: 'medium',
-        title_en: '',
-        title_fr: '',
-        description_en: '',
-        description_fr: '',
+        title: '',
+        description: '',
         scheduledDate: ''
     });
     const [formLoading, setFormLoading] = useState(false);
@@ -59,10 +60,10 @@ const WorkOrders = () => {
             type: formData.type,
             priority: formData.priority,
             scheduledDate: formData.scheduledDate || null,
-            title_en: formData.title_en,
-            title_fr: formData.title_fr,
-            description_en: formData.description_en,
-            description_fr: formData.description_fr
+            title_en: formData.title,
+            title_fr: formData.title,
+            description_en: formData.description,
+            description_fr: formData.description
         };
 
         try {
@@ -71,7 +72,7 @@ const WorkOrders = () => {
                 setIsModalOpen(false);
                 setFormData({
                     assetId: '', type: 'corrective', priority: 'medium',
-                    title_en: '', title_fr: '', description_en: '', description_fr: '',
+                    title: '', description: '',
                     scheduledDate: ''
                 });
                 fetchData();
@@ -231,7 +232,7 @@ const WorkOrders = () => {
                                         <div className="flex items-center gap-3 mt-4 text-slate-500">
                                             <Wrench size={14} className="text-slate-300" />
                                             <span className="text-[10px] font-black uppercase tracking-widest truncate">
-                                                {order.asset_name || order.asset_name_en || order.asset_name_fr || t('workOrders.genericAsset')}
+                                                {i18n.language === 'fr' ? (order.asset_name_fr || order.asset_name_en || order.asset_name) : (order.asset_name_en || order.asset_name_fr || order.asset_name) || t('workOrders.genericAsset')}
                                             </span>
                                         </div>
 
@@ -242,7 +243,9 @@ const WorkOrders = () => {
                                                 </div>
                                                 <span className="text-[9px] font-black uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</span>
                                             </div>
-                                            <MoreHorizontal size={18} className="opacity-40" />
+                                            <button onClick={() => setSimModalOpen(true)} className="p-2 hover:bg-slate-100 rounded-xl transition-all opacity-40 hover:opacity-100">
+                                                <MoreHorizontal size={18} />
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -280,7 +283,7 @@ const WorkOrders = () => {
                                                     <div className="p-2 bg-slate-100 rounded-lg text-slate-400">
                                                         <Wrench size={16} />
                                                     </div>
-                                                    <span className="text-xs font-black uppercase tracking-tight">{order.asset_name || order.asset_name_en || order.asset_name_fr || t('workOrders.unknownAsset')}</span>
+                                                    <span className="text-xs font-black uppercase tracking-tight">{i18n.language === 'fr' ? (order.asset_name_fr || order.asset_name_en || order.asset_name) : (order.asset_name_en || order.asset_name_fr || order.asset_name) || t('workOrders.unknownAsset')}</span>
                                                 </div>
                                             </td>
                                             <td className="px-12 py-10 text-center">
@@ -303,7 +306,7 @@ const WorkOrders = () => {
                                             </td>
                                             <td className="px-12 py-10">
                                                 <div className="flex justify-end gap-4 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                                                    <button className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                                    <button onClick={() => setSimModalOpen(true)} className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
                                                         <MoreHorizontal size={20} />
                                                     </button>
                                                     <button 
@@ -323,7 +326,7 @@ const WorkOrders = () => {
                 </div>
             )}
 
-            {/* Modal - Forensic Order Initializer */}
+            {/* Modal - Work Order Form */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
                     <div className="bg-white rounded-[4rem] w-full max-w-2xl shadow-2xl border border-white/20 overflow-hidden animate-scale-in">
@@ -338,29 +341,16 @@ const WorkOrders = () => {
                         </div>
                         
                         <form onSubmit={handleCreateOrder} className="p-12 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                        <Globe size={14} className="text-blue-500" /> {t('workOrders.field_title')} (EN)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.title_en}
-                                        onChange={(e) => setFormData({...formData, title_en: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                        <Globe size={14} className="text-indigo-600" /> {t('workOrders.field_title')} (FR)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.title_fr}
-                                        onChange={(e) => setFormData({...formData, title_fr: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
-                                    />
-                                </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                                    <Globe size={14} className="text-indigo-600" /> {t('workOrders.field_title')}
+                                </label>
+                                <input 
+                                    type="text" required
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                />
                             </div>
 
                             <div className="space-y-4">
@@ -375,7 +365,7 @@ const WorkOrders = () => {
                                 >
                                     <option value="">{t('workOrders.scanAssetMatrix')}</option>
                                     {assets.map(asset => (
-                                        <option key={asset.id} value={asset.id}>{asset.name || asset.name_en || asset.name_fr}</option>
+                                        <option key={asset.id} value={asset.id}>{i18n.language === 'fr' ? (asset.name_fr || asset.name_en || asset.name) : (asset.name_en || asset.name_fr || asset.name)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -423,27 +413,15 @@ const WorkOrders = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        {t('workOrders.field_description')} (EN)
-                                    </label>
-                                    <textarea 
-                                        value={formData.description_en}
-                                        onChange={(e) => setFormData({...formData, description_en: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        {t('workOrders.field_description')} (FR)
-                                    </label>
-                                    <textarea 
-                                        value={formData.description_fr}
-                                        onChange={(e) => setFormData({...formData, description_fr: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
-                                    />
-                                </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                    {t('workOrders.field_description')}
+                                </label>
+                                <textarea 
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
+                                />
                             </div>
 
                             <div className="flex gap-6 pt-10">
@@ -454,8 +432,7 @@ const WorkOrders = () => {
                                 >
                                     {t('common.cancel')}
                                 </button>
-                                <button 
-                                    type="submit"
+                                <button type="submit"
                                     disabled={formLoading || assets.length === 0}
                                     className="flex-1 px-10 py-6 bg-slate-950 text-yellow-400 font-black rounded-[2rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-[0.2em] text-[10px] border border-white/5"
                                 >
@@ -466,6 +443,15 @@ const WorkOrders = () => {
                     </div>
                 </div>
             )}
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Deep Diagnostic Scan" 
+                processingText="Querying AI Models for Asset Anomalies..." 
+                successText="No anomalies found"
+                onSuccessCallback={() => toast.success('Diagnostic complete. Operations nominal.')}
+            />
         </div>
     );
 };

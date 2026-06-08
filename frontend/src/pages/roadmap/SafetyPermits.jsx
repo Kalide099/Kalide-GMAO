@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShieldAlert, FileCheck, Camera, ShieldX, Clock, CheckCircle, Smartphone } from 'lucide-react';
+import { ShieldAlert, Clock, CheckCircle, Smartphone } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const SafetyPermits = () => {
     const { t } = useTranslation();
     const [permits, setPermits] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
+    const [selectedPermitId, setSelectedPermitId] = useState(null);
+    const [photoUrl, setPhotoUrl] = useState('https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg');
+    const [statusMessage, setStatusMessage] = useState('');
+    const [statusTone, setStatusTone] = useState('');
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     const fetchPermits = async () => {
         try {
@@ -23,22 +31,28 @@ const SafetyPermits = () => {
         fetchPermits();
     }, []);
 
-    const validatePermit = async (permitId) => {
-        const photoUrl = prompt("Industrial Evidence: Enter LOTO Photo URL (for demo):", "https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg");
-        if (!photoUrl) return;
+    const openValidateModal = (permitId) => {
+        setSelectedPermitId(permitId);
+        setPhotoUrl('https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg');
+        setIsValidateModalOpen(true);
+    };
 
+    const validatePermit = async () => {
         try {
             const res = await api.post('/safety/validate', {
-                permitId,
+                permitId: selectedPermitId,
                 photoUrl,
                 signature: 'Digital_Cert_X509'
             });
             if (res.data.success) {
-                alert(res.data.message);
+                setStatusTone('success');
+                setStatusMessage(res.data.message || 'Permit validated successfully.');
+                setIsValidateModalOpen(false);
                 fetchPermits();
             }
         } catch (e) {
-            alert("Validation failed.");
+            setStatusTone('error');
+            setStatusMessage(e?.response?.data?.message || 'Validation failed.');
         }
     };
 
@@ -52,11 +66,17 @@ const SafetyPermits = () => {
                         <p className="text-slate-400 font-black uppercase tracking-[0.4em] text-[10px]">{t('roadmap.safety.permitSubtitle')}</p>
                     </div>
                 </div>
-                <div className="px-10 py-5 bg-rose-900 rounded-[2rem] shadow-2xl shadow-rose-900/10 flex items-center gap-4 border border-rose-800 group transition-all">
+                <button onClick={() => setSimModalOpen(true)} className="px-10 py-5 bg-rose-900 rounded-[2rem] shadow-2xl shadow-rose-900/10 flex items-center gap-4 border border-rose-800 group transition-all hover:bg-rose-800 hover:scale-105 active:scale-95">
                     <ShieldAlert className="text-white w-6 h-6 animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">{t('roadmap.active_compliance_mo', 'Active Compliance Monitoring')}</span>
-                </div>
+                </button>
             </div>
+
+            {statusMessage && (
+                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                    {statusMessage}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <div className="lg:col-span-2 space-y-8">
@@ -86,7 +106,7 @@ const SafetyPermits = () => {
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <button 
-                                            onClick={() => validatePermit(permit.id)}
+                                            onClick={() => openValidateModal(permit.id)}
                                             className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-yellow-400 hover:text-slate-900 transition-all flex items-center gap-3 shadow-xl shadow-slate-900/10"
                                         >
                                             <CheckCircle size={14} /> {t('roadmap.validate_unlock', 'Validate & Unlock')}
@@ -128,6 +148,46 @@ const SafetyPermits = () => {
                     </p>
                 </div>
             </div>
+
+            {isValidateModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl animate-fade-in">
+                    <div className="w-full max-w-xl rounded-[3rem] bg-white shadow-3xl overflow-hidden">
+                        <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">{t("generated.pages.roadmap.safetypermits.validate_permit_1", "Validate permit")}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">{t("generated.pages.roadmap.safetypermits.provide_lockout_evidence_url_2", "Provide lockout evidence URL")}</p>
+                            </div>
+                            <button onClick={() => setIsValidateModalOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex items-center justify-center">
+                                <CheckCircle size={18} className="rotate-45" />
+                            </button>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">{t("generated.pages.roadmap.safetypermits.photo_url_3", "Photo URL")}</label>
+                                <input
+                                    type="url"
+                                    value={photoUrl}
+                                    onChange={(e) => setPhotoUrl(e.target.value)}
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-rose-600 transition-all font-mono text-xs text-slate-800"
+                                />
+                            </div>
+                            <div className="flex gap-4 pt-2">
+                                <button type="button" onClick={() => setIsValidateModalOpen(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 text-slate-600 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all">{t("generated.pages.roadmap.safetypermits.cancel_4", "Cancel")}</button>
+                                <button type="button" onClick={validatePermit} className="flex-1 py-4 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-yellow-400 hover:text-slate-900 transition-all">{t("generated.pages.roadmap.safetypermits.submit_5", "Submit")}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Deep Compliance Audit" 
+                processingText="Scanning facility node data for safety violations..." 
+                successText="No active violations found"
+                onSuccessCallback={() => toast.success('Compliance verified. Zero active infractions.')}
+            />
         </div>
     );
 };

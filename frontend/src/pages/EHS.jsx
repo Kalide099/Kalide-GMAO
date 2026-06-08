@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api/axiosConfig';
 import { useTranslation } from 'react-i18next';
-import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Map, Terminal, Siren } from 'lucide-react';
+import { ShieldAlert, Map, Terminal, Siren } from 'lucide-react';
 
 const EHS = () => {
     const { t } = useTranslation();
@@ -12,6 +12,8 @@ const EHS = () => {
         permitsIssued: 0
     });
     const [loading, setLoading] = useState(true);
+    const [statusMessage, setStatusMessage] = useState('');
+    const [statusTone, setStatusTone] = useState('');
 
     const fetchStats = async () => {
         try {
@@ -30,6 +32,24 @@ const EHS = () => {
     useEffect(() => {
         fetchStats();
     }, []);
+
+    const handleReportIncident = () => {
+        setStatusTone('success');
+        setStatusMessage('Incident routing opened in work orders.');
+        window.location.assign('/app/work-orders?priority=high&module=safety');
+    };
+
+    const handleAuditSafety = async () => {
+        try {
+            const res = await api.get('/safety/pending');
+            const count = Array.isArray(res?.data?.data) ? res.data.data.length : 0;
+            setStatusTone('success');
+            setStatusMessage(`Pending safety permits: ${count}`);
+        } catch (error) {
+            setStatusTone('error');
+            setStatusMessage('Unable to load pending safety permits.');
+        }
+    };
 
     const incidentStats = [
         { label: t('ehs.incidents'), value: String(stats.activeIncidents).padStart(2, '0'), color: "text-rose-500", bg: "bg-rose-50" },
@@ -58,10 +78,10 @@ const EHS = () => {
                     </div>
                 </div>
                 <div className="flex gap-4 relative z-10">
-                    <button className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-xl shadow-rose-900/40">
+                    <button onClick={handleReportIncident} className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-xl shadow-rose-900/40">
                         {t('ehs.reportIncident')}
                     </button>
-                    <button className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all border border-white/10">
+                    <button onClick={handleAuditSafety} className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all border border-white/10">
                         {t('ehs.auditSafety')}
                     </button>
                 </div>
@@ -75,6 +95,12 @@ const EHS = () => {
                     </div>
                 ))}
             </div>
+
+            {statusMessage && (
+                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                    {statusMessage}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Hazard Map Mockup */}

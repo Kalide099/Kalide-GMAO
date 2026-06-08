@@ -1,11 +1,14 @@
-import React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShieldCheck, Lock, EyeOff, Server, Globe, Key, AlertCircle, FileLock2 } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const SecurityProtocol = () => {
     const { t } = useTranslation();
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     const protocols = [
         {
@@ -115,7 +118,7 @@ const SecurityProtocol = () => {
                     <Key className="text-slate-900 mx-auto mb-6" size={48} />
                     <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter italic mb-4">{t('legal.requestBlueprint')}</h2>
                     <p className="text-slate-900/70 font-bold mb-8 uppercase tracking-widest text-xs">{t('legal.blueprintDesc')}</p>
-                    <button className="px-10 py-5 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                    <button onClick={() => setSimModalOpen(true)} className="px-10 py-5 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
                         {t('legal.contactSecurity')}
                     </button>
                 </div>
@@ -123,6 +126,15 @@ const SecurityProtocol = () => {
 
             </div>
             <PublicFooter />
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Initiating Secure Channel" 
+                processingText="Validating clearance level..." 
+                successText="Channel Established"
+                onSuccessCallback={() => toast.success('Security officer will contact you on secure comms.')}
+            />
         </div>
     );
 };

@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
+
 import { useTranslation } from 'react-i18next';
 import { Activity, ShieldAlert, TrendingDown, Clock, Zap, Target, BarChart } from 'lucide-react';
-import api from '../../services/api/axiosConfig';
 
 const RealTimeCommand = () => {
     const { t } = useTranslation();
-    const [stats, setStats] = useState({
+    const [stats] = useState({
         oee: 84.5,
         mttr: '45m',
         mtbf: '124h',
         downtimeCost: 12400
     });
 
-    const [alerts, setAlerts] = useState([
+    const [alerts] = useState([
         { id: 1, type: 'CRITICAL', msg: 'Vibration Anomaly in Node-04', time: '2m ago', cost: '$450/hr' },
         { id: 2, type: 'PREDICTIVE', msg: 'Bearing Wear expected in 4 days', time: '15m ago', cost: 'N/A' },
         { id: 3, type: 'SECURITY', msg: 'Unauthorized ECU Access attempt', time: '1h ago', cost: 'SEC-RISK' }
@@ -115,9 +115,7 @@ const RealTimeCommand = () => {
                             <span className="text-lg font-black text-white italic">0.84 kW/{t('roadmap.command.unit')}</span>
                         </div>
                     </div>
-                    <button className="w-full py-6 bg-yellow-400 text-slate-900 rounded-3xl font-black text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all">
-                    {t('roadmap.command.esgReport')}
-                    </button>
+
                 </div>
             </div>
         </div>

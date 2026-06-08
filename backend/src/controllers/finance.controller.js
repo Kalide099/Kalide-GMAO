@@ -1,4 +1,5 @@
 const financeService = require('../services/finance.service');
+const { successResponse, errorResponse } = require('../utils/responseHandler');
 
 exports.getOverview = async (req, res, next) => {
     try {
@@ -45,9 +46,22 @@ exports.createBudget = async (req, res, next) => {
     }
 };
 
+exports.archiveContract = async (req, res, next) => {
+    try {
+        const archived = await financeService.archiveContract(req.user.company_id, req.params.id);
+        if (!archived) {
+            return errorResponse(res, 404, 'Contract not found.');
+        }
+
+        return successResponse(res, 200, 'Contract archived.');
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.getAssetDetails = async (req, res) => {
     try {
-        const details = await financeService.getAssetFinancials(req.user.companyId, req.params.assetId);
+        const details = await financeService.getAssetFinancials(req.user.company_id, req.params.assetId);
         if (!details) return res.status(404).json({ success: false, message: 'Financial model not found for this asset.' });
         res.json({ success: true, data: details });
     } catch (err) {

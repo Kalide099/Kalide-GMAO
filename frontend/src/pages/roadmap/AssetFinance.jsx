@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DollarSign, TrendingDown, Layers, Calculator, BarChart3, PieChart } from 'lucide-react';
+import { DollarSign, TrendingDown, PieChart } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
 
 const AssetFinance = () => {

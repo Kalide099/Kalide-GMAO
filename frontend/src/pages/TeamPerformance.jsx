@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { Users, Activity, TrendingUp, Clock, Medal, Award, User, MoreHorizontal } from 'lucide-react';
+import { Users, TrendingUp, Clock, Medal, Award, MoreHorizontal } from 'lucide-react';
 
 const TeamPerformance = () => {
     const { t } = useTranslation();
@@ -32,6 +32,15 @@ const TeamPerformance = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleWorkerAction = (worker) => {
+        const details = [
+            `${worker.first_name} ${worker.last_name}`,
+            `Completed tasks: ${worker.completed_tasks}`,
+            `Average hours: ${worker.avg_hours ? parseFloat(worker.avg_hours).toFixed(1) : '--'}`
+        ].join('\n');
+        alert(details);
+    };
 
     if (loading && workers.length === 0) return (
         <div className="min-h-[400px] flex items-center justify-center">
@@ -142,7 +151,7 @@ const TeamPerformance = () => {
                                     </div>
                                 </div>
 
-                                <button className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-slate-800 transition-colors">
+                                <button onClick={() => handleWorkerAction(worker)} className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-slate-800 transition-colors">
                                     <MoreHorizontal size={24} />
                                 </button>
                             </div>

@@ -1,12 +1,20 @@
-import React from 'react';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield, Rocket, Clock, Zap, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 const FreeTrial = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const [simModalOpen, setSimModalOpen] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSimModalOpen(true);
+    };
 
     return (
         <div className="min-h-screen border-t border-slate-100 flex flex-col bg-slate-950 text-white relative overflow-hidden selection:bg-indigo-500 selection:text-white">
@@ -79,7 +87,7 @@ const FreeTrial = () => {
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('freeTrialPage.initPhase')}</p>
                                 </div>
 
-                                <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+                                <form className="space-y-6" onSubmit={handleSubmit}>
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">{t('freeTrialPage.enterpriseEmail')}</label>
                                         <input 
@@ -89,7 +97,7 @@ const FreeTrial = () => {
                                         />
                                     </div>
 
-                                    <button className="w-full py-8 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                                    <button type="submit" className="w-full py-8 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center gap-3 group">
                                         {t('freeTrialPage.initButton')}
                                         <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
                                     </button>
@@ -115,6 +123,15 @@ const FreeTrial = () => {
             </div>
             
             <PublicFooter />
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Provisioning Sandbox Environment" 
+                processingText="Deploying isolated tenant architecture..." 
+                successText="Sandbox Ready"
+                onSuccessCallback={() => navigate('/login')}
+            />
         </div>
     );
 };

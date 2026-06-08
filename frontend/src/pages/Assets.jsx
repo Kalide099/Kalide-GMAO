@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { Wrench, Plus, Circle, MapPin, Hash, CheckCircle2, Globe, QrCode, X, ExternalLink, Trash2, Printer, Search, Upload } from 'lucide-react';
-
+import { Wrench, Search, Plus, Upload, MapPin, QrCode, Trash2, X, Globe, Hash, Printer, ExternalLink } from 'lucide-react';
 const Assets = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,10 +12,7 @@ const Assets = () => {
     const [searchQuery, setSearchQuery] = useState('');
     
     const [formData, setFormData] = useState({
-        name_en: '',
-        name_fr: '',
-        description_en: '',
-        description_fr: '',
+        name: '',
         location: '',
         serialNumber: '',
         status: 'active'
@@ -45,10 +41,15 @@ const Assets = () => {
         e.preventDefault();
         setFormLoading(true);
         try {
-            const response = await api.post('/assets', formData);
+            const payload = {
+                ...formData,
+                name_en: formData.name,
+                name_fr: formData.name
+            };
+            const response = await api.post('/assets', payload);
             if (response.data.success) {
                 setIsModalOpen(false);
-                setFormData({ name_en: '', name_fr: '', description_en: '', description_fr: '', location: '', serialNumber: '', status: 'active' });
+                setFormData({ name: '', location: '', serialNumber: '', status: 'active' });
                 fetchAssets();
             }
         } catch (error) {
@@ -84,7 +85,7 @@ const Assets = () => {
     };
 
     const filteredAssets = assets.filter(asset => {
-        const name = (asset.name || asset.name_en || asset.name_fr || '').toLowerCase();
+        const name = (i18n.language === 'fr' ? (asset.name_fr || asset.name_en || asset.name) : (asset.name_en || asset.name_fr || asset.name) || '').toLowerCase();
         const sn = (asset.serial_number || '').toLowerCase();
         const query = searchQuery.toLowerCase();
         return name.includes(query) || sn.includes(query);
@@ -199,7 +200,7 @@ const Assets = () => {
                                                 </div>
                                                 <div>
                                                     <div className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">
-                                                       {asset.name || asset.name_en || asset.name_fr}
+                                                       {i18n.language === 'fr' ? (asset.name_fr || asset.name_en || asset.name) : (asset.name_en || asset.name_fr || asset.name)}
                                                     </div>
                                                     {asset.serial_number && (
                                                         <div className="text-[10px] text-slate-400 mt-1 font-mono uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded inline-block">
@@ -259,29 +260,16 @@ const Assets = () => {
                             </button>
                         </div>
                         <form onSubmit={handleCreateAsset} className="p-10 space-y-8 max-h-[75vh] overflow-y-auto">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Globe size={14} className="text-blue-500" /> {t('assets.field_name')} (EN)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.name_en}
-                                        onChange={(e) => setFormData({...formData, name_en: e.target.value})}
-                                        className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800"
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Globe size={14} className="text-indigo-500" /> {t('assets.field_name')} (FR)
-                                    </label>
-                                    <input 
-                                        type="text" required
-                                        value={formData.name_fr}
-                                        onChange={(e) => setFormData({...formData, name_fr: e.target.value})}
-                                        className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800"
-                                    />
-                                </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Globe size={14} className="text-indigo-600" /> {t('assets.field_name')}
+                                </label>
+                                <input 
+                                    type="text" required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800"
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-8">
                                 <div className="space-y-4">
@@ -326,7 +314,7 @@ const Assets = () => {
                             <div className="bg-white p-8 rounded-[3rem] border-4 border-slate-50 flex flex-col items-center shadow-inner">
                                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${window.location.origin}/app/assets/${qrAsset.id}`} alt="QR" className="w-40 h-40 rounded-2xl shadow-2xl border border-white/50" />
                                 <div className="mt-8">
-                                    <p className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{qrAsset.name || qrAsset.name_en || qrAsset.name_fr}</p>
+                                    <p className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{i18n.language === 'fr' ? (qrAsset.name_fr || qrAsset.name_en || qrAsset.name) : (qrAsset.name_en || qrAsset.name_fr || qrAsset.name)}</p>
                                     <p className="text-slate-400 font-mono text-[10px] mt-1 tracking-widest">{qrAsset.serial_number || t('assets.noSerialTag') || 'NO-SERIAL-TAG'}</p>
                                 </div>
                             </div>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-    Globe, Shield, Activity, Zap, Cpu, 
-    AlertTriangle, Server, Radio, Crosshair, 
+    Globe, Shield, Activity, Cpu, 
+    Server, Radio, Crosshair, 
     Terminal, Database, Maximize2, Layers
 } from 'lucide-react';
 import api from '../services/api/axiosConfig';
@@ -19,11 +19,42 @@ const WarRoom = () => {
     });
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState([
-        { id: 1, time: '02:14:05', origin: 'CLUSTER_ALPHA', msg: 'Neural Link Synchronized', status: 'optimal' },
-        { id: 2, time: '02:15:22', origin: 'CLUSTER_BETA', msg: 'IoT Gateway Pulse Detected', status: 'optimal' },
-        { id: 3, time: '02:16:47', origin: 'REGION_APAC', msg: 'Latency Spikes: Node 404', status: 'caution' },
-        { id: 4, time: '02:18:10', origin: 'HQ_CORE', msg: 'Deep AI Forensics Active', status: 'optimal' },
+        { id: 1, time: '02:14:05', origin: 'CLUSTER_ALPHA', msg: 'Secure connection established', status: 'optimal' },
+        { id: 2, time: '02:15:22', origin: 'CLUSTER_BETA', msg: 'IoT gateway is online', status: 'optimal' },
+        { id: 3, time: '02:16:47', origin: 'REGION_APAC', msg: 'Latency increase detected at Site 404', status: 'caution' },
+        { id: 4, time: '02:18:10', origin: 'HQ_CORE', msg: 'Deep AI checks are active', status: 'optimal' },
     ]);
+
+    const pushLog = (msg, origin = 'HQ_CORE', status = 'optimal') => {
+        const entry = {
+            id: Date.now(),
+            time: new Date().toLocaleTimeString(),
+            origin,
+            msg,
+            status
+        };
+        setLogs((prev) => [entry, ...prev.slice(0, 5)]);
+    };
+
+    const toggleFullscreen = async () => {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+            pushLog('Fullscreen tactical view enabled', 'UI_CORE');
+            return;
+        }
+
+        await document.exitFullscreen();
+        pushLog('Fullscreen tactical view disabled', 'UI_CORE');
+    };
+
+    const runNodeDiagnostics = () => {
+        pushLog('Site diagnostics complete', 'SITE_SCAN');
+    };
+
+    const initializeUplink = () => {
+        if (!selectedFacility) return;
+        pushLog(`Connection started for ${selectedFacility.city || selectedFacility.name}`, 'CONNECTION_CORE');
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,7 +73,7 @@ const WarRoom = () => {
                     setStats(statsRes.data.data);
                 }
             } catch (err) {
-                console.error("GIS Synchronization Terminal Failure:", err);
+                console.error("Map sync failed:", err);
             } finally {
                 setLoading(false);
             }
@@ -55,8 +86,8 @@ const WarRoom = () => {
             const newLog = {
                 id: Date.now(),
                 time: new Date().toLocaleTimeString(),
-                origin: ['NODE_NORTH', 'NODE_SOUTH', 'CORE'][Math.floor(Math.random() * 3)],
-                msg: ['Diagnostic Ping Successful', 'Cluster Load Balanced', 'Encrypted Handshake Complete'][Math.floor(Math.random() * 3)],
+                origin: ['SITE_NORTH', 'SITE_SOUTH', 'CORE'][Math.floor(Math.random() * 3)],
+                msg: ['Health check successful', 'Traffic load balanced', 'Secure connection confirmed'][Math.floor(Math.random() * 3)],
                 status: 'optimal'
             };
             setLogs(prev => [newLog, ...prev.slice(0, 5)]);
@@ -127,8 +158,8 @@ const WarRoom = () => {
                         </div>
 
                         <div className="absolute bottom-10 right-10 z-10 flex gap-4">
-                             <button className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-yellow-400 hover:text-slate-900 transition-all text-white active:scale-95"><Maximize2 size={20}/></button>
-                             <button className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/20 transition-all text-white active:scale-95"><Cpu size={20}/></button>
+                                <button onClick={toggleFullscreen} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-yellow-400 hover:text-slate-900 transition-all text-white active:scale-95"><Maximize2 size={20}/></button>
+                                <button onClick={runNodeDiagnostics} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/20 transition-all text-white active:scale-95"><Cpu size={20}/></button>
                         </div>
 
                         {/* Map Cluster Nodes */}
@@ -272,7 +303,7 @@ const WarRoom = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full h-20 bg-yellow-400 hover:bg-yellow-500 text-slate-950 rounded-[2rem] font-black uppercase tracking-widest italic transition-all active:scale-95 shadow-[0_0_30px_rgba(250,204,21,0.2)]">
+                            <button onClick={initializeUplink} className="w-full h-20 bg-yellow-400 hover:bg-yellow-500 text-slate-950 rounded-[2rem] font-black uppercase tracking-widest italic transition-all active:scale-95 shadow-[0_0_30px_rgba(250,204,21,0.2)]">
                                 {t('warRoom.initializeUplink')}
                             </button>
                         </div>

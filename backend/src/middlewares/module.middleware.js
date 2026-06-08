@@ -13,7 +13,7 @@ const checkModule = (moduleName) => {
 
             const [companies] = await pool.query(
                 'SELECT enabled_modules FROM companies WHERE id = ?',
-                [req.user.companyId]
+                [req.user.company_id]
             );
 
             if (companies.length === 0) {
@@ -24,8 +24,9 @@ const checkModule = (moduleName) => {
             
             // If modules is a string (MySQL JSON sometimes returns string), parse it
             const activeModules = typeof modules === 'string' ? JSON.parse(modules) : modules;
+            const safeModules = Array.isArray(activeModules) ? activeModules : [];
 
-            if (!activeModules.includes(moduleName)) {
+            if (!safeModules.includes(moduleName)) {
                 return res.status(403).json({ 
                     success: false, 
                     message: `Module '${moduleName}' is not enabled for your organization. Please contact support.`,

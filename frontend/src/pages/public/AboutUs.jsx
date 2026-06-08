@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, Users, Globe, Award, Sparkles, Building2, TrendingUp, Factory, HeartPulse, Zap, Leaf, GraduationCap, UtensilsCrossed, Truck, ShoppingCart, Waves, ShieldCheck } from 'lucide-react';
+import { Shield, Target, Users, Globe, Sparkles, Building2, TrendingUp, Factory, HeartPulse, Zap, Leaf, GraduationCap, UtensilsCrossed, Truck, ShoppingCart, Waves, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';

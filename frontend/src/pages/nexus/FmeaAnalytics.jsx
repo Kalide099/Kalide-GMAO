@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layers, Plus, TrendingUp, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
+import { Layers, TrendingUp, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const FmeaAnalytics = () => {
     const { t } = useTranslation();
-    const [entries, setEntries] = useState([
+    const [simModalOpen, setSimModalOpen] = useState(false);
+    const entries = [
         { id: 1, mode: t('nexus.rcm.modes.m1'), severity: 8, occurrence: 3, detection: 2, rpn: 48 },
         { id: 2, mode: t('nexus.rcm.modes.m2'), severity: 5, occurrence: 6, detection: 4, rpn: 120 },
-    ]);
-
-    const calculateRpn = (s, o, d) => s * o * d;
+    ];
 
     return (
         <div className="space-y-12 animate-fade-in-up pb-20">
@@ -83,7 +84,7 @@ const FmeaAnalytics = () => {
                                     </span>
                                 </td>
                                 <td className="p-10 text-right">
-                                    <button className="p-4 bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors">
+                                    <button onClick={() => setSimModalOpen(true)} className="px-6 py-4 bg-slate-100 rounded-2xl text-[10px] uppercase font-black tracking-widest text-slate-400 hover:bg-slate-900 hover:text-white transition-colors">
                                         {t('nexus.rcm.analyze_details')}
                                     </button>
                                 </td>
@@ -92,6 +93,15 @@ const FmeaAnalytics = () => {
                     </tbody>
                 </table>
             </div>
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="FMEA Sub-System Analysis" 
+                processingText="Correlating historical fault vectors..." 
+                successText="Analysis Complete"
+                onSuccessCallback={() => toast.success('Failure mode details compiled.')}
+            />
         </div>
     );
 };

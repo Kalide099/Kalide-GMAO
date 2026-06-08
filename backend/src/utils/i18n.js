@@ -9,7 +9,14 @@ const en = {
         "user_not_found": "User not found",
         "profile_retrieved": "User profile retrieved successfully",
         "sso_retrieved": "SSO configurations retrieved",
-        "sso_established": "SSO Node established successfully"
+        "sso_established": "SSO Node established successfully",
+        "logout_success": "Logged out successfully",
+        "reset_link_sent": "If the account exists, recovery instructions have been sent.",
+        "password_reset_success": "Password reset successfully",
+        "mfa_setup_initialized": "MFA setup initialized.",
+        "mfa_enabled": "MFA enabled successfully.",
+        "mfa_disabled": "MFA disabled successfully.",
+        "mfa_backup_regenerated": "MFA backup codes regenerated."
     },
     "common": {
         "save_success": "Saved successfully",
@@ -45,7 +52,14 @@ const fr = {
         "user_not_found": "Utilisateur non trouvé",
         "profile_retrieved": "Profil utilisateur récupéré avec succès",
         "sso_retrieved": "Configurations SSO récupérées",
-        "sso_established": "Nœud SSO établi avec succès"
+        "sso_established": "Nœud SSO établi avec succès",
+        "logout_success": "Déconnexion réussie",
+        "reset_link_sent": "Si le compte existe, les instructions de récupération ont été envoyées.",
+        "password_reset_success": "Mot de passe réinitialisé avec succès",
+        "mfa_setup_initialized": "Configuration MFA initialisée.",
+        "mfa_enabled": "MFA activée avec succès.",
+        "mfa_disabled": "MFA désactivée avec succès.",
+        "mfa_backup_regenerated": "Codes de secours MFA régénérés."
     },
     "common": {
         "save_success": "Enregistré avec succès",

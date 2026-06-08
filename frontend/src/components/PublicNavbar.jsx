@@ -12,15 +12,8 @@ const PublicNavbar = () => {
 
     return (
         <nav className="w-full h-24 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between px-6 lg:px-24 sticky top-0 z-50 transition-all">
-            <Link to="/" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-xl shadow-slate-900/10 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-yellow-400"></div>
-                    <Zap className="text-yellow-400 w-6 h-6" fill="currentColor" />
-                </div>
-                <div className="flex flex-col">
-                    <span className="font-black text-2xl tracking-tighter text-slate-900 leading-none">KGMAO</span>
-                    <span className="text-[9px] font-black uppercase text-yellow-500 tracking-[0.3em] mt-1 italic">{t('common.intelligence')}</span>
-                </div>
+            <Link to="/" className="flex items-center group">
+                <img src="/logo.png" alt="KGMAO Logo" className="h-14 w-auto drop-shadow-xl group-hover:scale-105 transition-transform" />
             </Link>
             
             <div className="hidden lg:flex items-center gap-10">

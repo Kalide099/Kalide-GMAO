@@ -14,8 +14,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // 1. CRITICAL: Do NOT intercept or cache any API calls
-  if (url.pathname.startsWith('/api')) {
+  // 1. CRITICAL: Do NOT intercept or cache any API calls or health checks
+  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/health')) {
     return; // Pass through to network
   }
 

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Mail, Briefcase, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock } from 'lucide-react';
+import { Mail, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock, Languages, Phone } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api/axiosConfig';
@@ -15,8 +15,15 @@ const Register = () => {
         adminFirstName: '',
         adminLastName: '',
         adminEmail: '',
-        password: ''
+        adminPhone: '',
+        password: '',
+        preferredLanguage: 'en'
     });
+
+    const languageOptions = [
+        { value: 'en', label: 'English' },
+        { value: 'fr', label: 'Français' }
+    ];
 
     const industries = [
         { id: 'manufacturing', label: t('marketing.industries.manufacturing'), icon: '🏭' },
@@ -90,6 +97,28 @@ const Register = () => {
                                 )}
                                 
                                 <form onSubmit={handleSubmit} className="space-y-8">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 flex items-center gap-2">
+                                            <Languages size={14} />
+                                            {t('common.language')}
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                name="preferredLanguage"
+                                                value={formData.preferredLanguage}
+                                                onChange={handleChange}
+                                                required
+                                                className="input-field appearance-none bg-white cursor-pointer"
+                                            >
+                                                {languageOptions.map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.companyName')}</label>
@@ -154,19 +183,35 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.workEmail')}</label>
-                                        <div className="relative">
-                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
-                                            <input 
-                                                name="adminEmail"
-                                                type="email" 
-                                                required
-                                                value={formData.adminEmail}
-                                                onChange={handleChange}
-                                                className="input-field pl-14"
-                                                placeholder="admin@enterprise.com"
-                                            />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.workEmail')}</label>
+                                            <div className="relative">
+                                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                                                <input 
+                                                    name="adminEmail"
+                                                    type="email" 
+                                                    required
+                                                    value={formData.adminEmail}
+                                                    onChange={handleChange}
+                                                    className="input-field pl-14"
+                                                    placeholder="admin@enterprise.com"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.phoneNumber') || 'Phone Number'}</label>
+                                            <div className="relative">
+                                                <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                                                <input 
+                                                    name="adminPhone"
+                                                    type="tel" 
+                                                    value={formData.adminPhone}
+                                                    onChange={handleChange}
+                                                    className="input-field pl-14"
+                                                    placeholder="+1 (555) 000-0000"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -186,8 +231,7 @@ const Register = () => {
                                         </div>
                                     </div>
                                     
-                                    <button 
-                                        type="submit" 
+                                    <button type="submit" 
                                         disabled={loading}
                                         className="w-full bg-slate-900 hover:bg-black text-white font-black py-6 rounded-[2rem] flex items-center justify-center gap-3 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 disabled:opacity-70 group"
                                     >

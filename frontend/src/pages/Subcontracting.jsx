@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { 
     Users, Plus, Search, Star, Mail, Phone, ShieldCheck, 
-    Trash2, ExternalLink, Globe, Hammer, Terminal
+    Trash2, Hammer, Terminal
 } from 'lucide-react';
+
+import SimulatedProcessModal from '../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const Subcontracting = () => {
     const { t } = useTranslation();
     const [subcontractors, setSubcontractors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [simModalOpen, setSimModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
         name: '',
@@ -44,9 +48,23 @@ const Subcontracting = () => {
                 setIsModalOpen(false);
                 setFormData({ name: '', contact_email: '', contact_phone: '', service_type: '', rating: 5 });
                 fetchData();
+                toast.success('Subcontractor Registered successfully.');
             }
         } catch (err) {
-            alert(t('common.error'));
+            toast.error(t('common.error'));
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('common.confirmDelete'))) return;
+        try {
+            const res = await api.delete(`/subcontractors/${id}`);
+            if (res.data.success) {
+                fetchData();
+                toast.success('Subcontractor profile deleted.');
+            }
+        } catch (err) {
+            toast.error('Deletion failed');
         }
     };
 
@@ -132,10 +150,10 @@ const Subcontracting = () => {
                             </div>
 
                             <div className="flex gap-4">
-                                <button className="flex-1 py-4 bg-slate-50 text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-900 hover:text-white transition-all border border-slate-100">
+                                <button onClick={() => setSimModalOpen(true)} className="flex-1 py-4 bg-slate-50 text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-900 hover:text-white transition-all border border-slate-100">
                                     {t('cmms.subcontracting.view_reports')}
                                 </button>
-                                <button className="px-5 py-4 bg-slate-50 text-slate-400 rounded-2xl hover:text-rose-600 transition-all border border-slate-100">
+                                <button onClick={() => handleDelete(sub.id)} className="px-5 py-4 bg-slate-50 text-slate-400 rounded-2xl hover:text-rose-600 transition-all border border-slate-100">
                                     <Trash2 size={16} />
                                 </button>
                             </div>
@@ -214,6 +232,15 @@ const Subcontracting = () => {
                     </div>
                 </div>
             )}
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Generating Forensic Report" 
+                processingText="Compiling Partner Service Telemetry..." 
+                successText="Report Generated & Available"
+                onSuccessCallback={() => toast.success('Report cached in Document Vault.')}
+            />
         </div>
     );
 };

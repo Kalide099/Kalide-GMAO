@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import { Mail, ArrowLeft, Loader2, ShieldCheck, Zap } from 'lucide-react';
-
+import api from '../../services/api/axiosConfig';
 const ForgotPassword = () => {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSent, setIsSent] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('');
+    const [resetLink, setResetLink] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        setStatusMessage('');
+
+        try {
+            const response = await api.post('/auth/forgot-password', { email });
+            if (response.data?.success) {
+                setIsSent(true);
+                setStatusMessage(response.data?.message || 'Recovery instructions sent.');
+
+                const token = response.data?.data?.resetToken;
+                if (token) {
+                    setResetLink(`/reset-password?token=${encodeURIComponent(token)}`);
+                } else {
+                    setResetLink('');
+                }
+            }
+        } catch (error) {
+            setStatusMessage(error.response?.data?.message || 'Unable to start recovery. Please try again.');
+        } finally {
             setIsLoading(false);
-            setIsSent(true);
-        }, 1500);
+        }
     };
 
     return (
@@ -60,8 +77,7 @@ const ForgotPassword = () => {
                                 </div>
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button type="submit" 
                                 disabled={isLoading}
                                 className="w-full h-18 bg-slate-900 hover:bg-black text-white font-black py-5 rounded-[2rem] flex items-center justify-center gap-4 transition-all shadow-xl shadow-slate-900/10 active:scale-95 disabled:opacity-50"
                             >
@@ -71,6 +87,10 @@ const ForgotPassword = () => {
                                     <span className="uppercase tracking-widest">{t('auth.sendResetLink', 'Send Recovery Link')}</span>
                                 )}
                             </button>
+
+                            {statusMessage ? (
+                                <p className="text-xs font-bold uppercase tracking-widest text-center text-slate-500">{statusMessage}</p>
+                            ) : null}
                         </form>
                     ) : (
                         <div className="text-center space-y-8 bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 border-dashed animate-scale-in">
@@ -79,7 +99,12 @@ const ForgotPassword = () => {
                             </div>
                             <div className="space-y-2">
                                 <h4 className="text-emerald-900 font-black uppercase text-sm tracking-widest">{t('auth.recoverySent', 'Recovery Protocol Initiated')}</h4>
-                                <p className="text-emerald-600 text-[10px] font-bold uppercase leading-loose tracking-widest">{t('auth.checkEmail', 'Check your encrypted inbox for further instructions.')}</p>
+                                <p className="text-emerald-600 text-[10px] font-bold uppercase leading-loose tracking-widest">{statusMessage || t('auth.checkEmail', 'Check your encrypted inbox for further instructions.')}</p>
+                                {resetLink ? (
+                                    <Link to={resetLink} className="inline-block mt-3 text-xs font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800">
+                                        {t('auth.resetNow', 'Reset now (development)')}
+                                    </Link>
+                                ) : null}
                             </div>
                         </div>
                     )}

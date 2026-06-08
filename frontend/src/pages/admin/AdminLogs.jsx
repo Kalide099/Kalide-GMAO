@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
-import { ShieldAlert, Terminal as TerminalIcon, Search, Zap, Trash2, Cpu } from 'lucide-react';
+import { ShieldAlert, Terminal as TerminalIcon, Search, Zap, Cpu } from 'lucide-react';
 
 const AdminLogs = () => {
     const { t } = useTranslation();

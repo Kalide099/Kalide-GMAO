@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tablet, Video, Radio, ClipboardCheck, PlayCircle, UserCheck, MessageSquare, PhoneCall } from 'lucide-react';
+import { Tablet, Video, Radio, ClipboardCheck, UserCheck, MessageSquare, PhoneCall } from 'lucide-react';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const AugmentedWorkforce = () => {
     const { t } = useTranslation();
     const [step, setStep] = useState(1);
+    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
 
     return (
         <div className="space-y-12 animate-fade-in-up uppercase">
@@ -17,7 +20,7 @@ const AugmentedWorkforce = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] shadow-xl flex items-center gap-4 hover:scale-105 active:scale-95 transition-all">
+                    <button onClick={() => setSimModal({ isOpen: true, type: 'expert' })} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] shadow-xl flex items-center gap-4 hover:scale-105 active:scale-95 transition-all">
                         <Video size={20} className="text-rose-400" />
                         <span className="text-[10px] font-black uppercase tracking-widest">{t('roadmap.connect_remote_exper', 'Connect Remote Expert')}</span>
                     </button>
@@ -79,10 +82,13 @@ const AugmentedWorkforce = () => {
                         </div>
 
                         <div className="pt-8 border-t border-slate-50 space-y-4">
-                             <button className="w-full py-5 bg-rose-50 text-rose-600 rounded-2xl font-black text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-rose-600 hover:text-white transition-all">
+                             <button onClick={() => setSimModal({ isOpen: true, type: 'voice' })} className="w-full py-5 bg-rose-50 text-rose-600 rounded-2xl font-black text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-rose-600 hover:text-white transition-all">
                                 <PhoneCall size={16} /> {t('roadmap.start_voice_link', 'START VOICE LINK')}
                              </button>
-                             <button className="w-full py-5 bg-slate-50 text-slate-400 rounded-2xl font-black text-[10px] tracking-widest flex items-center justify-center gap-3 opacity-50 cursor-not-allowed">
+                             <button 
+                                onClick={() => step >= 3 && setSimModal({ isOpen: true, type: 'signoff' })}
+                                className={`w-full py-5 rounded-2xl font-black text-[10px] tracking-widest flex items-center justify-center gap-3 transition-all ${step >= 3 ? 'bg-slate-900 text-white shadow-xl hover:bg-slate-800' : 'bg-slate-50 text-slate-400 opacity-50 cursor-not-allowed'}`}
+                             >
                                 <ClipboardCheck size={16} /> {t('roadmap.sign_off_task', 'SIGN OFF TASK')}
                              </button>
                         </div>
@@ -97,6 +103,22 @@ const AugmentedWorkforce = () => {
                     </div>
                 </div>
             </div>
+            <SimulatedProcessModal 
+                isOpen={simModal.isOpen} 
+                onClose={() => setSimModal({ isOpen: false, type: null })} 
+                title={
+                    simModal.type === 'expert' ? 'Establishing Video Uplink' : 
+                    simModal.type === 'voice' ? 'Connecting Audio Channel' : 
+                    'Verifying Holographic Sign-off'
+                } 
+                processingText="Negotiating WebRTC Connection via Edge Nodes..." 
+                successText={simModal.type === 'signoff' ? 'Task Signed Off' : 'Connection Established'}
+                onSuccessCallback={() => {
+                    toast.success(
+                        simModal.type === 'signoff' ? 'Work Order updated successfully.' : 'Remote expert connected to AR HUD.'
+                    );
+                }}
+            />
         </div>
     );
 };

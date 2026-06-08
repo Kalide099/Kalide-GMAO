@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   LayoutDashboard, Wrench, Package, ArrowRightLeft, LogOut, Menu, X, 
   BrainCircuit, Activity, ShieldCheck, ShoppingCart, Zap, TrendingUp, 
   Globe, ShieldAlert, DollarSign, Map, Truck, Award, Radio, Boxes, 
-  Link, Leaf, Eye, Siren, Ship, FileText, Users, Layers, Fingerprint, Bot
+  Link, Leaf, Eye, Siren, Ship, FileText, Users, Layers, Fingerprint,
+  Sprout, Droplets, Factory, Wind, Sun, Waves, Laptop, Snowflake, Tractor, Bot, Coffee, Presentation, Combine, Route, Search,
+  BatteryCharging, PhoneCall, Droplet, MessageSquare, Smartphone, TrendingDown, Crosshair
 } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import CommandPalette from '../components/CommandPalette';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api/axiosConfig';
 
@@ -16,6 +19,7 @@ const DashboardLayout = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
@@ -57,11 +61,31 @@ const DashboardLayout = () => {
       { icon: <Activity size={20} />, label: t('nav.iot'), path: '/app/iot', module: 'iot' },
       { icon: <Zap size={20} />, label: t('nav.energy'), path: '/app/energy' },
       { icon: <TrendingUp size={20} />, label: t('nav.performance'), path: '/app/performance' },
-      { icon: <Radio size={20} />, label: t('nav.command_center'), path: '/app/command', module: 'command' },
+      { icon: <Radio size={20} />, label: t('nav.command_center') || 'Activity Center', path: '/app/command' },
       { icon: <Boxes size={20} />, label: t('nav.digital_twin'), path: '/app/twin', module: 'twin' },
+      { icon: <Sprout size={20} />, label: t('nav.industry.cropYield') || 'Crop Yield', path: '/app/crop-yield', industries: ['agrifood'], tiers: ['pro', 'enterprise'] },
+      { icon: <Droplets size={20} />, label: t('nav.industry.soilIoT') || 'Soil Moisture IoT', path: '/app/soil-iot', industries: ['agrifood'], tiers: ['enterprise'] },
+      { icon: <ShieldCheck size={20} />, label: t('nav.industry.medicalCompliance') || 'Medical Compliance', path: '/app/medical-compliance', industries: ['healthcare'], tiers: ['enterprise'] },
+      { icon: <Award size={20} />, label: t('nav.industry.campusFacilities') || 'Campus Facilities', path: '/app/campus-facilities', industries: ['education'], tiers: ['pro', 'enterprise'] },
+      { icon: <Layers size={20} />, label: t('nav.industry.housekeeping') || 'Housekeeping SLA', path: '/app/housekeeping', industries: ['hospitality'], tiers: ['pro', 'enterprise'] },
+      { icon: <ShoppingCart size={20} />, label: t('nav.industry.storeLayout') || 'Store Layout', path: '/app/store-layout', industries: ['retail'], tiers: ['pro', 'enterprise'] },
+      { icon: <Zap size={20} />, label: t('nav.industry.ventilation') || 'Subsurface Ventilation', path: '/app/subsurface-ventilation', industries: ['mining'], tiers: ['enterprise'] },
+      { icon: <Map size={20} />, label: t('nav.industry.cityMap') || 'City Infrastructure', path: '/app/city-infrastructure', industries: ['public_works'], tiers: ['enterprise'] },
+      { icon: <Factory size={20} />, label: t('nav.industry.productionOee') || 'Production OEE', path: '/app/production-oee', industries: ['manufacturing'], tiers: ['pro', 'enterprise'] },
+      { icon: <Wind size={20} />, label: t('nav.industry.negativePressure') || 'Negative Pressure IoT', path: '/app/negative-pressure', industries: ['healthcare'], tiers: ['enterprise'] },
+      { icon: <Sun size={20} />, label: t('nav.industry.renewableOutput') || 'Renewable Forecast', path: '/app/renewable-output', industries: ['energy'], tiers: ['enterprise'] },
+      { icon: <Waves size={20} />, label: t('nav.industry.waterQuality') || 'Water Quality', path: '/app/water-quality', industries: ['environment'], tiers: ['enterprise'] },
+      { icon: <Laptop size={20} />, label: t('nav.industry.itLifecycle') || 'IT Asset Lifecycle', path: '/app/it-lifecycle', industries: ['education'], tiers: ['pro', 'enterprise'] },
+      { icon: <Snowflake size={20} />, label: t('nav.industry.coldChain') || 'Cold Chain Logistics', path: '/app/cold-chain', industries: ['agrifood'], tiers: ['pro', 'enterprise'] },
+      { icon: <Tractor size={20} />, label: t('nav.industry.machineryTelematics') || 'Machinery Telematics', path: '/app/machinery-telematics', industries: ['construction'], tiers: ['enterprise'] },
+      { icon: <Bot size={20} />, label: t('nav.industry.roboticsManager') || 'AGV Robotics', path: '/app/robotics-manager', industries: ['transport_logistics'], tiers: ['enterprise'] },
+      { icon: <Coffee size={20} />, label: t('nav.industry.guestAmenity') || 'Guest Amenities', path: '/app/guest-amenity', industries: ['hospitality'], tiers: ['pro', 'enterprise'] },
+      { icon: <Presentation size={20} />, label: t('nav.industry.visualMerchandising') || 'Visual Merchandising', path: '/app/visual-merchandising', industries: ['retail'], tiers: ['pro', 'enterprise'] },
+      { icon: <Combine size={20} />, label: t('nav.industry.beltYield') || 'Conveyor Yield', path: '/app/belt-yield', industries: ['mining'], tiers: ['enterprise'] },
+      { icon: <Route size={20} />, label: t('nav.industry.wasteRouting') || 'Waste Routing', path: '/app/waste-routing', industries: ['public_works'], tiers: ['enterprise'] },
     ]},
     { id: 'global_matrix', items: [
-      { icon: <Globe size={20} />, label: t('nav.global'), path: '/app/global', module: 'global' },
+      { icon: <Globe size={20} />, label: t('nav.global') || 'Global Overview', path: '/app/global' },
       { icon: <Map size={20} />, label: t('roadmap.gis.title'), path: '/app/map', module: 'global' },
       { icon: <Truck size={20} />, label: t('roadmap.gis.telematics'), path: '/app/fleet', module: 'global' },
       { icon: <Ship size={20} />, label: t('nav.logistics'), path: '/app/logistics-tower', module: 'logistics' },
@@ -79,21 +103,46 @@ const DashboardLayout = () => {
       { icon: <Leaf size={20} />, label: t('nav.carbon_ledger'), path: '/app/carbon-ledger', module: 'carbon_ledger' },
     ]},
     { id: 'nexus_suite', items: [
-      { icon: <ShieldCheck size={20} />, label: t('nexus.rca.title') || 'RCA Analysis', path: '/app/nexus/rca', module: 'rca' },
-      { icon: <Activity size={20} />, label: t('nexus.fmea.title') || 'FMEA Logic', path: '/app/nexus/fmea', module: 'fmea' },
-      { icon: <Siren size={20} />, label: t('nexus.loto.title') || 'LOTO Safety', path: '/app/nexus/loto', module: 'loto' },
+      { icon: <ShieldCheck size={20} />, label: t('nexus.rca.title') || 'Issue Analysis', path: '/app/nexus/rca', module: 'rca' },
+      { icon: <Activity size={20} />, label: t('nexus.fmea.title') || 'Risk Check', path: '/app/nexus/fmea', module: 'fmea' },
+      { icon: <Siren size={20} />, label: t('nexus.loto.title') || 'Safety Lock', path: '/app/nexus/loto', module: 'loto' },
       { icon: <Zap size={20} />, label: t('nexus.calibration.title') || 'Calibration', path: '/app/nexus/calibration', module: 'calibration' },
-      { icon: <FileText size={20} />, label: t('nexus.dms.title') || 'DMS Vault', path: '/app/nexus/dms', module: 'dms' },
-      { icon: <Wrench size={20} />, label: t('nexus.tpm.title') || 'Autonomous TPM', path: '/app/nexus/tpm', module: 'tpm' },
-      { icon: <Boxes size={20} />, label: t('nexus.bim.title') || 'BIM Explorer', path: '/app/nexus/bim', module: 'bim' },
-      { icon: <Activity size={20} />, label: 'Offline Matrix', path: '/app/nexus/offline' },
+      { icon: <FileText size={20} />, label: t('nexus.dms.title') || 'Document Center', path: '/app/nexus/dms', module: 'dms' },
+      { icon: <Wrench size={20} />, label: t('nexus.tpm.title') || 'Auto Maintenance', path: '/app/nexus/tpm', module: 'tpm' },
+      { icon: <Boxes size={20} />, label: t('nexus.bim.title') || '3D Explorer', path: '/app/nexus/bim', module: 'bim' },
+      { icon: <Activity size={20} />, label: 'Offline Mode', path: '/app/nexus/offline' },
     ]},
     { id: 'administration', role: ['admin', 'super_admin', 'system_admin'], items: [
       { icon: <Users size={20} />, label: t('nav.subcontracting'), path: '/app/subcontracting' },
       { icon: <Layers size={20} />, label: t('nav.finance_matrix'), path: '/app/finance-matrix' },
       { icon: <FileText size={20} />, label: t('nav.custom_forms'), path: '/app/custom-forms' },
-      { icon: <Fingerprint size={20} />, label: t('nav.sso') || 'SSO Identity', path: '/app/sso-config' },
+      { icon: <Fingerprint size={20} />, label: t('nav.sso') || 'Single Sign-On', path: '/app/sso-config' },
+      { icon: <ShieldCheck size={20} />, label: 'MFA Security', path: '/app/mfa-security' },
       { icon: <ShieldCheck size={20} />, label: t('nav.audit'), path: '/app/audit' },
+    ]},
+    { id: 'enterprise_autonomy', items: [
+      { icon: <Bot size={20} />, label: 'AI Copilot', path: '/app/ai-copilot', module: 'copilot' },
+      { icon: <Radio size={20} />, label: 'Drone Fleet', path: '/app/drone-fleet', module: 'drone' },
+      { icon: <ShoppingCart size={20} />, label: 'AI Procurement', path: '/app/ai-procurement', module: 'procurement' },
+      { icon: <Eye size={20} />, label: 'Vision Defect', path: '/app/vision-defect', module: 'vision' },
+      { icon: <Layers size={20} />, label: 'Workflow Builder', path: '/app/workflows', module: 'workflow' },
+      { icon: <FileText size={20} />, label: 'Reporting Studio', path: '/app/reports', module: 'reporting' },
+      { icon: <Wrench size={20} />, label: 'Tenant Settings', path: '/app/settings', module: 'tenant_settings' },
+    ]},
+    { id: 'emerging_markets_hub', items: [
+      { icon: <BatteryCharging size={20} />, label: 'Micro-Grid Telemetry', path: '/app/micro-grid', module: 'micro_grid' },
+      { icon: <PhoneCall size={20} />, label: 'USSD Offline Ops', path: '/app/ussd-offline', module: 'ussd_offline' },
+      { icon: <Droplet size={20} />, label: 'Theft & Leak AI', path: '/app/leak-detection', module: 'leak_detection' },
+      { icon: <Wind size={20} />, label: 'Dust Predictive Engine', path: '/app/dust-predictive', module: 'dust_predictive' },
+      { icon: <Map size={20} />, label: 'Dynamic Route Risk', path: '/app/route-risk', module: 'route_risk' },
+      { icon: <Snowflake size={20} />, label: 'Solar Cold Storage', path: '/app/solar-cold', module: 'solar_cold' },
+      { icon: <MessageSquare size={20} />, label: 'Community Fault App', path: '/app/community-fault', module: 'community_fault' },
+      { icon: <Smartphone size={20} />, label: 'Mobile Money Payroll', path: '/app/mobile-money', module: 'mobile_money' },
+      { icon: <Activity size={20} />, label: 'Pipeline Integrity', path: '/app/pipeline-integrity', module: 'pipeline_integrity' },
+      { icon: <Sun size={20} />, label: 'Off-Grid Eco-Resort', path: '/app/off-grid', module: 'off_grid' },
+      { icon: <TrendingDown size={20} />, label: 'Inflation Pricing Sync', path: '/app/inflation-sync', module: 'inflation_sync' },
+      { icon: <Crosshair size={20} />, label: 'Anti-Poaching IoT', path: '/app/anti-poaching', module: 'anti_poaching' },
+      { icon: <Layers size={20} />, label: 'Low-Bandwidth Twins', path: '/app/low-bandwidth-twin', module: 'low_bandwidth_twin' }
     ]}
   ];
 
@@ -104,6 +153,8 @@ const DashboardLayout = () => {
     'nexus_suite': ['pro', 'enterprise'],
     'global_matrix': ['enterprise'],
     'enterprise_roadmap': ['enterprise'],
+    'enterprise_autonomy': ['enterprise'],
+    'emerging_markets_hub': ['enterprise'],
     'administration': ['enterprise']
   };
 
@@ -147,6 +198,13 @@ const DashboardLayout = () => {
               
               // Role check for full section
               if (section.role && !section.role.includes(user?.role)) return false;
+              
+              // Industry check
+              if (item.industries && !item.industries.includes(user?.industry || 'manufacturing')) return false;
+
+              // Tier check
+              const userPlan = (user?.plan || 'enterprise').toLowerCase();
+              if (item.tiers && !item.tiers.includes(userPlan)) return false;
               
               if (item.module) return modules.includes(item.module) || user?.role === 'super_admin';
               return true;
@@ -204,8 +262,13 @@ const DashboardLayout = () => {
           </button>
         </div>
       </aside>
+      {/* Command Palette Modal */}
+      <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
 
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative z-10 lg:pl-0">
+        
+        {/* Top Header */}
         <header className="h-24 bg-white/90 backdrop-blur-2xl border-b border-slate-100 flex items-center justify-between px-8 lg:px-16 z-30 shadow-sm">
           <div className="flex items-center gap-8">
             <button 
@@ -215,6 +278,15 @@ const DashboardLayout = () => {
               <Menu size={24} />
             </button>
             <div className="hidden lg:flex items-center gap-4">
+                <button 
+                  onClick={() => setIsCommandOpen(true)}
+                  className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl border border-slate-200 transition-colors"
+                >
+                  <Search size={16} />
+                  <span className="text-sm font-semibold">{t('dashboardLayout.search')}</span>
+                  <kbd className="hidden md:inline-block text-[10px] font-bold bg-white border border-slate-200 rounded px-1.5 py-0.5 ml-2">{t('dashboardLayout.commandHint')}</kbd>
+                </button>
+                <div className="h-4 w-px bg-slate-200 mx-2"></div>
                 <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.8)]"></div>
                 <div className="text-slate-900 font-black uppercase text-[10px] tracking-[0.4em] italic opacity-80">{t('app.banner_text')}</div>
                 <div className="h-4 w-px bg-slate-200 mx-2"></div>
@@ -296,7 +368,7 @@ const DashboardLayout = () => {
           <div className="absolute inset-x-0 top-0 h-[40rem] bg-gradient-to-b from-slate-50/80 via-white to-transparent -z-10"></div>
           <div className="absolute inset-y-0 right-0 w-[40rem] bg-[radial-gradient(circle_at_right,_rgba(250,204,21,0.03)_0%,_transparent_70%)] -z-10"></div>
           
-          <div className="max-w-[1700px] mx-auto animate-fade-in-up">
+          <div className="max-w-[1700px] mx-auto">
             <Outlet />
           </div>
         </main>

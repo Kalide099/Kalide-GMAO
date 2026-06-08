@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Truck, Activity, Fuel, Gauge, Share2, ClipboardList, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Truck, Activity, Gauge, Share2, ClipboardList, AlertTriangle, ShieldCheck } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const FleetTelematics = () => {
     const { t } = useTranslation();
     const [fleet, setFleet] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchFleet = async () => {
@@ -87,7 +90,7 @@ const FleetTelematics = () => {
                                         </div>
                                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">{t('roadmap.transmission_nominal', 'Transmission Nominal')}</span>
                                     </div>
-                                    <button className="p-3 hover:bg-slate-950 hover:text-white rounded-xl transition-all text-slate-400">
+                                    <button onClick={() => setSimModalOpen(true)} className="p-3 hover:bg-slate-950 hover:text-white rounded-xl transition-all text-slate-400">
                                         <Share2 size={16} />
                                     </button>
                                 </div>
@@ -132,6 +135,15 @@ const FleetTelematics = () => {
                     </div>
                 </div>
             </div>
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Syncing Asset Telemetry" 
+                processingText="Establishing secure quantum link..." 
+                successText="Telemetry Synced"
+                onSuccessCallback={() => toast.success('Live vehicle diagnostic data shared to Activity Center.')}
+            />
         </div>
     );
 };

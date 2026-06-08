@@ -1,13 +1,16 @@
 const rateLimit = require('express-rate-limit');
 const { errorResponse } = require('../utils/responseHandler');
+const { config } = require('../config/env');
 
 /**
  * Global Rate Limiter securing the generic API from basic DDOS vectors
  * Limits standard users to 500 requests per 15 minutes.
  */
 exports.globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 500,
+    windowMs: config.globalRateLimitWindowMs,
+    max: config.globalRateLimitMax,
+    standardHeaders: true,
+    legacyHeaders: false,
     handler: (req, res) => {
         errorResponse(res, 429, 'Too many requests from this IP, please try again after 15 minutes.');
     }
@@ -18,8 +21,10 @@ exports.globalLimiter = rateLimit({
  * Limits users to exactly 10 attempts per 15 minutes.
  */
 exports.authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 100, // Increased for smoother dev/testing flow
+    windowMs: config.authRateLimitWindowMs,
+    max: config.authRateLimitMax,
+    standardHeaders: true,
+    legacyHeaders: false,
     handler: (req, res) => {
         errorResponse(res, 429, 'Excessive authentication attempts detected. This IP is blocked for 15 minutes.');
     }

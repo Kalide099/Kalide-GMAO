@@ -106,3 +106,14 @@ exports.createBudget = async (companyId, data) => {
     );
     return { id, year, sector };
 };
+
+exports.archiveContract = async (companyId, contractId) => {
+    const [result] = await pool.query(
+        `UPDATE contracts
+         SET status = 'archived'
+         WHERE id = ? AND company_id = ?`,
+        [contractId, companyId]
+    );
+
+    return result.affectedRows > 0;
+};

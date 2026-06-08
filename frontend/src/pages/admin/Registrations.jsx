@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
 import { 
     UserPlus, CheckCircle, XCircle, Clock, 
-    Building2, Mail, Briefcase, Search, Zap 
+    Building2, Mail, Search, Zap, Eye, Phone, Lock
 } from 'lucide-react';
 
 const AdminRegistrations = () => {
@@ -11,6 +11,7 @@ const AdminRegistrations = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedRequest, setSelectedRequest] = useState(null);
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -154,6 +155,12 @@ const AdminRegistrations = () => {
                                             </td>
                                             <td className="px-12 py-10">
                                                 <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                                                    <button 
+                                                        onClick={() => setSelectedRequest(req)}
+                                                        className="px-6 py-3 bg-white border border-slate-100 text-slate-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-sm flex items-center gap-2"
+                                                    >
+                                                        <Eye size={14} /> {t('admin.viewProfile') || 'View Profile'}
+                                                    </button>
                                                     {req.status === 'pending' ? (
                                                         <>
                                                             <button 
@@ -170,9 +177,9 @@ const AdminRegistrations = () => {
                                                             </button>
                                                         </>
                                                     ) : (
-                                                        <button className="px-6 py-3 bg-slate-50 text-slate-300 border border-slate-100 rounded-xl font-black text-[9px] uppercase tracking-widest cursor-not-allowed">
+                                                        <span className="inline-flex items-center px-6 py-3 bg-slate-50 text-slate-300 border border-slate-100 rounded-xl font-black text-[9px] uppercase tracking-widest cursor-not-allowed">
                                                             {t('admin_registrations.processed')}
-                                                        </button>
+                                                        </span>
                                                     )}
                                                 </div>
                                             </td>
@@ -194,6 +201,81 @@ const AdminRegistrations = () => {
                                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t('admin_registrations.pendingRequests')}</span>
                                 <span className="text-xl font-black text-slate-900 italic">{requests.filter(r => r.status === 'pending').length}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Profile Modal */}
+            {selectedRequest && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in">
+                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                                    <Building2 size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{selectedRequest.company_name}</h2>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                        ID: {selectedRequest.id.slice(0, 8)} • {selectedRequest.industry}
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedRequest(null)}
+                                className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
+                            >
+                                <Zap className="rotate-45" size={20} />
+                            </button>
+                        </div>
+                        <div className="p-10 space-y-8">
+                            <div className="space-y-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Admin Profile Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Full Name</div>
+                                        <div className="text-sm font-bold text-slate-700">{selectedRequest.admin_first_name} {selectedRequest.admin_last_name}</div>
+                                    </div>
+                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Email Address</div>
+                                        <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                            <Mail size={14} className="text-slate-400" /> {selectedRequest.admin_email}
+                                        </div>
+                                    </div>
+                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Phone Number</div>
+                                        <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                            <Phone size={14} className="text-slate-400" /> {selectedRequest.admin_phone || 'N/A'}
+                                        </div>
+                                    </div>
+                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 border-l-4 border-l-emerald-500">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">Password Status</div>
+                                        <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                            <Lock size={14} className="text-emerald-500" /> Secured & Encrypted
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
+                            <button 
+                                onClick={() => setSelectedRequest(null)}
+                                className="flex-1 py-5 bg-white border border-slate-200 text-slate-600 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-slate-100 transition-all shadow-sm"
+                            >
+                                {t('common.close')}
+                            </button>
+                            {selectedRequest.status === 'pending' && (
+                                <button 
+                                    onClick={() => {
+                                        setSelectedRequest(null);
+                                        processRequest(selectedRequest.id, 'approved');
+                                    }}
+                                    className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-emerald-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                                >
+                                    <CheckCircle size={16} /> {t('admin_registrations.authorize')}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

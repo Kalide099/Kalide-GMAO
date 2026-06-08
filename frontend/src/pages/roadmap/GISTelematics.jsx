@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Map, Truck, Navigation, Fuel, Gauge, Share2, Activity } from 'lucide-react';
+import { Map, Truck, Fuel, Share2 } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const GISTelematics = () => {
     const { t } = useTranslation();
     const [fleet, setFleet] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('satellite');
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchFleet = async () => {
@@ -37,8 +41,18 @@ const GISTelematics = () => {
                     </div>
                 </div>
                 <div className="flex bg-white p-2 rounded-3xl border border-slate-100 shadow-sm">
-                    <button className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">{t('roadmap.satellite_view', 'Satellite View')}</button>
-                    <button className="px-8 py-4 text-slate-400 font-black text-[10px] uppercase tracking-widest">{t('roadmap.terrain_map', 'Terrain Map')}</button>
+                    <button 
+                        onClick={() => setViewMode('satellite')}
+                        className={`px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${viewMode === 'satellite' ? 'bg-slate-900 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        {t('roadmap.satellite_view', 'Satellite View')}
+                    </button>
+                    <button 
+                        onClick={() => setViewMode('terrain')}
+                        className={`px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${viewMode === 'terrain' ? 'bg-slate-900 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        {t('roadmap.terrain_map', 'Terrain Map')}
+                    </button>
                 </div>
             </div>
 
@@ -80,7 +94,7 @@ const GISTelematics = () => {
                                 <p className="text-[10px] font-black text-slate-900 mt-2">{selectedAsset.latitude}, {selectedAsset.longitude}</p>
                             </div>
                         </div>
-                        <button className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-[10px] uppercase tracking-widest">
+                        <button onClick={() => setSimModalOpen(true)} className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-[10px] uppercase tracking-widest hover:bg-slate-800">
                             <Share2 size={16} /> {t('roadmap.trace_route_sync', 'Trace Route Sync')}
                         </button>
                     </div>
@@ -95,6 +109,15 @@ const GISTelematics = () => {
                     </div>
                 </div>
             </div>
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Trace Route Synchronization" 
+                processingText="Calculating path optimization algorithms..." 
+                successText="Path Synced"
+                onSuccessCallback={() => toast.success('Route sent to asset autopilot.')}
+            />
         </div>
     );
 };

@@ -11,7 +11,12 @@ package-lock.json
 .env.production.local
 
 # Build
-# dist/
+dist/
+desktop-dist/
+frontend/dist/
+frontend/public/downloads/
+*.exe
+
 build/
 .next/
 out/

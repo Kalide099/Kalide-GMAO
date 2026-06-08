@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { ShoppingCart, Package, Truck, Clock, CheckCircle2, XCircle, Plus, Search, Filter } from 'lucide-react';
-
+import { ShoppingCart, Plus, Search, Truck, CheckCircle2, Clock, XCircle } from 'lucide-react';
 const Procurement = () => {
     const { t } = useTranslation();
     const [orders, setOrders] = useState([]);
@@ -272,8 +271,7 @@ const Procurement = () => {
                                     >
                                         {t('common.cancel')}
                                     </button>
-                                    <button 
-                                        type="submit"
+                                    <button type="submit"
                                         className="flex-[2] py-5 bg-slate-900 hover:bg-black text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl transition-all active:scale-95"
                                     >
                                         {t('procurement.generateOrder')}

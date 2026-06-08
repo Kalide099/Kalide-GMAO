@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Boxes, Zap, Thermometer, ShieldCheck, Play, Save, History, Layout, Cpu } from 'lucide-react';
-import api from '../../services/api/axiosConfig';
+import { Boxes, Thermometer, ShieldCheck, Play, Save, History, Cpu } from 'lucide-react';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const DigitalTwin = () => {
     const { t } = useTranslation();
-    const [activeAsset, setActiveAsset] = useState({ name: 'Turbine-Omega-04', status: 'Optimal' });
+
     const [simulationMode, setSimulationMode] = useState(false);
     const [load, setLoad] = useState(74);
+    const [simModalOpen, setSimModalOpen] = useState(false);
 
     return (
         <div className="space-y-12 animate-fade-in-up uppercase">
@@ -30,7 +32,7 @@ const DigitalTwin = () => {
                         <Play size={18} className={simulationMode ? 'animate-pulse' : ''} />
                         {simulationMode ? t('roadmap.twin.exitSim') : t('roadmap.twin.enterSim')}
                     </button>
-                    <button className="p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:bg-slate-50 transition-all">
+                    <button onClick={() => setSimModalOpen(true)} className="p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:bg-slate-50 transition-all">
                         <Save size={24} className="text-slate-900" />
                     </button>
                 </div>
@@ -118,6 +120,15 @@ const DigitalTwin = () => {
                     </div>
                 </div>
             </div>
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen} 
+                onClose={() => setSimModalOpen(false)} 
+                title="Capturing Blockchain Snapshot" 
+                processingText="Serializing multidimensional mesh nodes..." 
+                successText="Snapshot Archived"
+                onSuccessCallback={() => toast.success('3D Twin parameters securely frozen.')}
+            />
         </div>
     );
 };

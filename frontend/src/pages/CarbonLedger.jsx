@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api/axiosConfig';
 import { useTranslation } from 'react-i18next';
-import { Leaf, TrendingDown, Award, Globe, ShieldCheck, Database, Zap } from 'lucide-react';
+import { Leaf, TrendingDown, Award, ShieldCheck, Zap } from 'lucide-react';
 
 const CarbonLedger = () => {
     const { t } = useTranslation();
@@ -28,6 +28,26 @@ const CarbonLedger = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleInitExchange = async () => {
+        await fetchData();
+
+        const exportPayload = {
+            generated_at: new Date().toISOString(),
+            total_carbon: stats.totalCarbon,
+            average_consumption: stats.avgConsumption
+        };
+
+        const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'carbon-ledger-export.json';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    };
 
     if (loading && stats.totalCarbon === 0) return (
         <div className="min-h-[400px] flex items-center justify-center">
@@ -113,7 +133,7 @@ const CarbonLedger = () => {
                             </div>
                         ))}
                     </div>
-                    <button className="w-full py-5 bg-emerald-500 text-emerald-950 rounded-[2rem] font-black uppercase tracking-widest transition-all hover:bg-emerald-400 active:scale-95 shadow-xl shadow-emerald-500/10 mt-4">
+                    <button onClick={handleInitExchange} className="w-full py-5 bg-emerald-500 text-emerald-950 rounded-[2rem] font-black uppercase tracking-widest transition-all hover:bg-emerald-400 active:scale-95 shadow-xl shadow-emerald-500/10 mt-4">
                         {t('carbon.initExchange')}
                     </button>
                 </div>

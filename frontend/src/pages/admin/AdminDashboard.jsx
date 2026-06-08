@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
 import { 
-    Building2, Users, CreditCard, Activity, TrendingUp, 
-    ArrowUpRight, Globe, Layers, Zap, Search, ShieldAlert 
+    Building2, Users, CreditCard, Activity, 
+    ArrowUpRight, Globe, Layers, Zap, ShieldAlert 
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -39,6 +40,11 @@ const AdminDashboard = () => {
     }
 
     const { companies, users, revenue } = stats || {};
+    const privilegedUsers = Number(stats?.mfa?.privileged_users || 0);
+    const privilegedUsersMfaEnabled = Number(stats?.mfa?.privileged_users_mfa_enabled || 0);
+    const mfaCoverage = privilegedUsers > 0
+        ? ((privilegedUsersMfaEnabled / privilegedUsers) * 100).toFixed(1)
+        : '0.0';
 
     const analyticsCards = [
         { 
@@ -73,6 +79,14 @@ const AdminDashboard = () => {
             color: 'bg-slate-900', 
             accent: 'bg-indigo-600',
             trend: t('admin.trendFiscal')
+        },
+        {
+            label: 'Privileged MFA Coverage',
+            val: `${mfaCoverage}%`,
+            icon: <ShieldAlert className="text-white" size={24} />,
+            color: 'bg-slate-900',
+            accent: 'bg-emerald-500',
+            trend: `${privilegedUsersMfaEnabled}/${privilegedUsers} secured`
         }
     ];
 
@@ -123,7 +137,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Core Analytic Microchips */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                 {analyticsCards.map((card, idx) => (
                     <div key={idx} className="bg-white p-10 rounded-[3.5rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:border-slate-200 transition-all group relative overflow-hidden flex flex-col justify-between h-80">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[4rem] -mr-8 -mt-8 flex items-center justify-center group-hover:bg-slate-100 transition-colors">
@@ -203,9 +217,7 @@ const AdminDashboard = () => {
                         ))}
                     </div>
 
-                    <button className="w-full mt-12 py-5 bg-slate-50 text-slate-900 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] border border-slate-100 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
-                        {t('admin.launchForensic')}
-                    </button>
+
                 </div>
             </div>
         </div>

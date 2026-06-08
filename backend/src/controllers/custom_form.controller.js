@@ -21,3 +21,18 @@ exports.createCustomForm = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.deleteCustomForm = async (req, res, next) => {
+    try {
+        const lang = req.lang || 'en';
+        const deleted = await customFormService.deleteCustomForm(req.user.company_id, req.params.id);
+
+        if (!deleted) {
+            return errorResponse(res, 404, t('errors.not_found', lang));
+        }
+
+        return successResponse(res, 200, t('common.delete_success', lang));
+    } catch (err) {
+        next(err);
+    }
+};

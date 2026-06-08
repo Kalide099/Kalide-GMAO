@@ -3,12 +3,16 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
 
 const globalErrorHandler = require('./middlewares/error.middleware');
 const { extractLanguage } = require('./middlewares/lang.middleware');
-const { xssSanitizer } = require('./middlewares/security.middleware');
+const { xssSanitizer, globalLimiter, authLimiter } = require('./middlewares/security.middleware');
 const checkModule = require('./middlewares/module.middleware');
+const { config } = require('./config/env');
+const logger = require('./config/logger');
+const db = require('./config/db');
+const { recordRequest, snapshotMetrics } = require('./utils/runtimeMetrics');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
@@ -41,44 +45,60 @@ const nexusRoutes = require('./routes/nexus.routes');
 
 const app = express();
 
-// 🔍 High-Priority Request Logger for Production Debugging
 app.use((req, res, next) => {
-    console.log(`📡 [INCOMING] ${req.method} ${req.url} - ${new Date().toISOString()}`);
+    const requestId = req.headers['x-request-id'] || crypto.randomUUID();
+    req.requestId = requestId;
+    res.setHeader('X-Request-Id', requestId);
     next();
 });
 
-// ======================
-// TRUST PROXY (IMPORTANT FOR HOSTINGER)
-// ======================
-app.set('trust proxy', 1);
+app.use((req, res, next) => {
+    const startedAtNs = process.hrtime.bigint();
 
-// ======================
-// SAFE RATE LIMITERS
-// ======================
-const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 1000, 
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipSuccessfulRequests: true,
+    res.on('finish', () => {
+        const durationMs = Number(process.hrtime.bigint() - startedAtNs) / 1_000_000;
+        recordRequest({
+            method: req.method,
+            path: req.originalUrl,
+            statusCode: res.statusCode,
+            durationMs
+        });
+
+        logger.info('Request completed', {
+            requestId: req.requestId,
+            method: req.method,
+            path: req.originalUrl,
+            statusCode: res.statusCode,
+            durationMs: Number(durationMs.toFixed(2))
+        });
+    });
+
+    logger.info('Incoming request', {
+        requestId: req.requestId,
+        method: req.method,
+        path: req.originalUrl
+    });
+    next();
 });
 
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 200, 
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipSuccessfulRequests: true,
-});
+app.set('trust proxy', config.trustProxy ? 1 : false);
 
 // Global Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+const allowedOrigins = config.corsOrigin === '*'
+    ? true
+    : config.corsOrigin.split(',').map((item) => item.trim()).filter(Boolean);
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 app.use(helmet());
 app.use(xssSanitizer);
-// app.use(globalLimiter); // Removed to prevent blocking all requests
 app.use(extractLanguage);
+app.use('/api', globalLimiter);
 
 // Static files - Disable CDN caching to ensure the latest React build is always served
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -98,11 +118,45 @@ if (process.env.NODE_ENV === 'development') {
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'active', message: 'KGMAO SaaS Operating Securely' });
+    res.status(200).json({
+        status: 'active',
+        message: 'KGMAO SaaS Operating Securely',
+        uptime: process.uptime(),
+        version: config.appVersion,
+        build: config.buildSha,
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/ready', async (req, res) => {
+    const dbHealthy = await db.checkDatabaseHealth();
+    if (!dbHealthy) {
+        return res.status(503).json({
+            status: 'degraded',
+            message: 'Database unavailable',
+            requestId: req.requestId
+        });
+    }
+
+    return res.status(200).json({
+        status: 'ready',
+        message: 'All critical dependencies available',
+        requestId: req.requestId,
+        version: config.appVersion,
+        build: config.buildSha
+    });
+});
+
+app.get('/metrics', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        requestId: req.requestId,
+        metrics: snapshotMetrics()
+    });
 });
 
 // API Routes
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/companies', companyRoutes);
 app.use('/api/v1/assets', assetRoutes);
 app.use('/api/v1/work-orders', workOrderRoutes);
@@ -141,20 +195,6 @@ app.get('*', (req, res, next) => {
 });
 
 // Global Error Handler
-app.use((err, req, res, next) => {
-    console.error("❌ ERROR:", err.message);
-    
-    // Hostinger intercepts 5xx errors and replaces them with an HTML page.
-    // To ensure the frontend receives our JSON error, we convert critical 5xx server errors 
-    // (like database timeouts) to a 400 Bad Request if it contains our specific keywords.
-    let statusCode = err.statusCode || 500;
-    if (statusCode >= 500 || err.message.includes('DATABASE_TIMEOUT')) {
-        statusCode = 400; // Force 400 so Hostinger doesn't block the JSON payload
-    }
-
-    return res.status(statusCode).json({
-        message: err.message || "Internal Server Error"
-    });
-});
+app.use(globalErrorHandler);
 
 module.exports = app;

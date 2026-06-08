@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
-import { Users, Search, Zap, Globe, ShieldCheck, Mail, Building2, UserCheck } from 'lucide-react';
+import { Search, Zap, Globe, ShieldCheck, Mail, Building2, UserCheck } from 'lucide-react';
 
 const AdminUsers = () => {
     const { t } = useTranslation();

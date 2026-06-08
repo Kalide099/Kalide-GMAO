@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 import api from '../services/api/axiosConfig';
 import { decodeJWT } from '../utils/jwt';
 
@@ -18,6 +19,9 @@ export const AuthProvider = ({ children }) => {
             try {
                 const decodedToken = decodeJWT(token);
                 if (decodedToken) {
+                    const preferredLanguage = decodedToken.preferred_language || localStorage.getItem('kgmao_language') || 'en';
+                    localStorage.setItem('kgmao_language', preferredLanguage);
+                    i18n.changeLanguage(preferredLanguage);
                     setUser(decodedToken);
                 } else {
                     localStorage.removeItem('kgmao_token');
@@ -37,11 +41,19 @@ export const AuthProvider = ({ children }) => {
         checkSession();
     }, []);
 
-    const login = async (email, password) => {
+    const login = async (email, password, options = {}) => {
         try {
-            const response = await api.post('/auth/login', { email, password });
+            const response = await api.post('/auth/login', {
+                email,
+                password,
+                ...(options.mfaCode ? { mfaCode: options.mfaCode } : {}),
+                ...(options.backupCode ? { backupCode: options.backupCode } : {})
+            });
             if (response.data.success) {
+                const preferredLanguage = response.data.data.user?.preferredLanguage || response.data.data.user?.preferred_language || 'en';
                 localStorage.setItem('kgmao_token', response.data.data.token);
+                localStorage.setItem('kgmao_language', preferredLanguage);
+                i18n.changeLanguage(preferredLanguage);
                 checkSession();
                 return true;
             }
@@ -52,10 +64,16 @@ export const AuthProvider = ({ children }) => {
         return false;
     };
 
-    const logout = () => {
-        localStorage.removeItem('kgmao_token');
-        setUser(null);
-        window.location.href = '/login';
+    const logout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.warn('Logout endpoint failed, clearing local session anyway.');
+        } finally {
+            localStorage.removeItem('kgmao_token');
+            setUser(null);
+            window.location.href = '/login';
+        }
     };
 
     const stopImpersonatedSession = () => {

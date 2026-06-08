@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { useTranslation } from 'react-i18next';
-import { Award, CheckCircle, AlertTriangle, Calendar, Search, User, Filter } from 'lucide-react';
+import { Award, CheckCircle, AlertTriangle, Search } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
 
 const SkillMatrix = () => {
@@ -50,9 +51,7 @@ const SkillMatrix = () => {
                             className="bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-6 text-[10px] font-black tracking-widest focus:ring-2 focus:ring-slate-900 outline-none w-80 transition-all shadow-sm"
                         />
                     </div>
-                    <button className="p-4 bg-slate-900 text-white rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-                        <Filter size={20} />
-                    </button>
+
                 </div>
             </div>
 
@@ -103,9 +102,7 @@ const SkillMatrix = () => {
                                     </div>
                                 </td>
                                 <td className="px-12 py-10 text-right">
-                                    <button className="px-8 py-3 bg-slate-50 text-slate-900 border border-slate-100 rounded-xl font-black text-[10px] tracking-widest hover:bg-slate-900 hover:text-white transition-all uppercase">
-                                        {t('roadmap.skills.view')}
-                                    </button>
+
                                 </td>
                             </tr>
                         ))}

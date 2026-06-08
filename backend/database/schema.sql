@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS companies (
     name_fr VARCHAR(255) NOT NULL,
     industry_en VARCHAR(100),
     industry_fr VARCHAR(100),
+    default_language CHAR(2) NOT NULL DEFAULT 'en',
     country_code CHAR(2) DEFAULT 'US',
     vat_id VARCHAR(50),
     unit_system ENUM('metric', 'imperial') DEFAULT 'metric',
@@ -115,11 +116,42 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('super_admin', 'admin', 'manager', 'technician', 'client') DEFAULT 'client',
     status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
+    preferred_language CHAR(2) NOT NULL DEFAULT 'en',
+    mfa_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    mfa_secret VARCHAR(255) NULL,
+    mfa_temp_secret VARCHAR(255) NULL,
+    token_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL,
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
     UNIQUE INDEX idx_company_email (company_id, email, deleted_at)
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id CHAR(36) PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    requested_ip VARCHAR(45) NULL,
+    requested_user_agent VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE INDEX idx_password_reset_token_hash (token_hash),
+    INDEX idx_password_reset_user_id (user_id),
+    INDEX idx_password_reset_expires_at (expires_at)
+);
+
+CREATE TABLE IF NOT EXISTS mfa_backup_codes (
+    id CHAR(36) PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+    code_hash VARCHAR(255) NOT NULL,
+    used_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_mfa_backup_user_id (user_id),
+    INDEX idx_mfa_backup_used_at (used_at)
 );
 
 
@@ -441,7 +473,9 @@ CREATE TABLE IF NOT EXISTS registration_requests (
     admin_first_name VARCHAR(100) NOT NULL,
     admin_last_name VARCHAR(100) NOT NULL,
     admin_email VARCHAR(255) NOT NULL,
+    admin_phone VARCHAR(50),
     password_hash VARCHAR(255) NOT NULL,
+    preferred_language CHAR(2) NOT NULL DEFAULT 'en',
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

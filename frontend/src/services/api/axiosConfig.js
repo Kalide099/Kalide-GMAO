@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api/v1', // Force relative URL for Hostinger Unified Monorepo
+    baseURL: import.meta.env.VITE_API_URL || '/api/v1',
     headers: {
         'Content-Type': 'application/json'
     }
@@ -29,6 +29,8 @@ import { queueAction } from '../../utils/offlineSync';
 // Response interceptor to handle Global Auth Errors and Offline Persistence
 api.interceptors.response.use((response) => response, async (error) => {
     const originalRequest = error.config;
+    const errorCode = error.response?.data?.error_code;
+    const requestUrl = originalRequest?.url || '';
 
     // Handle Network Errors (Offline)
     if (!error.response && !navigator.onLine) {
@@ -43,10 +45,21 @@ api.interceptors.response.use((response) => response, async (error) => {
         }
     }
 
-    if (error.response && error.response.status === 401) {
-        // Token expired or invalid, forcibly clear and eject to login
-        localStorage.removeItem('kgmao_token');
-        window.location.href = '/login';
+    const isMfaChallenge = errorCode === 'MFA_REQUIRED' || errorCode === 'MFA_INVALID';
+
+    if (error.response && error.response.status === 401 && !isMfaChallenge) {
+        const isAuthRequest = requestUrl.startsWith('/auth/');
+        const isOptionalBackgroundRequest = requestUrl.startsWith('/notifications');
+
+        if (!isAuthRequest && !isOptionalBackgroundRequest) {
+            // Token expired or invalid, clear session and preserve intended route.
+            localStorage.removeItem('kgmao_token');
+            const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            const loginRedirectUrl = `/login?redirect=${encodeURIComponent(currentPath || '/app')}`;
+            if (!window.location.pathname.startsWith('/login')) {
+                window.location.href = loginRedirectUrl;
+            }
+        }
     }
 
     // Enhance error object with backend message if available

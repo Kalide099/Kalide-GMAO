@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Book, Cpu, ShieldCheck, Mail, MessageSquare, Zap, Globe, Radio } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
+import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import toast from 'react-hot-toast';
 
 const HelpCenter = () => {
     const { t } = useTranslation();
+    const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
     const categories = [
         { icon: <Zap className="text-yellow-400" />, title: t('help.categories.gettingStarted.title'), desc: t('help.categories.gettingStarted.desc') },
@@ -88,11 +91,11 @@ const HelpCenter = () => {
                              <p className="text-slate-500 font-medium text-sm">{t('help.supportDesc')}</p>
                         </div>
                         <div className="space-y-4 pt-4">
-                            <button className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
+                            <button onClick={() => setSimModalOpen({ isOpen: true, type: 'chat' })} className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
                                 <MessageSquare size={18} className="text-yellow-400" />
                                 {t('help.startChat')}
                             </button>
-                            <button className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
+                            <button onClick={() => setSimModalOpen({ isOpen: true, type: 'ticket' })} className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
                                 <Mail size={18} className="text-indigo-600" />
                                 {t('help.openTicket')}
                             </button>
@@ -107,6 +110,15 @@ const HelpCenter = () => {
             </div>
             </div>
             <PublicFooter />
+
+            <SimulatedProcessModal 
+                isOpen={simModalOpen.isOpen} 
+                onClose={() => setSimModalOpen({ isOpen: false, type: null })} 
+                title={simModalOpen.type === 'chat' ? 'Connecting to Agent' : 'Generating Ticket ID'} 
+                processingText={simModalOpen.type === 'chat' ? 'Locating available support node...' : 'Encrypting support payload...'} 
+                successText={simModalOpen.type === 'chat' ? 'Agent Connected' : 'Ticket Created'}
+                onSuccessCallback={() => toast.success(simModalOpen.type === 'chat' ? 'Support agent joined the channel.' : 'Ticket #8849 logged in the system.')}
+            />
         </div>
     );
 };

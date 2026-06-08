@@ -7,5 +7,6 @@ router.use(authenticate);
 
 router.get('/', customFormController.getCustomForms);
 router.post('/', customFormController.createCustomForm);
+router.delete('/:id', customFormController.deleteCustomForm);
 
 module.exports = router;

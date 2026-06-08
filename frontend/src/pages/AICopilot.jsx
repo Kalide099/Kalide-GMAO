@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Bot, Send, Loader2, Terminal, Sparkles, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
 const AICopilot = () => {
     const { t } = useTranslation();
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([
-        { role: 'system', content: 'Industrial Generative AI Copilot v3.0 Initialized. Welcome to the Nexus Intelligence Hub. How can I assist with your Enterprise operations today?' }
+        { role: 'system', content: 'AI Copilot is ready. Welcome to your operations center. How can I help today?' }
     ]);
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
@@ -30,14 +29,14 @@ const AICopilot = () => {
 
         // Simulate AI thinking and responding
         setTimeout(() => {
-            let reply = "I have analyzed the telemetry matrix.";
+            let reply = "I have analyzed your live data.";
             
             if (userText.toLowerCase().includes('vibration') || userText.toLowerCase().includes('pump')) {
-                reply = "Based on the historical FMEA logic, a vibration of 40mm/s on Pump #4 indicates a critical bearing failure. I recommend dispatching a corrective work order immediately. Would you like me to draft it?";
+                reply = "Based on past maintenance records, a vibration of 40mm/s on Pump #4 suggests a serious bearing issue. I recommend creating a repair work order now. Would you like me to draft it?";
             } else if (userText.toLowerCase().includes('order') || userText.toLowerCase().includes('draft')) {
                 reply = "Work Order drafted for Pump #4 (Bearing Replacement). Estimated MTTR: 2 Hours. Required Part: Bearing Kit K7. Status: Pending Approval.";
             } else if (userText.toLowerCase().includes('esg') || userText.toLowerCase().includes('carbon')) {
-                reply = "Your current industrial cluster is operating at 12% higher energy intensity than the global baseline. Suggesting an automated optimization of HVAC Node A to save 140kg CO2/day.";
+                reply = "Your site is using 12% more energy than your normal baseline. I suggest optimizing HVAC Unit A to save about 140kg CO2 per day.";
             } else {
                 reply = "I am cross-referencing your request with the global CMMS knowledge base. Please specify the asset or module you are inquiring about.";
             }
@@ -58,17 +57,17 @@ const AICopilot = () => {
                     </div>
                     <div>
                         <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">{t('copilot.title', 'AI Copilot')}</h1>
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">{t('copilot.subtitle', 'Generative Nexus Engine')}</p>
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">{t('copilot.subtitle', 'Smart Assistant')}</p>
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-4 text-slate-400 z-10">
                     <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.model', 'Model: GPT-4.5 Nexus')}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.model', 'Model: GPT-4.5')}</span>
                     </div>
                     <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <Activity className="w-4 h-4 text-indigo-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.telemetry', 'Telemetry: Active')}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.telemetry', 'Live Data: On')}</span>
                     </div>
                 </div>
                 
@@ -80,7 +79,7 @@ const AICopilot = () => {
             <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-slate-50 space-y-8 custom-scrollbar">
                 <div className="text-center mb-8">
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 bg-white px-6 py-2 rounded-full shadow-sm border border-slate-100 inline-block">
-                        {t('copilot.secure_session', 'Secure Enterprise Session Initialized')}
+                        {t('copilot.secure_session', 'Secure session started')}
                     </span>
                 </div>
                 
@@ -100,7 +99,7 @@ const AICopilot = () => {
                     <div className="flex justify-start">
                         <div className="bg-white border border-slate-100 p-6 rounded-[2rem] rounded-tl-sm shadow-sm flex items-center gap-4">
                             <Loader2 className="w-6 h-6 animate-spin text-yellow-500" />
-                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">{t('copilot.parsing', 'Parsing Industrial Data...')}</span>
+                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">{t('copilot.parsing', 'Reading your data...')}</span>
                         </div>
                     </div>
                 )}
@@ -117,8 +116,7 @@ const AICopilot = () => {
                         placeholder={t('copilot.placeholder', 'Ask AI Copilot for diagnostics, ESG insights, or draft work orders...')}
                         className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-base rounded-[2rem] pl-8 pr-16 py-6 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium font-medium shadow-inner"
                     />
-                    <button 
-                        type="submit" 
+                    <button type="submit" 
                         disabled={!input.trim() || isTyping}
                         className="absolute right-3 w-12 h-12 bg-slate-900 text-white rounded-[1.5rem] flex items-center justify-center hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md group"
                     >

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { 
     ShieldCheck, Key, Globe, Plus, Trash2, 
-    Terminal, Settings, Fingerprint, Lock
+    Fingerprint, Lock
 } from 'lucide-react';
 
 const SSOConfig = () => {
@@ -11,6 +11,8 @@ const SSOConfig = () => {
     const [configs, setConfigs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('');
+    const [statusTone, setStatusTone] = useState('');
     const [formData, setFormData] = useState({
         provider_name: '',
         idp_entity_id: '',
@@ -40,11 +42,37 @@ const SSOConfig = () => {
             const res = await api.post('/auth/sso-config', formData);
             if (res.data.success) {
                 setIsModalOpen(false);
+                setStatusTone('success');
+                setStatusMessage(res.data.message || 'SSO configuration created.');
                 fetchData();
             }
         } catch (err) {
-            alert("Protocol Violation.");
+            setStatusTone('error');
+            setStatusMessage(err?.response?.data?.message || 'Protocol Violation.');
         }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('common.confirmDelete') || 'Delete this SSO configuration?')) return;
+
+        try {
+            await api.delete(`/auth/sso-config/${id}`);
+            await fetchData();
+        } catch (err) {
+            setStatusTone('error');
+            setStatusMessage(err?.response?.data?.message || 'Delete failed.');
+        }
+    };
+
+    const handleVerify = (url) => {
+        if (!url) {
+            setStatusTone('error');
+            setStatusMessage('Missing SSO endpoint URL.');
+            return;
+        }
+        setStatusTone('success');
+        setStatusMessage('SSO endpoint opened in a new tab.');
+        window.open(url, '_blank', 'noopener,noreferrer');
     };
 
     return (
@@ -73,6 +101,12 @@ const SSOConfig = () => {
                 </button>
             </div>
 
+            {statusMessage && (
+                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                    {statusMessage}
+                </div>
+            )}
+
             {loading ? (
                 <div className="h-[40vh] flex flex-col items-center justify-center gap-4 text-slate-400">
                     <div className="w-12 h-12 border-4 border-slate-900 border-t-yellow-400 rounded-full animate-spin"></div>
@@ -86,7 +120,7 @@ const SSOConfig = () => {
                             <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">{t('marketing.sso.empty')}</p>
                         </div>
                     ) : (
-                        configs.map((cfg, i) => (
+                        configs.map((cfg) => (
                             <div key={cfg.id} className="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100 hover:shadow-2xl transition-all group animate-fade-in-up">
                                 <div className="flex justify-between items-start mb-10">
                                     <div className="p-4 bg-indigo-50 rounded-2xl text-indigo-600">
@@ -110,10 +144,10 @@ const SSOConfig = () => {
                                 </div>
 
                                 <div className="flex gap-4">
-                                    <button className="flex-1 py-4 bg-slate-950 text-yellow-400 rounded-2xl font-black uppercase tracking-widest text-[9px] shadow-xl">
+                                    <button onClick={() => handleVerify(cfg.sso_url)} className="flex-1 py-4 bg-slate-950 text-yellow-400 rounded-2xl font-black uppercase tracking-widest text-[9px] shadow-xl">
                                         {t('marketing.sso.verify')}
                                     </button>
-                                    <button className="px-5 py-4 bg-rose-50 text-rose-300 hover:bg-rose-600 hover:text-white rounded-2xl transition-all">
+                                    <button onClick={() => handleDelete(cfg.id)} className="px-5 py-4 bg-rose-50 text-rose-300 hover:bg-rose-600 hover:text-white rounded-2xl transition-all">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>

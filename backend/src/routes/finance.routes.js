@@ -10,6 +10,7 @@ router.get('/asset/:assetId', financeController.getAssetDetails);
 
 router.get('/contracts', financeController.getContracts);
 router.post('/contracts', financeController.createContract);
+router.patch('/contracts/:id/archive', financeController.archiveContract);
 
 router.get('/budgets', financeController.getBudgets);
 router.post('/budgets', financeController.createBudget);

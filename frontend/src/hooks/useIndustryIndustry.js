@@ -36,7 +36,7 @@ const useIndustryIndustry = () => {
             mainMetric: t('industry.min.mainMetric', 'Safety Clearance')
         },
         logistics: {
-            assetName: t('industry.log.assetName', 'Fleet / Hub'),
+            assetName: t('industry.log.assetName', 'Fleet / Center'),
             throughput: t('industry.log.throughput', 'Parcel Volume'),
             health: t('industry.log.health', 'Fleet Utilization'),
             mainMetric: t('industry.log.mainMetric', 'Delivery Accuracy')

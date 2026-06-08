@@ -21,3 +21,14 @@ exports.createCustomForm = async (companyId, data) => {
     
     return { id, name };
 };
+
+exports.deleteCustomForm = async (companyId, formId) => {
+    const [result] = await pool.query(
+        `UPDATE custom_forms
+         SET is_active = FALSE
+         WHERE id = ? AND company_id = ?`,
+        [formId, companyId]
+    );
+
+    return result.affectedRows > 0;
+};

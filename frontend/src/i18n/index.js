@@ -16,10 +16,17 @@ i18n
   .init({
     resources,
     supportedLngs: ['en', 'fr'],
-    nonExplicitSupportedLngs: true,
-    fallbackLng: 'en', // DEFAULT: Fallback to English if detected lang is unsupported
+    nonExplicitSupportedLngs: false,
+    load: 'languageOnly',
+    fallbackLng: {
+      en: ['en'],
+      fr: ['fr'],
+      default: ['en']
+    },
     debug: import.meta.env.DEV,
-    saveMissing: true, 
+    saveMissing: false,
+    returnNull: false,
+    returnEmptyString: false,
     interpolation: {
       escapeValue: false, 
     },

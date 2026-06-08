@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api/axiosConfig';
 import { useTranslation } from 'react-i18next';
-import { Eye, Cpu, Zap, Radio, Boxes, Smartphone, Users, ShieldCheck } from 'lucide-react';
+import { Zap, Radio, Boxes, ShieldCheck } from 'lucide-react';
 
 const NeuralAR = () => {
     const { t } = useTranslation();
     const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     const fetchTasks = async () => {
         try {
-            setLoading(true);
             const res = await api.get('/work-orders');
             if (res.data.success) {
                 setTasks(res.data.data.filter(t => t.status === 'in_progress'));
             }
         } catch (error) {
             console.error("Neural AR Sync Failure", error);
-        } finally {
-            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchTasks();
     }, []);
+
+    const handleLaunchOverlay = (taskId) => {
+        window.open(`/app/work-orders?task=${taskId}`, '_blank', 'noopener,noreferrer');
+    };
 
     return (
         <div className="space-y-10 animate-fade-in-up">
@@ -53,7 +53,7 @@ const NeuralAR = () => {
                             ) : tasks.map(task => (
                                 <div key={task.id} className="flex justify-between items-center group">
                                     <span className="text-[10px] font-black text-white/60 tracking-tight uppercase truncate max-w-[150px]">{task.title}</span>
-                                    <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[8px] font-black uppercase tracking-widest rounded-lg transition-all">{t('neural_ar.launchOverlay')}</button>
+                                    <button onClick={() => handleLaunchOverlay(task.id)} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[8px] font-black uppercase tracking-widest rounded-lg transition-all">{t('neural_ar.launchOverlay')}</button>
                                 </div>
                             ))}
                          </div>

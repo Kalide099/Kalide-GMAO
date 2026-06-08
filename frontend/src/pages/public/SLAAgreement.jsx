@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Activity, Clock, Zap, CheckCircle2, AlertTriangle, ShieldCheck, HeartPulse, HardDrive } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api/axiosConfig';
 import { useTranslation } from 'react-i18next';
-import { Truck, Ship, Globe, Package, TrendingUp, Anchor, Compass } from 'lucide-react';
+import { Truck, Ship, Globe, Anchor } from 'lucide-react';
 
 const LogisticsTower = () => {
     const { t } = useTranslation();
@@ -90,7 +90,7 @@ const LogisticsTower = () => {
                         <div className="space-y-6">
                             {data.shipments.length === 0 ? (
                                 <p className="text-[10px] font-bold text-slate-300 italic uppercase">{t('logistics.noLiveTransits')}</p>
-                            ) : data.shipments.map((order, i) => (
+                            ) : data.shipments.map((order) => (
                                 <div key={order.id} className="flex items-center gap-4 group cursor-pointer">
                                     <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
                                         <Truck className="text-slate-400 group-hover:text-white" size={20} />

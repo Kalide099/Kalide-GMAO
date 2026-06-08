@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
 import { 
     Building2, Power, UserCheck, Settings2, ShieldAlert, Cpu, BrainCircuit, Globe,
-    Package, Radio, Boxes, Link, Leaf, Eye, X, Award, DollarSign, Search, Layers, Thermometer, FileText, Box, Zap
+    Package, Radio, Boxes, Link, Leaf, Eye, X, Award, DollarSign, Search, Layers, Thermometer, FileText, Box, Zap,
+    Bot, ShoppingCart, Wrench, Map
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 const AdminCompanies = () => {
     const { t, i18n } = useTranslation();
-    const { logout } = useAuth(); 
+    useAuth();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCompany, setSelectedCompany] = useState(null);
@@ -76,11 +78,45 @@ const AdminCompanies = () => {
         try {
             const res = await api.patch(`/admin/company/${id}/plan`, { plan });
             if (res.data.success) {
-                setCompanies(companies.map(c => c.id === id ? {...c, plan} : c));
-                setSelectedCompany({...selectedCompany, plan});
+                const updatedModules = res.data.data?.enabled_modules;
+                
+                setCompanies(companies.map(c => c.id === id ? {
+                    ...c, 
+                    plan, 
+                    ...(updatedModules && { enabled_modules: updatedModules })
+                } : c));
+                
+                setSelectedCompany(prev => prev ? {
+                    ...prev, 
+                    plan,
+                    ...(updatedModules && { enabled_modules: updatedModules })
+                } : null);
             }
         } catch (e) {
             alert(t('admin.planUpdateError'));
+        }
+    };
+
+    const impersonateTenantContext = async (company) => {
+        if (!window.confirm(t('admin.impersonationConfirm', { defaultValue: 'Start an impersonation session for this tenant?' }))) {
+            return;
+        }
+
+        try {
+            const response = await api.get(`/admin/company/${company.id}/impersonate`);
+            const token = response?.data?.data?.token;
+
+            if (!token) {
+                toast.error(t('admin.impersonationFailed', { defaultValue: 'Impersonation failed. No token returned.' }));
+                return;
+            }
+
+            localStorage.setItem('kgmao_token', token);
+            toast.success(t('admin.impersonationSuccess', { defaultValue: 'You are now impersonating the tenant context.' }));
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Tenant impersonation failed', error);
+            toast.error(t('admin.impersonationFailed', { defaultValue: 'Unable to start impersonation for this tenant.' }));
         }
     };
 
@@ -139,14 +175,14 @@ const AdminCompanies = () => {
                                         <div className="flex flex-wrap gap-1.5 max-w-[320px]">
                                             {[
                                                 // Nexus Modules
-                                                { id: 'rca', icon: <Search size={14} />, label: t('nexus.rca.title') || 'RCA' },
-                                                { id: 'fmea', icon: <Layers size={14} />, label: t('nexus.fmea.title') || 'FMEA' },
-                                                { id: 'loto', icon: <ShieldAlert size={14} />, label: t('nexus.loto.title') || 'LOTO' },
+                                                { id: 'rca', icon: <Search size={14} />, label: t('nexus.rca.title') || 'Issue Review' },
+                                                { id: 'fmea', icon: <Layers size={14} />, label: t('nexus.fmea.title') || 'Risk Check' },
+                                                { id: 'loto', icon: <ShieldAlert size={14} />, label: t('nexus.loto.title') || 'Safety Lock' },
                                                 { id: 'calibration', icon: <Thermometer size={14} />, label: t('nexus.calibration.title') || 'Calibration' },
-                                                { id: 'dms', icon: <FileText size={14} />, label: t('nexus.dms.title') || 'DMS' },
-                                                { id: 'tpm', icon: <Settings2 size={14} />, label: t('nexus.tpm.title') || 'TPM' },
+                                                { id: 'dms', icon: <FileText size={14} />, label: t('nexus.dms.title') || 'Documents' },
+                                                { id: 'tpm', icon: <Settings2 size={14} />, label: t('nexus.tpm.title') || 'Maintenance' },
                                                 { id: 'inventory', icon: <Box size={14} />, label: t('nexus.inventory.title') || 'Inventory' },
-                                                { id: 'bim', icon: <Zap size={14} />, label: t('nexus.bim.title') || 'BIM' },
+                                                { id: 'bim', icon: <Zap size={14} />, label: t('nexus.bim.title') || '3D View' },
                                                 { id: 'offline', icon: <Power size={14} />, label: t('nexus.offline.title') || 'Offline' },
                                                 // Global Matrix Modules
                                                 { id: 'safety', icon: <ShieldAlert size={14} />, label: t('roadmap.safety.title') },
@@ -158,9 +194,31 @@ const AdminCompanies = () => {
                                                 { id: 'ar', icon: <Eye size={14} />, label: t('nav.ar_workforce') },
                                                 { id: 'command', icon: <Radio size={14} />, label: t('nav.command_center') },
                                                 { id: 'twin', icon: <Boxes size={14} />, label: t('nav.digital_twin') },
-                                                { id: 'hub', icon: <Link size={14} />, label: t('nav.integration_hub') },
+                                                { id: 'hub', icon: <Link size={14} />, label: t('nav.integration_hub') || 'Operations Center' },
                                                 { id: 'esg', icon: <Leaf size={14} />, label: t('roadmap.esg.title') },
-                                                { id: 'finance', icon: <DollarSign size={14} />, label: t('roadmap.finance.title') }
+                                                { id: 'finance', icon: <DollarSign size={14} />, label: t('roadmap.finance.title') },
+                                                // Enterprise Autonomy Modules
+                                                { id: 'copilot', icon: <Bot size={14} />, label: 'AI Copilot' },
+                                                { id: 'drone', icon: <Radio size={14} />, label: 'Drone Fleet' },
+                                                { id: 'procurement', icon: <ShoppingCart size={14} />, label: 'AI Procurement' },
+                                                { id: 'vision', icon: <Eye size={14} />, label: 'Vision Defect' },
+                                                { id: 'workflow', icon: <Layers size={14} />, label: 'Workflow Builder' },
+                                                { id: 'reporting', icon: <FileText size={14} />, label: 'Reporting Studio' },
+                                                { id: 'tenant_settings', icon: <Wrench size={14} />, label: 'Tenant Settings' },
+                                                // Phase 5 Emerging Markets Hub
+                                                { id: 'micro_grid', icon: <Cpu size={14} />, label: 'Micro-Grid' },
+                                                { id: 'ussd_offline', icon: <Radio size={14} />, label: 'USSD Offline' },
+                                                { id: 'leak_detection', icon: <Zap size={14} />, label: 'Leak Detection' },
+                                                { id: 'dust_predictive', icon: <Thermometer size={14} />, label: 'Dust Engine' },
+                                                { id: 'route_risk', icon: <Map size={14} />, label: 'Route Risk' },
+                                                { id: 'solar_cold', icon: <Thermometer size={14} />, label: 'Solar Cold' },
+                                                { id: 'community_fault', icon: <FileText size={14} />, label: 'Community Fault' },
+                                                { id: 'mobile_money', icon: <DollarSign size={14} />, label: 'Mobile Money' },
+                                                { id: 'pipeline_integrity', icon: <Eye size={14} />, label: 'Pipeline Integrity' },
+                                                { id: 'off_grid', icon: <Cpu size={14} />, label: 'Off-Grid Resort' },
+                                                { id: 'inflation_sync', icon: <DollarSign size={14} />, label: 'Inflation Sync' },
+                                                { id: 'anti_poaching', icon: <Radio size={14} />, label: 'Anti-Poaching' },
+                                                { id: 'low_bandwidth_twin', icon: <Boxes size={14} />, label: '2.5D Twins' }
                                             ].map(mod => {
                                                 let currentMods = c.enabled_modules;
                                                 if (typeof currentMods === 'string') {
@@ -203,6 +261,7 @@ const AdminCompanies = () => {
                                                     <Power size={20} />
                                                 </button>
                                                 <button 
+                                                    onClick={() => impersonateTenantContext(c)}
                                                     className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
                                                     title={t('admin.impersonateTenant')}
                                                 >

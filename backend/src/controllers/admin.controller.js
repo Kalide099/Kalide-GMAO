@@ -2,6 +2,10 @@ const pool = require('../config/db');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const { getEnv } = require('../config/env');
+const { getModulesForPlan } = require('../config/industryTemplates');
+
+const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
 
 exports.getPlatformAnalytics = async (req, res, next) => {
     try {
@@ -13,6 +17,14 @@ exports.getPlatformAnalytics = async (req, res, next) => {
         `);
 
         const [userStats] = await pool.query('SELECT COUNT(*) as total_users FROM users WHERE deleted_at IS NULL');
+
+        const [mfaStats] = await pool.query(`
+            SELECT 
+                SUM(CASE WHEN role IN ('admin', 'super_admin') THEN 1 ELSE 0 END) AS privileged_users,
+                SUM(CASE WHEN role IN ('admin', 'super_admin') AND mfa_enabled = TRUE THEN 1 ELSE 0 END) AS privileged_users_mfa_enabled
+            FROM users
+            WHERE deleted_at IS NULL
+        `);
         
         const [revenueStats] = await pool.query(`
             SELECT SUM(amount) as total_revenue, currency 
@@ -24,6 +36,7 @@ exports.getPlatformAnalytics = async (req, res, next) => {
         return successResponse(res, 200, 'Global Platform Analytics retrieved', {
             companies: companyStats[0],
             users: userStats[0],
+            mfa: mfaStats[0],
             revenue: revenueStats
         });
     } catch (err) {
@@ -85,7 +98,7 @@ exports.impersonateUser = async (req, res, next) => {
     try {
         const { userId } = req.params;
 
-        const [users] = await pool.query('SELECT id, company_id, role, email FROM users WHERE id = ?', [userId]);
+        const [users] = await pool.query('SELECT id, company_id, role, email, token_version FROM users WHERE id = ?', [userId]);
         
         if (users.length === 0) return errorResponse(res, 404, 'Targeted user not found structurally.');
 
@@ -97,14 +110,61 @@ exports.impersonateUser = async (req, res, next) => {
                 id: target.id, 
                 company_id: target.company_id, 
                 role: target.role,
+                token_version: Number(target.token_version || 0),
                 is_impersonating: true, // Special flag primarily utilized by UI banner wrappers
                 original_admin_id: req.user.id
             },
-            process.env.JWT_SECRET,
+            JWT_SECRET,
             { expiresIn: '1h' } // Short expiry for safety routines
         );
 
         return successResponse(res, 200, `Impersonation established for: ${target.email}`, { token: impersonationToken });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.impersonateCompany = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const [users] = await pool.query(
+            `SELECT id, company_id, role, email, token_version
+             FROM users
+             WHERE company_id = ?
+               AND deleted_at IS NULL
+               AND status <> 'suspended'
+             ORDER BY
+               CASE
+                 WHEN role = 'admin' THEN 1
+                 WHEN role = 'manager' THEN 2
+                 ELSE 3
+               END,
+               created_at ASC
+             LIMIT 1`,
+            [id]
+        );
+
+        if (users.length === 0) {
+            return errorResponse(res, 404, 'No eligible user found for this company impersonation request.');
+        }
+
+        const target = users[0];
+
+        const impersonationToken = jwt.sign(
+            {
+                id: target.id,
+                company_id: target.company_id,
+                role: target.role,
+                token_version: Number(target.token_version || 0),
+                is_impersonating: true,
+                original_admin_id: req.user.id
+            },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        return successResponse(res, 200, `Impersonation established for company context: ${target.email}`, { token: impersonationToken });
     } catch (err) {
         next(err);
     }
@@ -129,7 +189,7 @@ exports.getGlobalAuditLogs = async (req, res, next) => {
 exports.getAllUsers = async (req, res, next) => {
     try {
         const [users] = await pool.query(`
-            SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.status, u.created_at, c.name_en as company_name
+            SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.role, u.status, u.created_at, c.name_en as company_name
             FROM users u
             LEFT JOIN companies c ON u.company_id = c.id
             WHERE u.deleted_at IS NULL
@@ -189,16 +249,28 @@ exports.updateCompanyPlan = async (req, res, next) => {
             return errorResponse(res, 400, 'Invalid plan selection.');
         }
 
-        await pool.query('UPDATE companies SET plan = ? WHERE id = ?', [plan, id]);
+        // Fetch company industry
+        const [companies] = await pool.query('SELECT industry_en FROM companies WHERE id = ?', [id]);
+        if (companies.length === 0) {
+            return errorResponse(res, 404, 'Company not found.');
+        }
+        
+        const industry = companies[0].industry_en || 'manufacturing';
+        const assignedModules = getModulesForPlan(industry, plan);
+
+        await pool.query('UPDATE companies SET plan = ?, enabled_modules = ? WHERE id = ?', [plan, JSON.stringify(assignedModules), id]);
 
         // Audit Log
         await pool.query(
             `INSERT INTO audit_logs (id, company_id, user_id, action, entity_type, entity_id, details)
              VALUES (UUID(), ?, ?, ?, ?, ?, ?)`,
-             [id, req.user.id, 'admin_update_plan', 'companies', id, JSON.stringify({ new_plan: plan })]
+             [id, req.user.id, 'admin_update_plan', 'companies', id, JSON.stringify({ new_plan: plan, assigned_modules: assignedModules })]
         );
 
-        return successResponse(res, 200, `Company plan upgraded to ${plan.toUpperCase()}`);
+        return successResponse(res, 200, `Company plan upgraded to ${plan.toUpperCase()}`, {
+            plan,
+            enabled_modules: assignedModules
+        });
     } catch (err) {
         next(err);
     }

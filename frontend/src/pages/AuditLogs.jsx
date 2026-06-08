@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
-import { ShieldCheck, User, Clock, FileText, Database } from 'lucide-react';
+import { ShieldCheck, User, Clock, Database } from 'lucide-react';
 
 const AuditLogs = () => {
     const { t } = useTranslation();

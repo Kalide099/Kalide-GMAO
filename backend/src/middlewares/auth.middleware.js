@@ -1,11 +1,15 @@
 const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../utils/responseHandler');
 const { t } = require('../utils/i18n');
+const pool = require('../config/db');
+const { getEnv } = require('../config/env');
+
+const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
 
 /**
  * Middleware to authenticate user via JWT
  */
-exports.authenticate = (req, res, next) => {
+exports.authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         const lang = req.lang || 'en';
@@ -17,9 +21,29 @@ exports.authenticate = (req, res, next) => {
         const token = authHeader.split(' ')[1];
         
         // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         
         if (!decoded.company_id && decoded.role !== 'super_admin') {
+            return errorResponse(res, 401, t('auth.invalid_token', lang));
+        }
+
+        const [users] = await pool.query(
+            'SELECT id, status, deleted_at, token_version FROM users WHERE id = ? LIMIT 1',
+            [decoded.id]
+        );
+
+        if (users.length === 0) {
+            return errorResponse(res, 401, t('auth.invalid_token', lang));
+        }
+
+        const user = users[0];
+        if (user.status !== 'active' || user.deleted_at !== null) {
+            return errorResponse(res, 401, t('auth.invalid_token', lang));
+        }
+
+        const currentTokenVersion = Number(user.token_version || 0);
+        const tokenVersion = Number(decoded.token_version || 0);
+        if (currentTokenVersion !== tokenVersion) {
             return errorResponse(res, 401, t('auth.invalid_token', lang));
         }
 

@@ -1,4 +1,5 @@
 const { errorResponse } = require('../utils/responseHandler');
+const logger = require('../config/logger');
 
 /**
  * Global Error Handling Layer
@@ -8,8 +9,12 @@ const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 
-    // Log error for internal monitoring (In production, use Winston or Sentry)
-    console.error(`[INTERNAL ERROR] ${err.stack}`);
+    logger.error('Unhandled API error', {
+        requestId: req.requestId,
+        method: req.method,
+        path: req.originalUrl,
+        error: err
+    });
 
     // MySQL Specific Handling
     if (err.code === 'ER_DUP_ENTRY') {
@@ -21,12 +26,10 @@ const globalErrorHandler = (err, req, res, next) => {
     }
 
     // Standard Response
-    return errorResponse(
-        res, 
-        err.statusCode, 
-        process.env.NODE_ENV === 'development' ? err.message : 'internal_server_error',
-        err.errorCode || 'SERVER_ERROR'
-    );
+    const isDev = process.env.NODE_ENV === 'development';
+    const safeMessage = isDev ? err.message : 'internal_server_error';
+
+    return errorResponse(res, err.statusCode, safeMessage, err.errorCode || 'SERVER_ERROR');
 };
 
 module.exports = globalErrorHandler;
