@@ -100,11 +100,11 @@ const ContactUs = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.fullName')}</label>
-                                    <input type="text" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder="John Matrix" />
+                                    <input type="text" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.email')}</label>
-                                    <input type="email" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder="admin@enterprise.com" />
+                                    <input type="email" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.email')} />
                                 </div>
                             </div>
 
@@ -138,10 +138,10 @@ const ContactUs = () => {
             <SimulatedProcessModal 
                 isOpen={simModalOpen} 
                 onClose={() => setSimModalOpen(false)} 
-                title="Transmitting Encrypted Payload" 
-                processingText="Establishing secure handshake with HQ..." 
-                successText="Transmission Confirmed"
-                onSuccessCallback={() => toast.success('Your message has been received by our terminal.')}
+                title={t('contact.modal.title')} 
+                processingText={t('contact.modal.processing')} 
+                successText={t('contact.modal.success')}
+                onSuccessCallback={() => toast.success(t('contact.modal.toast'))}
             />
         </div>
     );

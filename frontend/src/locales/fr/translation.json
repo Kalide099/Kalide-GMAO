@@ -1366,6 +1366,16 @@
       "a2": "Initialisation des Modules d'Actifs et Configuration Multi-Tenant",
       "a3": "Interprétation du Tableau de Bord d'Intelligence Prédictive",
       "a4": "Protocoles de Conformité ISO et de Sécurité OT"
+    },
+    "modals": {
+      "chatTitle": "Initialisation de la Liaison de Communication",
+      "chatProcessing": "Contournement des protocoles de sécurité...",
+      "chatSuccess": "Connexion Établie",
+      "chatToast": "Un agent de support a rejoint le canal.",
+      "ticketTitle": "Soumission du Ticket de Support",
+      "ticketProcessing": "Acheminement vers un opérateur disponible...",
+      "ticketSuccess": "Ticket Soumis",
+      "ticketToast": "Le ticket #8849 a été enregistré dans le système."
     }
   },
   "contact": {
@@ -1395,7 +1405,17 @@
     "addressLine2": "Center Espace Global, KG 9042",
     "phoneNumber": "+1 (800) KG-MAO-OPS",
     "mttrValue": "MTTR : 15 Min",
-    "encryptionStandard": "Lien AES-256"
+    "encryptionStandard": "Lien AES-256",
+    "placeholders": {
+      "name": "Jean Dupont",
+      "email": "admin@entreprise.com"
+    },
+    "modal": {
+      "title": "Transmission de la Charge Utile Cryptée",
+      "processing": "Établissement d'une poignée de main sécurisée avec le QG...",
+      "success": "Transmission Confirmée",
+      "toast": "Votre message a été reçu par notre terminal."
+    }
   },
   "legal": {
     "termsTitle": "Conditions de Gouvernance",
@@ -1602,6 +1622,24 @@
       "tier1": "10% de Crédit",
       "tier2": "25% de Crédit",
       "tier3": "100% de Crédit"
+    },
+    "print": {
+      "title": "Initialisation du Spouleur d'Impression",
+      "processing": "Formatage de la topologie du document...",
+      "success": "Action Terminée",
+      "toast": "Document envoyé à l'imprimante."
+    },
+    "pdf": {
+      "title": "Génération du PDF Légal",
+      "processing": "Compilation des clauses cryptées...",
+      "success": "Action Terminée",
+      "toast": "PDF téléchargé en toute sécurité."
+    },
+    "security": {
+      "title": "Initiation des Communications Sécurisées",
+      "processing": "Établissement d'un tunnel crypté...",
+      "success": "Connexion Sécurisée",
+      "toast": "Un officier de sécurité vous contactera sur des communications sécurisées."
     }
   },
   "warRoom": {

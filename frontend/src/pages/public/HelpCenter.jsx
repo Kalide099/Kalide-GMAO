@@ -114,10 +114,10 @@ const HelpCenter = () => {
             <SimulatedProcessModal 
                 isOpen={simModalOpen.isOpen} 
                 onClose={() => setSimModalOpen({ isOpen: false, type: null })} 
-                title={simModalOpen.type === 'chat' ? 'Connecting to Agent' : 'Generating Ticket ID'} 
-                processingText={simModalOpen.type === 'chat' ? 'Locating available support node...' : 'Encrypting support payload...'} 
-                successText={simModalOpen.type === 'chat' ? 'Agent Connected' : 'Ticket Created'}
-                onSuccessCallback={() => toast.success(simModalOpen.type === 'chat' ? 'Support agent joined the channel.' : 'Ticket #8849 logged in the system.')}
+                title={simModalOpen.type === 'chat' ? t('help.modals.chatTitle') : t('help.modals.ticketTitle')} 
+                processingText={simModalOpen.type === 'chat' ? t('help.modals.chatProcessing') : t('help.modals.ticketProcessing')} 
+                successText={simModalOpen.type === 'chat' ? t('help.modals.chatSuccess') : t('help.modals.ticketSuccess')}
+                onSuccessCallback={() => toast.success(simModalOpen.type === 'chat' ? t('help.modals.chatToast') : t('help.modals.ticketToast'))}
             />
         </div>
     );

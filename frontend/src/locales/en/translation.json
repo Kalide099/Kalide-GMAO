@@ -1366,6 +1366,16 @@
       "a2": "Initialisation des Modules d'Actifs et Configuration Multi-Tenant",
       "a3": "Interprétation du Tableau de Bord d'Analytics Prédictive",
       "a4": "Processes de Conformité ISO et de Sécurité OT"
+    },
+    "modals": {
+      "chatTitle": "Initializing Comm Link",
+      "chatProcessing": "Bypassing security protocols...",
+      "chatSuccess": "Connection Established",
+      "chatToast": "Support agent joined the channel.",
+      "ticketTitle": "Submitting Support Ticket",
+      "ticketProcessing": "Routing to available operator...",
+      "ticketSuccess": "Ticket Submitted",
+      "ticketToast": "Ticket #8849 logged in the system."
     }
   },
   "contact": {
@@ -1395,7 +1405,17 @@
     "addressLine2": "Center System Global, KG 9042",
     "phoneNumber": "+1 (800) KG-MAO-OPS",
     "mttrValue": "MTTR : 15 Min",
-    "encryptionStandard": "Lien AES-256"
+    "encryptionStandard": "Lien AES-256",
+    "placeholders": {
+      "name": "John Matrix",
+      "email": "admin@enterprise.com"
+    },
+    "modal": {
+      "title": "Transmitting Encrypted Payload",
+      "processing": "Establishing secure handshake with HQ...",
+      "success": "Transmission Confirmed",
+      "toast": "Your message has been received by our terminal."
+    }
   },
   "legal": {
     "termsTitle": "Terms of Governance",
@@ -1602,6 +1622,24 @@
         "tier2": "25% Credit",
         "tier3": "100% Credit"
       }
+    },
+    "print": {
+      "title": "Initializing Print Spooler",
+      "processing": "Formatting document topology...",
+      "success": "Action Completed",
+      "toast": "Document sent to printer."
+    },
+    "pdf": {
+      "title": "Generating Legal PDF",
+      "processing": "Compiling encrypted clauses...",
+      "success": "Action Completed",
+      "toast": "PDF securely downloaded."
+    },
+    "security": {
+      "title": "Initiating Secure Comms",
+      "processing": "Establishing encrypted tunnel...",
+      "success": "Connection Secure",
+      "toast": "Security officer will contact you on secure comms."
     }
   },
   "admin_registrations": {

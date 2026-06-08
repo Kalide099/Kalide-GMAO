@@ -101,10 +101,10 @@ const TermsOfUse = () => {
             <SimulatedProcessModal 
                 isOpen={simModalOpen.isOpen} 
                 onClose={() => setSimModalOpen({ isOpen: false, type: null })} 
-                title={simModalOpen.type === 'pdf' ? 'Generating Legal PDF' : 'Initializing Print Spooler'} 
-                processingText={simModalOpen.type === 'pdf' ? 'Compiling encrypted clauses...' : 'Formatting document topology...'} 
-                successText="Action Completed"
-                onSuccessCallback={() => toast.success(simModalOpen.type === 'pdf' ? 'PDF securely downloaded.' : 'Document sent to printer.')}
+                title={simModalOpen.type === 'pdf' ? t('legal.pdf.title') : t('legal.print.title')} 
+                processingText={simModalOpen.type === 'pdf' ? t('legal.pdf.processing') : t('legal.print.processing')} 
+                successText={simModalOpen.type === 'pdf' ? t('legal.pdf.success') : t('legal.print.success')}
+                onSuccessCallback={() => toast.success(simModalOpen.type === 'pdf' ? t('legal.pdf.toast') : t('legal.print.toast'))}
             />
         </div>
     );

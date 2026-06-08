@@ -130,10 +130,10 @@ const SecurityProtocol = () => {
             <SimulatedProcessModal 
                 isOpen={simModalOpen} 
                 onClose={() => setSimModalOpen(false)} 
-                title="Initiating Secure Channel" 
-                processingText="Validating clearance level..." 
-                successText="Channel Established"
-                onSuccessCallback={() => toast.success('Security officer will contact you on secure comms.')}
+                title={t('legal.security.title')} 
+                processingText={t('legal.security.processing')} 
+                successText={t('legal.security.success')}
+                onSuccessCallback={() => toast.success(t('legal.security.toast'))}
             />
         </div>
     );
