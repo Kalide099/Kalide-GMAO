@@ -2,6 +2,11 @@ const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 
+const REGISTRATION_REQUEST_COLUMNS = {
+    admin_phone: 'ALTER TABLE registration_requests ADD COLUMN admin_phone VARCHAR(50) NULL AFTER admin_email',
+    preferred_language: "ALTER TABLE registration_requests ADD COLUMN preferred_language CHAR(2) NOT NULL DEFAULT 'en' AFTER password_hash"
+};
+
 const isMissingCompanyDefaultLanguageColumn = (error) => (
     error &&
     error.code === 'ER_BAD_FIELD_ERROR' &&
@@ -14,9 +19,54 @@ const isMissingUserPreferredLanguageColumn = (error) => (
     String(error.sqlMessage || '').toLowerCase().includes('preferred_language')
 );
 
+const ensureRegistrationRequestsSchema = async () => {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS registration_requests (
+            id CHAR(36) PRIMARY KEY,
+            company_name VARCHAR(255) NOT NULL,
+            industry VARCHAR(100) NOT NULL,
+            admin_first_name VARCHAR(100) NOT NULL,
+            admin_last_name VARCHAR(100) NOT NULL,
+            admin_email VARCHAR(255) NOT NULL,
+            admin_phone VARCHAR(50) NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            preferred_language CHAR(2) NOT NULL DEFAULT 'en',
+            status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            processed_at TIMESTAMP NULL,
+            processed_by CHAR(36) NULL,
+            FOREIGN KEY (processed_by) REFERENCES users(id) ON DELETE SET NULL
+        )
+    `);
+
+    const [columns] = await pool.query(
+        `SELECT column_name AS column_name
+         FROM information_schema.columns
+         WHERE table_schema = DATABASE()
+           AND table_name = 'registration_requests'
+           AND column_name IN ('admin_phone', 'preferred_language')`
+    );
+
+    const existingColumns = new Set(columns.map((column) => column.column_name));
+    for (const [columnName, alterSql] of Object.entries(REGISTRATION_REQUEST_COLUMNS)) {
+        if (!existingColumns.has(columnName)) {
+            try {
+                await pool.query(alterSql);
+            } catch (error) {
+                if (error.code !== 'ER_DUP_FIELDNAME') {
+                    throw error;
+                }
+            }
+        }
+    }
+};
+
 exports.createRequest = async (data) => {
     const { companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone, password, preferredLanguage } = data;
     const id = uuidv4();
+
+    await ensureRegistrationRequestsSchema();
     
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
