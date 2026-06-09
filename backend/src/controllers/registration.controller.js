@@ -3,8 +3,8 @@ const { successResponse, errorResponse } = require('../utils/responseHandler');
 
 exports.submitRequest = async (req, res, next) => {
     try {
-        const { companyName, adminEmail, password, preferredLanguage, adminPhone } = req.body;
-        if (!companyName || !adminEmail || !password || !preferredLanguage) {
+        const { companyName, industry, adminFirstName, adminLastName, adminEmail, password, preferredLanguage, adminPhone } = req.body;
+        if (!companyName || !industry || !adminFirstName || !adminLastName || !adminEmail || !password || !preferredLanguage) {
             return errorResponse(res, 400, 'Missing required registration fields.');
         }
         const result = await registrationService.createRequest(req.body);

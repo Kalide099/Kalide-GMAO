@@ -21,10 +21,36 @@ exports.createRequest = async (data) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
     
-    await pool.query(
-        'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash, preferredLanguage]
-    );
+    try {
+        await pool.query(
+            'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash, preferredLanguage]
+        );
+    } catch (error) {
+        if (error.code === 'ER_BAD_FIELD_ERROR') {
+            const msg = String(error.sqlMessage || '').toLowerCase();
+            if (msg.includes('preferred_language') && msg.includes('admin_phone')) {
+                await pool.query(
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash]
+                );
+            } else if (msg.includes('admin_phone')) {
+                await pool.query(
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash, preferredLanguage]
+                );
+            } else if (msg.includes('preferred_language')) {
+                await pool.query(
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash]
+                );
+            } else {
+                throw error;
+            }
+        } else {
+            throw error;
+        }
+    }
     
     return { id };
 };
