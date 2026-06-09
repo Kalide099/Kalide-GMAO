@@ -99,6 +99,8 @@ app.use(helmet());
 app.use(xssSanitizer);
 app.use(extractLanguage);
 app.use('/api', globalLimiter);
+const { idempotency } = require('./middlewares/idempotency.middleware');
+app.use('/api', idempotency);
 
 // Static files - Disable CDN caching to ensure the latest React build is always served
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
