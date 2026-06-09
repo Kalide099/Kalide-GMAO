@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Mail, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock, Languages, Phone } from 'lucide-react';
+import { Mail, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock, Languages, Phone, Eye, EyeOff } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api/axiosConfig';
@@ -9,6 +9,7 @@ const Register = () => {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         companyName: '',
         industry: 'manufacturing',
@@ -221,13 +222,21 @@ const Register = () => {
                                             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
                                             <input 
                                                 name="password"
-                                                type="password" 
+                                                type={showPassword ? 'text' : 'password'} 
                                                 required
                                                 value={formData.password}
                                                 onChange={handleChange}
-                                                className="input-field pl-14"
+                                                className="input-field pl-14 pr-12"
                                                 placeholder="••••••••"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-yellow-500 transition-colors z-20 focus:outline-none"
+                                                tabIndex={-1}
+                                            >
+                                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                            </button>
                                         </div>
                                     </div>
 
