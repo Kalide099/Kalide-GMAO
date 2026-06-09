@@ -688,3 +688,41 @@ CREATE TABLE IF NOT EXISTS system_plugins (
     is_global BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- ==========================================
+-- IDEMPOTENCY KEYS (MIGRATION V8)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS idempotency_keys (
+    id VARCHAR(36) PRIMARY KEY,
+    idempotency_key VARCHAR(255) NOT NULL,
+    user_id VARCHAR(36) NOT NULL,
+    request_path VARCHAR(255) NOT NULL,
+    response_body JSON,
+    response_status INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_idempotency_user (user_id, idempotency_key),
+    UNIQUE KEY uk_user_key (user_id, idempotency_key)
+);
+
+-- ==========================================
+-- BACKGROUND JOBS QUEUE (MIGRATION V9)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS `background_jobs` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `type` VARCHAR(100) NOT NULL,
+  `payload` JSON NOT NULL,
+  `status` ENUM('pending', 'processing', 'completed', 'failed') NOT NULL DEFAULT 'pending',
+  `result` JSON DEFAULT NULL,
+  `error` TEXT DEFAULT NULL,
+  `created_by` CHAR(36) NOT NULL,
+  `company_id` CHAR(36) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `started_at` TIMESTAMP NULL DEFAULT NULL,
+  `completed_at` TIMESTAMP NULL DEFAULT NULL,
+  INDEX `idx_status_created` (`status`, `created_at`),
+  FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
