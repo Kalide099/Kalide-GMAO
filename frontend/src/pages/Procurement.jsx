@@ -202,12 +202,12 @@ const Procurement = () => {
 
             {/* New Order Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 lg:p-12">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 lg:p-12">
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-                    <div className="bg-white w-full max-w-2xl rounded-[3.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] relative z-10 overflow-hidden animate-fade-in-up">
-                        <div className="p-12">
-                            <h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase mb-2">{t('procurement.initModalTitle')}</h2>
-                            <p className="text-slate-400 font-bold text-sm uppercase tracking-widest mb-10">{t('procurement.initModalSubtitle')}</p>
+                    <div className="bg-white w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] rounded-[2rem] md:rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] relative z-10 overflow-hidden animate-fade-in-up">
+                        <div className="p-5 sm:p-8 md:p-12 overflow-y-auto custom-scrollbar max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)]">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 tracking-tighter uppercase mb-2">{t('procurement.initModalTitle')}</h2>
+                            <p className="text-slate-400 font-bold text-sm uppercase tracking-[0.08em] sm:tracking-widest mb-8 sm:mb-10">{t('procurement.initModalSubtitle')}</p>
                             
                             <form onSubmit={handleCreateOrder} className="space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -217,7 +217,7 @@ const Procurement = () => {
                                             required
                                             value={newOrder.item_id}
                                             onChange={e => setNewOrder({...newOrder, item_id: e.target.value})}
-                                            className="w-full px-8 py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
+                                            className="w-full px-4 sm:px-8 py-4 sm:py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
                                         >
                                             <option value="">{t('procurement.selectItem')}</option>
                                             {items.map(item => (
@@ -231,7 +231,7 @@ const Procurement = () => {
                                             required
                                             value={newOrder.supplier_id}
                                             onChange={e => setNewOrder({...newOrder, supplier_id: e.target.value})}
-                                            className="w-full px-8 py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
+                                            className="w-full px-4 sm:px-8 py-4 sm:py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
                                         >
                                             <option value="">{t('procurement.selectVendor')}</option>
                                             {suppliers.map(sup => (
@@ -246,7 +246,7 @@ const Procurement = () => {
                                             required
                                             value={newOrder.quantity}
                                             onChange={e => setNewOrder({...newOrder, quantity: e.target.value})}
-                                            className="w-full px-8 py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
+                                            className="w-full px-4 sm:px-8 py-4 sm:py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
                                             placeholder="0.00"
                                         />
                                     </div>
@@ -257,13 +257,13 @@ const Procurement = () => {
                                             required
                                             value={newOrder.total_cost}
                                             onChange={e => setNewOrder({...newOrder, total_cost: e.target.value})}
-                                            className="w-full px-8 py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
+                                            className="w-full px-4 sm:px-8 py-4 sm:py-5 bg-slate-50 rounded-2xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold"
                                             placeholder="0.00"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 pt-6">
+                                <div className="flex flex-col sm:flex-row gap-4 pt-6">
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}

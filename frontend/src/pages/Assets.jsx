@@ -248,18 +248,18 @@ const Assets = () => {
 
             {/* Create Asset Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-                    <div className="bg-white rounded-[3rem] w-full max-w-2xl shadow-2xl border border-white/20 overflow-hidden animate-scale-in">
-                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white rounded-[2rem] md:rounded-[3rem] w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-2xl border border-white/20 overflow-hidden animate-scale-in flex flex-col">
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50 shrink-0">
                             <div>
-                                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">{t('assets.add_title')}</h3>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">{t('assets.initNewUnit') || 'Initialize New Industrial Unit'}</p>
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tighter italic">{t('assets.add_title')}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.08em] sm:tracking-[0.2em] mt-1">{t('assets.initNewUnit') || 'Initialize New Industrial Unit'}</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-slate-200 rounded-full transition-colors">
                                 <X size={28} className="text-slate-500" />
                             </button>
                         </div>
-                        <form onSubmit={handleCreateAsset} className="p-10 space-y-8 max-h-[75vh] overflow-y-auto">
+                        <form onSubmit={handleCreateAsset} className="p-5 sm:p-8 md:p-10 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                     <Globe size={14} className="text-indigo-600" /> {t('assets.field_name')}
@@ -268,30 +268,30 @@ const Assets = () => {
                                     type="text" required
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800"
+                                    className="w-full px-4 sm:px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><MapPin size={14} className="text-rose-500" /> {t('assets.field_location')}</label>
-                                    <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold" />
+                                    <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} className="w-full px-4 sm:px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold" />
                                 </div>
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Hash size={14} className="text-amber-500" /> {t('assets.field_serial')}</label>
-                                    <input type="text" value={formData.serialNumber} onChange={(e) => setFormData({...formData, serialNumber: e.target.value})} className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold" />
+                                    <input type="text" value={formData.serialNumber} onChange={(e) => setFormData({...formData, serialNumber: e.target.value})} className="w-full px-4 sm:px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold" />
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('assets.field_status')}</label>
-                                <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold appearance-none">
+                                <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 sm:px-6 py-4 rounded-[1.25rem] border border-slate-100 bg-slate-50 focus:border-indigo-500 transition-all font-bold appearance-none">
                                     <option value="active">{t('assets.statusActive')}</option>
                                     <option value="maintenance">{t('assets.statusMaintenance')}</option>
                                     <option value="retired">{t('assets.statusRetired')}</option>
                                 </select>
                             </div>
-                            <div className="flex gap-6 pt-10">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-8 py-5 border border-slate-200 text-slate-600 font-bold rounded-[1.5rem] hover:bg-slate-50 transition-all uppercase tracking-widest text-xs">{t('common.cancel')}</button>
-                                <button type="submit" disabled={formLoading} className="flex-1 px-8 py-5 bg-slate-950 text-yellow-400 font-black rounded-[1.5rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-widest text-xs border border-white/5">{formLoading ? '...' : t('assets.submit')}</button>
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-6 sm:pt-10">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-6 sm:px-8 py-4 sm:py-5 border border-slate-200 text-slate-600 font-bold rounded-[1.5rem] hover:bg-slate-50 transition-all uppercase tracking-[0.08em] sm:tracking-widest text-xs">{t('common.cancel')}</button>
+                                <button type="submit" disabled={formLoading} className="flex-1 px-6 sm:px-8 py-4 sm:py-5 bg-slate-950 text-yellow-400 font-black rounded-[1.5rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-[0.08em] sm:tracking-widest text-xs border border-white/5">{formLoading ? '...' : t('assets.submit')}</button>
                             </div>
                         </form>
                     </div>

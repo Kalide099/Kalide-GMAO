@@ -167,15 +167,15 @@ const Login = () => {
                 </div>
 
                 {/* Right Side: High-End Auth Matrix */}
-                <div className="w-full lg:w-[45%] flex flex-col items-center justify-center p-8 md:p-16 relative z-10">
+                <div className="w-full lg:w-[45%] flex flex-col items-center justify-center px-4 py-24 sm:p-8 md:p-12 xl:p-16 relative z-10">
                     
                     {/* Top Actions: Mobile Brand + Desktop Nav */}
-                    <div className="absolute top-8 left-8 lg:hidden flex items-center gap-3">
+                    <div className="absolute top-5 left-5 sm:top-8 sm:left-8 lg:hidden flex items-center gap-3">
                         <Zap className="text-yellow-500 w-8 h-8 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" fill="currentColor" />
                         <span className="text-xl font-black text-white tracking-tighter italic">KGMAO</span>
                     </div>
 
-                    <div className="absolute top-8 right-8 flex items-center gap-6">
+                    <div className="absolute top-5 right-5 sm:top-8 sm:right-8 flex items-center gap-6">
 
                         <LanguageSwitcher />
                     </div>
@@ -232,7 +232,7 @@ const Login = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2 flex justify-between">
+                                <label className="text-[9px] font-black uppercase tracking-[0.08em] sm:tracking-[0.2em] text-slate-400 ml-2 flex flex-col sm:flex-row sm:justify-between gap-2">
                                     <span>{t('auth.password')}</span>
                                     <Link to="/forgot-password" className="text-slate-500 hover:text-yellow-400 transition-colors">{t('auth.forgotPassword')}</Link>
                                 </label>
@@ -329,7 +329,7 @@ const Login = () => {
                                         </svg>
                                     </label>
                                 </div>
-                                <label htmlFor="termsAgreement" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed cursor-pointer select-none">
+                                <label htmlFor="termsAgreement" className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.08em] sm:tracking-widest leading-relaxed cursor-pointer select-none">
                                     {t('compliance.termsAgreeText')} <Link to="/terms" className="text-yellow-400 hover:text-yellow-300 hover:underline">{t('compliance.termsOfUse')}</Link> {t('compliance.and')} <Link to="/privacy" className="text-yellow-400 hover:text-yellow-300 hover:underline">{t('compliance.privacyPolicy')}</Link>.
                                 </label>
                             </div>

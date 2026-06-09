@@ -78,9 +78,9 @@ const Register = () => {
     return (
         <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
             <PublicNavbar />
-            <div className="flex-1 flex items-center justify-center p-6">
+            <div className="flex-1 flex items-center justify-center px-4 py-8 sm:p-6">
                 <div className="w-full max-w-2xl">
-                    <div className="bg-white p-12 md:p-16 rounded-[3rem] shadow-2xl shadow-slate-900/5 relative overflow-hidden border border-slate-100">
+                    <div className="bg-white p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-slate-900/5 relative overflow-hidden border border-slate-100">
                         {/* Premium Accent */}
                         <div className="absolute top-0 left-0 w-full h-2 bg-yellow-400"></div>
                         
@@ -107,7 +107,7 @@ const Register = () => {
                                     </div>
                                 )}
                                 
-                                <form onSubmit={handleSubmit} className="space-y-8">
+                                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 flex items-center gap-2">
                                             <Languages size={14} />
@@ -149,7 +149,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.companyName')}</label>
                                             <div className="relative">
@@ -182,7 +182,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.adminFirstName')}</label>
                                             <div className="relative">
@@ -213,7 +213,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.workEmail')}</label>
                                             <div className="relative">
@@ -283,14 +283,14 @@ const Register = () => {
                                                 </svg>
                                             </label>
                                         </div>
-                                        <label htmlFor="termsAgreementReg" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed cursor-pointer select-none">
+                                        <label htmlFor="termsAgreementReg" className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.08em] sm:tracking-widest leading-relaxed cursor-pointer select-none">
                                             {t('compliance.termsAgreeText')} <Link to="/terms" className="text-yellow-500 hover:text-yellow-600 hover:underline">{t('compliance.termsOfUse')}</Link> {t('compliance.and')} <Link to="/privacy" className="text-yellow-500 hover:text-yellow-600 hover:underline">{t('compliance.privacyPolicy')}</Link>.
                                         </label>
                                     </div>
                                     
                                     <button type="submit" 
                                         disabled={loading}
-                                        className="w-full bg-slate-900 hover:bg-black text-white font-black py-6 rounded-[2rem] flex items-center justify-center gap-3 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 disabled:opacity-70 group"
+                                        className="w-full bg-slate-900 hover:bg-black text-white font-black py-5 sm:py-6 rounded-2xl sm:rounded-[2rem] flex items-center justify-center gap-3 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 disabled:opacity-70 group"
                                     >
                                         {loading ? (
                                             <Loader2 className="w-6 h-6 animate-spin" />

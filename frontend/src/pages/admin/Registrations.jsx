@@ -99,26 +99,26 @@ const AdminRegistrations = () => {
                     <p className="p-20 text-center font-black text-slate-300 italic animate-pulse uppercase tracking-[0.5em] text-[10px]">{t('admin_registrations.syncing')}</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-[3.5rem] shadow-2xl shadow-slate-200/40 border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] shadow-2xl shadow-slate-200/40 border border-slate-100 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-100">
-                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('admin.companyIdentity')}</th>
-                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('admin.adminPersona')}</th>
-                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">{t('admin.industrySector')}</th>
-                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Plan</th>
-                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">{t('admin.status')}</th>
-                                    <th className="px-12 py-8 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('common.actions')}</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em]">{t('admin.companyIdentity')}</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em]">{t('admin.adminPersona')}</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em] text-center">{t('admin.industrySector')}</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em] text-center">Plan</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em] text-center">{t('admin.status')}</th>
+                                    <th className="px-5 md:px-12 py-5 md:py-8 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.12em] md:tracking-[0.3em]">{t('common.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {filteredRequests.length === 0 ? (
-                                    <tr><td colSpan="6" className="px-12 py-32 text-center text-slate-300 font-black uppercase tracking-widest text-[10px] italic">{t('admin_registrations.zeroRequests')}</td></tr>
+                                    <tr><td colSpan="6" className="px-5 md:px-12 py-20 md:py-32 text-center text-slate-300 font-black uppercase tracking-widest text-[10px] italic">{t('admin_registrations.zeroRequests')}</td></tr>
                                 ) : (
                                     filteredRequests.map((req) => (
                                         <tr key={req.id} className="hover:bg-slate-50/50 transition-all group">
-                                            <td className="px-12 py-10">
+                                            <td className="px-5 md:px-12 py-6 md:py-10">
                                                 <div className="flex items-center gap-6">
                                                     <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:bg-yellow-400 group-hover:text-slate-900 transition-all duration-500">
                                                         <Building2 size={24} />
@@ -131,7 +131,7 @@ const AdminRegistrations = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-12 py-10">
+                                            <td className="px-5 md:px-12 py-6 md:py-10">
                                                 <div className="flex flex-col gap-1">
                                                     <span className="text-xs font-black text-slate-700 uppercase tracking-tight">{req.admin_first_name} {req.admin_last_name}</span>
                                                     <div className="flex items-center gap-2 text-slate-400 text-[10px] font-medium italic">
@@ -139,17 +139,17 @@ const AdminRegistrations = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-12 py-10 text-center">
+                                            <td className="px-5 md:px-12 py-6 md:py-10 text-center">
                                                 <span className="px-5 py-2 bg-slate-100 text-slate-500 border border-slate-200 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
                                                     {req.industry}
                                                 </span>
                                             </td>
-                                            <td className="px-12 py-10 text-center">
+                                            <td className="px-5 md:px-12 py-6 md:py-10 text-center">
                                                 <span className="px-5 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
                                                     {formatPlan(req.requested_plan)}
                                                 </span>
                                             </td>
-                                            <td className="px-12 py-10">
+                                            <td className="px-5 md:px-12 py-6 md:py-10">
                                                 <div className="flex flex-col items-center gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className={`w-2 h-2 rounded-full ${
@@ -165,7 +165,7 @@ const AdminRegistrations = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-12 py-10">
+                                            <td className="px-5 md:px-12 py-6 md:py-10">
                                                 <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
                                                     <button 
                                                         onClick={() => setSelectedRequest(req)}
@@ -220,15 +220,15 @@ const AdminRegistrations = () => {
 
             {/* Profile Modal */}
             {selectedRequest && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-                    <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in">
-                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in flex flex-col">
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50 shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
                                     <Building2 size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{selectedRequest.company_name}</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase italic tracking-tighter break-words">{selectedRequest.company_name}</h2>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
                                         ID: {selectedRequest.id.slice(0, 8)} • {selectedRequest.industry}
                                     </p>
@@ -241,7 +241,7 @@ const AdminRegistrations = () => {
                                 <Zap className="rotate-45" size={20} />
                             </button>
                         </div>
-                        <div className="p-10 space-y-8">
+                        <div className="p-5 sm:p-8 md:p-10 space-y-8 overflow-y-auto custom-scrollbar">
                             <div className="space-y-6">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Admin Profile Details</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -274,7 +274,7 @@ const AdminRegistrations = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
+                        <div className="p-5 sm:p-8 md:p-10 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
                             <button 
                                 onClick={() => setSelectedRequest(null)}
                                 className="flex-1 py-5 bg-white border border-slate-200 text-slate-600 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-slate-100 transition-all shadow-sm"

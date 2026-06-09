@@ -108,15 +108,15 @@ const MfaSecurity = () => {
     }
 
     return (
-        <div className="space-y-8">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
+        <div className="space-y-6 sm:space-y-8">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-5 sm:p-8 shadow-sm">
+                <div className="flex items-start sm:items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-2xl bg-slate-900 text-yellow-400 flex items-center justify-center">
                         <ShieldCheck size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight italic">{t('mfaSecurity.title')}</h1>
-                        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{t('mfaSecurity.subtitle')}</p>
+                        <h1 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight italic">{t('mfaSecurity.title')}</h1>
+                        <p className="text-xs font-bold uppercase tracking-[0.08em] sm:tracking-widest text-slate-500">{t('mfaSecurity.subtitle')}</p>
                     </div>
                 </div>
 
@@ -139,12 +139,12 @@ const MfaSecurity = () => {
             {message.text ? (
                 <div className={`rounded-2xl border p-4 flex items-center gap-3 ${message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
                     {message.type === 'success' ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
-                    <p className="text-xs font-bold uppercase tracking-wider">{message.text}</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] sm:tracking-wider break-words">{message.text}</p>
                 </div>
             ) : null}
 
             {!status.enabled ? (
-                <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm space-y-6">
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-5 sm:p-8 shadow-sm space-y-6">
                     <h2 className="text-lg font-black uppercase tracking-tight text-slate-900">{t('mfaSecurity.enableMfa')}</h2>
                     <button
                         onClick={beginSetup}
@@ -155,9 +155,9 @@ const MfaSecurity = () => {
 
                     {setupData ? (
                         <div className="grid lg:grid-cols-2 gap-6">
-                            <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50">
+                            <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50 overflow-hidden">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{t('mfaSecurity.qrCode')}</p>
-                                <img src={setupData.qrCodeDataUrl} alt="MFA QR Code" className="w-56 h-56 object-contain bg-white rounded-xl p-2 border border-slate-200" />
+                                <img src={setupData.qrCodeDataUrl} alt="MFA QR Code" className="w-full max-w-56 aspect-square object-contain bg-white rounded-xl p-2 border border-slate-200" />
                             </div>
                             <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50 space-y-4">
                                 <div>
@@ -185,7 +185,7 @@ const MfaSecurity = () => {
                 </div>
             ) : (
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm space-y-4">
+                    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 sm:p-8 shadow-sm space-y-4">
                         <h2 className="text-lg font-black uppercase tracking-tight text-slate-900">{t('mfaSecurity.disableMfa')}</h2>
                         <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('mfaSecurity.provideCode')}</p>
                         <div className="space-y-2">
@@ -214,7 +214,7 @@ const MfaSecurity = () => {
                         </button>
                     </div>
 
-                    <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm space-y-4">
+                    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 sm:p-8 shadow-sm space-y-4">
                         <h2 className="text-lg font-black uppercase tracking-tight text-slate-900">{t('mfaSecurity.backupCodes')}</h2>
                         <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('mfaSecurity.regenerateWarning')}</p>
                         <div className="space-y-2">
@@ -239,7 +239,7 @@ const MfaSecurity = () => {
                                     <p className="text-[10px] font-black uppercase tracking-widest text-yellow-700">{t('mfaSecurity.storeSecurely')}</p>
                                     <button onClick={copyBackupCodes} className="text-xs font-black uppercase tracking-widest text-slate-900 inline-flex items-center gap-1"><Copy size={14} /> {t('mfaSecurity.copy')}</button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {backupCodes.map((code) => (
                                         <div key={code} className="px-3 py-2 rounded-xl bg-white border border-yellow-200 text-xs font-black tracking-wider text-slate-900">{code}</div>
                                     ))}

@@ -185,17 +185,17 @@ const CustomForms = () => {
 
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl animate-fade-in">
-                    <div className="w-full max-w-xl rounded-[3rem] bg-white shadow-3xl overflow-hidden">
-                        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/70">
+                    <div className="w-full max-w-xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] rounded-[2rem] md:rounded-[3rem] bg-white shadow-3xl overflow-hidden flex flex-col">
+                        <div className="flex items-start justify-between gap-4 px-5 sm:px-8 py-5 sm:py-6 border-b border-slate-100 bg-slate-50/70 shrink-0">
                             <div>
-                                <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">{t('cmms.protocols.add')}</h3>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">{t('cmms.protocols.createEntity')}</p>
+                                <h3 className="text-xl sm:text-2xl font-black text-slate-900 uppercase italic tracking-tighter">{t('cmms.protocols.add')}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.08em] sm:tracking-[0.3em] mt-1">{t('cmms.protocols.createEntity')}</p>
                             </div>
                             <button onClick={() => setIsCreateModalOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex items-center justify-center">
                                 <Plus size={18} className="rotate-45" />
                             </button>
                         </div>
-                        <form onSubmit={handleCreateForm} className="p-8 space-y-6">
+                        <form onSubmit={handleCreateForm} className="p-5 sm:p-8 space-y-6 overflow-y-auto custom-scrollbar">
                             <div className="space-y-3">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">{t('cmms.protocols.formName')}</label>
                                 <input
@@ -218,7 +218,7 @@ const CustomForms = () => {
                                     placeholder="asset"
                                 />
                             </div>
-                            <div className="flex gap-4 pt-2">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-2">
                                 <button type="button" onClick={() => setIsCreateModalOpen(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 text-slate-600 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all">
                                     {t('common.cancel')}
                                 </button>

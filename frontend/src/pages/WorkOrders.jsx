@@ -328,19 +328,19 @@ const WorkOrders = () => {
 
             {/* Modal - Work Order Form */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-                    <div className="bg-white rounded-[4rem] w-full max-w-2xl shadow-2xl border border-white/20 overflow-hidden animate-scale-in">
-                        <div className="p-12 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white rounded-[2rem] md:rounded-[3rem] w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-2xl border border-white/20 overflow-hidden animate-scale-in flex flex-col">
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50 shrink-0">
                             <div>
-                                <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('workOrders.add_title')}</h3>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">{t('workOrders.initProtocol')}</p>
+                                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('workOrders.add_title')}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.08em] sm:tracking-[0.3em] mt-2">{t('workOrders.initProtocol')}</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-200 rounded-full transition-colors text-slate-400">
                                 <X size={32} />
                             </button>
                         </div>
                         
-                        <form onSubmit={handleCreateOrder} className="p-12 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                        <form onSubmit={handleCreateOrder} className="p-5 sm:p-8 md:p-10 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
                                     <Globe size={14} className="text-indigo-600" /> {t('workOrders.field_title')}
@@ -349,7 +349,7 @@ const WorkOrders = () => {
                                     type="text" required
                                     value={formData.title}
                                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
                                 />
                             </div>
 
@@ -361,7 +361,7 @@ const WorkOrders = () => {
                                     required
                                     value={formData.assetId}
                                     onChange={(e) => setFormData({...formData, assetId: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs appearance-none cursor-pointer"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs appearance-none cursor-pointer"
                                 >
                                     <option value="">{t('workOrders.scanAssetMatrix')}</option>
                                     {assets.map(asset => (
@@ -370,7 +370,7 @@ const WorkOrders = () => {
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
                                         <ShieldCheck size={16} className="text-emerald-500" /> {t('workOrders.field_type')}
@@ -378,7 +378,7 @@ const WorkOrders = () => {
                                     <select 
                                         value={formData.type}
                                         onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs cursor-pointer"
+                                        className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs cursor-pointer"
                                     >
                                         <option value="preventive">{t('workOrders.type_preventive') || 'Preventive'}</option>
                                         <option value="corrective">{t('workOrders.type_corrective') || 'Corrective'}</option>
@@ -391,7 +391,7 @@ const WorkOrders = () => {
                                     <select 
                                         value={formData.priority}
                                         onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                                        className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs cursor-pointer"
+                                        className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs cursor-pointer"
                                     >
                                         <option value="low">{t('workOrders.priorities.low')}</option>
                                         <option value="medium">{t('workOrders.priorities.medium')}</option>
@@ -409,7 +409,7 @@ const WorkOrders = () => {
                                     type="datetime-local"
                                     value={formData.scheduledDate}
                                     onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
                                 />
                             </div>
 
@@ -420,21 +420,21 @@ const WorkOrders = () => {
                                 <textarea 
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] bg-slate-50 border border-slate-100 h-32 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
                                 />
                             </div>
 
-                            <div className="flex gap-6 pt-10">
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-6 sm:pt-10">
                                 <button 
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-10 py-6 border border-slate-200 text-slate-500 font-black rounded-[2rem] hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px]"
+                                    className="flex-1 px-6 sm:px-10 py-4 sm:py-6 border border-slate-200 text-slate-500 font-black rounded-2xl sm:rounded-[2rem] hover:bg-slate-50 transition-all uppercase tracking-[0.08em] sm:tracking-[0.2em] text-[10px]"
                                 >
                                     {t('common.cancel')}
                                 </button>
                                 <button type="submit"
                                     disabled={formLoading || assets.length === 0}
-                                    className="flex-1 px-10 py-6 bg-slate-950 text-yellow-400 font-black rounded-[2rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-[0.2em] text-[10px] border border-white/5"
+                                    className="flex-1 px-6 sm:px-10 py-4 sm:py-6 bg-slate-950 text-yellow-400 font-black rounded-2xl sm:rounded-[2rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-[0.08em] sm:tracking-[0.2em] text-[10px] border border-white/5"
                                 >
                                     {formLoading ? '...' : t('workOrders.submit')}
                                 </button>

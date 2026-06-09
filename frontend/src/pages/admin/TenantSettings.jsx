@@ -30,15 +30,15 @@ const TenantSettings = () => {
 
     return (
         <div className="space-y-8 animate-fade-in font-sans pb-12">
-            <div className="bg-slate-900 p-10 rounded-[3rem] text-slate-50 relative overflow-hidden shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 border border-slate-800">
+            <div className="bg-slate-900 p-5 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] text-slate-50 relative overflow-hidden shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border border-slate-800">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full blur-[100px] opacity-20"></div>
                 <div className="relative z-10 flex items-center gap-6">
                     <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-700">
                         <Settings size={32} className="text-indigo-400" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black uppercase italic tracking-tighter">{t('tenantSettings.title')}</h1>
-                        <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">{t('tenantSettings.subtitle')}</p>
+                        <h1 className="text-2xl sm:text-4xl font-black uppercase italic tracking-tighter">{t('tenantSettings.title')}</h1>
+                        <p className="text-slate-400 font-bold uppercase tracking-[0.08em] sm:tracking-[0.2em] text-xs mt-2">{t('tenantSettings.subtitle')}</p>
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@ const TenantSettings = () => {
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 bg-white rounded-3xl border border-slate-100 shadow-sm p-8 min-h-[500px]">
+                <div className="flex-1 bg-white rounded-3xl border border-slate-100 shadow-sm p-5 sm:p-8 min-h-[500px] min-w-0">
                     {activeTab === 'profile' && (
                         <div className="animate-fade-in space-y-8">
                             <div>
@@ -114,7 +114,7 @@ const TenantSettings = () => {
 
                     {activeTab === 'users' && (
                         <div className="animate-fade-in space-y-8">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">{t('tenantSettings.teamManagement')}</h3>
                                     <p className="text-xs text-slate-500 font-semibold mt-1">{t('tenantSettings.teamDescription')}</p>

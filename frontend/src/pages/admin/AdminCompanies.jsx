@@ -277,15 +277,15 @@ const AdminCompanies = () => {
                 </div>
     
                 {selectedCompany && createPortal(
-                    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-6 animate-fade-in">
-                        <div className="bg-white rounded-[3rem] shadow-2xl border border-white/20 w-full max-w-2xl overflow-hidden animate-scale-in">
-                            <div className="bg-slate-50 p-10 border-b border-slate-100 flex items-center justify-between">
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-3 sm:p-6 animate-fade-in">
+                        <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-white/20 w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] overflow-hidden animate-scale-in flex flex-col">
+                            <div className="bg-slate-50 p-5 sm:p-8 md:p-10 border-b border-slate-100 flex items-start justify-between gap-4 shrink-0">
                                 <div className="flex items-center gap-6">
                                     <div className="p-4 bg-white rounded-3xl shadow-sm border border-slate-100">
                                         <Building2 className="text-rose-600" size={32} />
                                     </div>
                                     <div>
-                                        <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
+                                        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tighter">
                                             {t('admin.companyProfile')}
                                         </h3>
                                         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">{t('admin.industrialNode')}</p>
@@ -299,11 +299,11 @@ const AdminCompanies = () => {
                                 </button>
                             </div>
                             
-                            <div className="p-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="p-5 sm:p-8 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 overflow-y-auto custom-scrollbar">
                                 <div className="space-y-8">
                                     <div>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{t('admin.companyName')}</p>
-                                        <p className="text-xl font-black text-slate-900 uppercase italic">
+                                        <p className="text-lg sm:text-xl font-black text-slate-900 uppercase italic break-words">
                                             {currentLang === 'fr' ? selectedCompany.name_fr : selectedCompany.name_en}
                                         </p>
                                     </div>
@@ -328,7 +328,7 @@ const AdminCompanies = () => {
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 text-right md:text-left">{t('admin.operationalTier')}</p>
-                                        <div className="flex justify-end md:justify-start gap-2">
+                                        <div className="flex flex-wrap justify-start gap-2">
                                             {['basic', 'pro', 'enterprise'].map(p => (
                                                 <button
                                                     key={p}
@@ -372,7 +372,7 @@ const AdminCompanies = () => {
                                 </div>
                             </div>
     
-                            <div className="bg-slate-50 p-8 px-12 flex justify-end">
+                            <div className="bg-slate-50 p-5 sm:p-8 md:px-12 flex justify-end shrink-0">
                                 <button 
                                     onClick={() => setSelectedCompany(null)}
                                     className="px-10 py-4 bg-white border border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all shadow-xl"

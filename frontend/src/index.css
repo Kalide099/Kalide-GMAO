@@ -16,8 +16,23 @@
     font-size: 15px;
   }
 
+  html,
+  body,
+  #root {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
   body {
     @apply antialiased text-slate-900 bg-white selection:bg-yellow-200 selection:text-yellow-900;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 
@@ -26,7 +41,7 @@
     @apply bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors font-medium;
   }
   .input-field {
-    @apply block w-full rounded-2xl border-slate-200 shadow-sm focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 sm:text-sm px-4 py-3 border transition-all outline-none;
+    @apply block w-full rounded-2xl border-slate-200 shadow-sm focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 text-sm px-4 py-3 border transition-all outline-none;
   }
   .card {
     @apply bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 transition-all hover:shadow-md;
@@ -60,6 +75,27 @@
 
   .animate-spin-slow {
     animation: spin-slow 12s linear infinite;
+  }
+}
+
+@media (max-width: 640px) {
+  form label,
+  form p,
+  form span,
+  form button,
+  form a {
+    overflow-wrap: anywhere;
+  }
+
+  form label {
+    letter-spacing: 0.08em !important;
+    line-height: 1.4;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }
 

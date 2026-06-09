@@ -41,13 +41,13 @@ const ForgotPassword = () => {
     return (
         <div className="min-h-screen flex flex-col bg-slate-50">
             <PublicNavbar />
-            <div className="flex-1 flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-20 relative overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute inset-0 z-0 pointer-events-none opacity-5">
                     <div className="absolute top-1/4 left-1/4 w-[40rem] h-[40rem] bg-indigo-500 rounded-full blur-[100px] animate-pulse"></div>
                 </div>
 
-                <div className="w-full max-w-md bg-white rounded-[4rem] shadow-2xl border border-slate-100 p-12 md:p-16 relative z-10 animate-fade-in-up">
+                <div className="w-full max-w-md bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-slate-100 p-6 sm:p-8 md:p-12 relative z-10 animate-fade-in-up">
                     <div className="mb-10 text-center relative">
                         <Link to="/" className="absolute -top-6 left-0 text-[10px] font-black uppercase text-slate-400 hover:text-indigo-600 tracking-widest transition-colors flex items-center gap-1 group">
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
                                     <input 
                                         type="email" 
                                         required
-                                        className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-[2rem] pl-16 pr-6 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
+                                        className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2rem] pl-14 sm:pl-16 pr-4 sm:pr-6 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
                                         placeholder="admin@enterprise.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
@@ -79,7 +79,7 @@ const ForgotPassword = () => {
 
                             <button type="submit" 
                                 disabled={isLoading}
-                                className="w-full h-18 bg-slate-900 hover:bg-black text-white font-black py-5 rounded-[2rem] flex items-center justify-center gap-4 transition-all shadow-xl shadow-slate-900/10 active:scale-95 disabled:opacity-50"
+                                className="w-full bg-slate-900 hover:bg-black text-white font-black py-4 sm:py-5 rounded-2xl sm:rounded-[2rem] flex items-center justify-center gap-4 transition-all shadow-xl shadow-slate-900/10 active:scale-95 disabled:opacity-50"
                             >
                                 {isLoading ? (
                                     <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
@@ -93,7 +93,7 @@ const ForgotPassword = () => {
                             ) : null}
                         </form>
                     ) : (
-                        <div className="text-center space-y-8 bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 border-dashed animate-scale-in">
+                        <div className="text-center space-y-6 sm:space-y-8 bg-emerald-50 p-6 sm:p-10 rounded-[2rem] sm:rounded-[3rem] border border-emerald-100 border-dashed animate-scale-in">
                             <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-emerald-200">
                                 <ShieldCheck className="text-white w-10 h-10" />
                             </div>

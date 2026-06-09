@@ -158,19 +158,19 @@ const SSOConfig = () => {
             )}
 
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-900/90 backdrop-blur-xl animate-fade-in">
-                    <div className="bg-white rounded-[4rem] w-full max-w-2xl shadow-3xl overflow-hidden animate-scale-in">
-                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-900/90 backdrop-blur-xl animate-fade-in">
+                    <div className="bg-white rounded-[2rem] md:rounded-[3rem] w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-3xl overflow-hidden animate-scale-in flex flex-col">
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50 shrink-0">
                             <div>
-                                <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic font-black">{t('marketing.sso.link_node')}</h3>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">{t('marketing.sso.protocol')}</p>
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter uppercase italic font-black">{t('marketing.sso.link_node')}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.08em] sm:tracking-[0.3em] mt-2">{t('marketing.sso.protocol')}</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-slate-200 rounded-full transition-colors text-slate-400">
                                 <Plus size={24} className="rotate-45" />
                             </button>
                         </div>
                         
-                        <form onSubmit={handleSubmit} className="p-10 space-y-8">
+                        <form onSubmit={handleSubmit} className="p-5 sm:p-8 md:p-10 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">{t('marketing.sso.provider_domain')}</label>
                                 <input 
@@ -178,7 +178,7 @@ const SSOConfig = () => {
                                     placeholder={t('marketing.sso.provider_placeholder')}
                                     value={formData.provider_name}
                                     onChange={(e) => setFormData({...formData, provider_name: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
                                 />
                             </div>
                             <div className="space-y-4">
@@ -188,7 +188,7 @@ const SSOConfig = () => {
                                     placeholder={t('marketing.sso.idp_placeholder')}
                                     value={formData.idp_entity_id}
                                     onChange={(e) => setFormData({...formData, idp_entity_id: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
                                 />
                             </div>
                             <div className="space-y-4">
@@ -198,7 +198,7 @@ const SSOConfig = () => {
                                     placeholder={t('marketing.sso.entry_placeholder')}
                                     value={formData.sso_url}
                                     onChange={(e) => setFormData({...formData, sso_url: e.target.value})}
-                                    className="w-full px-8 py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
+                                    className="w-full px-4 sm:px-8 py-4 sm:py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 uppercase text-xs"
                                 />
                             </div>
                             <div className="space-y-4">
@@ -207,11 +207,11 @@ const SSOConfig = () => {
                                     placeholder={t('marketing.sso.cert_placeholder')}
                                     value={formData.public_certificate}
                                     onChange={(e) => setFormData({...formData, public_certificate: e.target.value})}
-                                    className="w-full h-32 px-8 py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-mono text-[10px]"
+                                    className="w-full h-32 px-4 sm:px-8 py-4 sm:py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-mono text-[10px]"
                                 />
                             </div>
 
-                            <button type="submit" className="w-full py-6 bg-slate-900 text-white font-black rounded-3xl shadow-2xl hover:bg-black transition-all uppercase tracking-widest text-[10px]">
+                            <button type="submit" className="w-full py-5 sm:py-6 bg-slate-900 text-white font-black rounded-2xl sm:rounded-3xl shadow-2xl hover:bg-black transition-all uppercase tracking-[0.08em] sm:tracking-widest text-[10px]">
                                 {t('marketing.sso.establish')}
                             </button>
                         </form>

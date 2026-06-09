@@ -89,28 +89,28 @@ const ContactUs = () => {
                 </div>
 
                 {/* Right Side: Communication Matrix (Form) */}
-                <div className="lg:w-1/2 p-12 lg:p-24 flex items-center justify-center order-1 lg:order-2">
-                    <div className="w-full max-w-xl space-y-12">
+                <div className="lg:w-1/2 p-5 sm:p-8 lg:p-16 xl:p-24 flex items-center justify-center order-1 lg:order-2">
+                    <div className="w-full max-w-xl space-y-8 sm:space-y-12">
                         <div className="space-y-3">
-                            <span className="px-4 py-1.5 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-[0.3em] rounded-full">{t('contact.secureTransmission')}</span>
-                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('contact.terminalTitle')}</h2>
+                            <span className="inline-flex max-w-full px-4 py-1.5 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-[0.08em] sm:tracking-[0.3em] rounded-full">{t('contact.secureTransmission')}</span>
+                            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('contact.terminalTitle')}</h2>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.fullName')}</label>
-                                    <input type="text" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />
+                                    <input type="text" className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.email')}</label>
-                                    <input type="email" className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.email')} />
+                                    <input type="email" className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.email')} />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.sector')}</label>
-                                <select className="w-full h-16 bg-slate-50 border-2 border-slate-50 rounded-3xl px-8 font-bold focus:border-yellow-400 outline-none transition-all appearance-none cursor-pointer">
+                                <select className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all appearance-none cursor-pointer">
                                     <option>{t('contact.sectors.sales')}</option>
                                     <option>{t('contact.sectors.support')}</option>
                                     <option>{t('contact.sectors.partnership')}</option>
@@ -120,10 +120,10 @@ const ContactUs = () => {
 
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.briefing')}</label>
-                                <textarea className="w-full h-40 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] p-8 font-bold focus:border-yellow-400 outline-none transition-all resize-none placeholder:text-slate-200" placeholder={t('contact.briefingPlaceholder')}></textarea>
+                                <textarea className="w-full h-36 sm:h-40 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 font-bold focus:border-yellow-400 outline-none transition-all resize-none placeholder:text-slate-200" placeholder={t('contact.briefingPlaceholder')}></textarea>
                             </div>
 
-                            <button type="submit" className="w-full h-20 bg-slate-900 hover:bg-black text-white rounded-[2.5rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group">
+                            <button type="submit" className="w-full min-h-16 sm:h-20 bg-slate-900 hover:bg-black text-white rounded-2xl sm:rounded-[2.5rem] font-black uppercase tracking-[0.08em] sm:tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group px-4">
                                 {t('contact.submit')}
                                 <Send size={20} className="text-yellow-400 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
                             </button>

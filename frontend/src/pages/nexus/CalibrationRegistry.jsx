@@ -135,55 +135,55 @@ const CalibrationRegistry = () => {
             </div>
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-                    <div className="bg-white rounded-[4rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-in">
-                        <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white rounded-[2rem] md:rounded-[3rem] w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-2xl overflow-hidden animate-scale-in flex flex-col">
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50 shrink-0">
                             <div>
-                                <h3 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{t('nexus.calibration.add_title')}</h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{t('nexus.calibration.add_subtitle')}</p>
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{t('nexus.calibration.add_title')}</h3>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.08em] sm:tracking-widest mt-1">{t('nexus.calibration.add_subtitle')}</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-200 rounded-full transition-colors text-slate-400">
                                 <X size={32} />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-10 space-y-8">
-                            <div className="grid grid-cols-2 gap-8">
+                        <form onSubmit={handleSubmit} className="p-5 sm:p-8 md:p-10 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.tag_id')}</label>
                                     <div className="relative">
                                         <Tag className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                                        <input type="text" required placeholder={t('nexus.calibration.form.tag_placeholder')} className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" required placeholder={t('nexus.calibration.form.tag_placeholder')} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.frequency')}</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                                        <input type="number" required placeholder={"180"} className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="number" required placeholder={"180"} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.name_en')}</label>
                                     <div className="relative">
                                         <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-400" size={16} />
-                                        <input type="text" required className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.name_fr')}</label>
                                     <div className="relative">
                                         <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-400" size={16} />
-                                        <input type="text" required className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex gap-6 pt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-5 border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-widest text-[10px]">{t('nexus.calibration.cancel')}</button>
-                                <button type="submit" className="flex-1 py-5 bg-slate-950 text-emerald-400 font-black rounded-2xl shadow-2xl hover:bg-black transition-all uppercase tracking-widest text-[10px]">{t('nexus.calibration.init_node')}</button>
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-6">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 sm:py-5 border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.08em] sm:tracking-widest text-[10px]">{t('nexus.calibration.cancel')}</button>
+                                <button type="submit" className="flex-1 py-4 sm:py-5 bg-slate-950 text-emerald-400 font-black rounded-2xl shadow-2xl hover:bg-black transition-all uppercase tracking-[0.08em] sm:tracking-widest text-[10px]">{t('nexus.calibration.init_node')}</button>
                             </div>
                         </form>
                     </div>
