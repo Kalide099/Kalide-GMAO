@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../utils/responseHandler');
 const { t } = require('../utils/i18n');
 const pool = require('../config/db');
-const { getEnv } = require('../config/env');
+const { config, getEnv } = require('../config/env');
 
 const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
 
@@ -75,4 +75,18 @@ exports.authorize = (...roles) => {
         }
         next();
     };
+};
+
+/**
+ * Middleware to enforce MFA for privileged roles
+ */
+exports.enforceMfa = (req, res, next) => {
+    const lang = req.lang || 'en';
+    const MFA_ENFORCED_ROLES = ['admin', 'super_admin'];
+    
+    if (config.mfaEnforcementEnabled && MFA_ENFORCED_ROLES.includes(req.user.role) && !req.user.mfa_enabled) {
+        return errorResponse(res, 403, 'MFA setup is required to access this resource.', 'MFA_REQUIRED');
+    }
+    
+    next();
 };

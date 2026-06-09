@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/admin.controller');
-const { authenticate } = require('../middlewares/auth.middleware');
+const { authenticate, enforceMfa } = require('../middlewares/auth.middleware');
 const { checkSuperAdmin } = require('../middlewares/admin.middleware');
 
 // Root Enforcement: Every single route here must pass JWT Auth AND Super Admin validations implicitly
 router.use(authenticate);
+router.use(enforceMfa);
 router.use(checkSuperAdmin);
 
 router.get('/analytics', adminController.getPlatformAnalytics);

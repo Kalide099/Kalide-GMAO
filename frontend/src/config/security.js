@@ -1,0 +1,1 @@
+export const isMfaEnforcementEnabled = import.meta.env.VITE_MFA_ENFORCEMENT_ENABLED === 'true';

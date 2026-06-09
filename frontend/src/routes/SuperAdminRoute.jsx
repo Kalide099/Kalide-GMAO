@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { isMfaEnforcementEnabled } from '../config/security';
 
 const SuperAdminRoute = () => {
   const { user, loading } = useAuth();
@@ -22,7 +23,7 @@ const SuperAdminRoute = () => {
   }
 
   const isMfaProtectedRoute = location.pathname.includes('/mfa-security');
-  if (!user?.mfa_enabled && !isMfaProtectedRoute) {
+  if (isMfaEnforcementEnabled && !user?.mfa_enabled && !isMfaProtectedRoute) {
       return <Navigate to="/admin/mfa-security" replace />;
   }
 

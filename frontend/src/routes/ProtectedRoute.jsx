@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { isMfaEnforcementEnabled } from '../config/security';
 
 const ProtectedRoute = () => {
     const { isAuthenticated, loading, user } = useAuth();
@@ -16,7 +17,7 @@ const ProtectedRoute = () => {
     const isPrivileged = user?.role === 'admin' || user?.role === 'super_admin';
     const isMfaProtectedRoute = location.pathname.includes('/mfa-security');
 
-    if (isPrivileged && !user?.mfa_enabled && !isMfaProtectedRoute) {
+    if (isMfaEnforcementEnabled && isPrivileged && !user?.mfa_enabled && !isMfaProtectedRoute) {
         return <Navigate to="/app/mfa-security" replace />;
     }
 

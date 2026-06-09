@@ -218,7 +218,7 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
         throw err;
     }
 
-    const requiresMfa = MFA_ENFORCED_ROLES.has(user.role) && Boolean(user.mfa_enabled);
+    const requiresMfa = config.mfaEnforcementEnabled && MFA_ENFORCED_ROLES.has(user.role) && Boolean(user.mfa_enabled);
     if (requiresMfa) {
         const mfaCode = String(mfaOptions.mfaCode || '').trim();
         const backupCode = String(mfaOptions.backupCode || '').trim();

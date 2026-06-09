@@ -48,6 +48,7 @@ const buildConfig = () => {
         authRateLimitWindowMs: toNumber(getEnv('AUTH_RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), 15 * 60 * 1000),
         authRateLimitMax: toNumber(getEnv('AUTH_RATE_LIMIT_MAX', 100), 100),
         passwordResetTokenTtlMinutes: toNumber(getEnv('PASSWORD_RESET_TOKEN_TTL_MINUTES', 15), 15),
+        mfaEnforcementEnabled: toBoolean(getEnv('MFA_ENFORCEMENT_ENABLED', 'false'), false),
         mfaIssuer: getEnv('MFA_ISSUER', 'KGMAO'),
         mfaBackupCodesCount: toNumber(getEnv('MFA_BACKUP_CODES_COUNT', 10), 10),
         dbConnectRetries: toNumber(getEnv('DB_CONNECT_RETRIES', 5), 5),
