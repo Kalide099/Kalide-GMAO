@@ -252,7 +252,7 @@ const DashboardLayout = () => {
           })}
         </nav>
 
-        <div className="p-8 border-t border-white/5 bg-slate-900/50">
+        <div className="p-8 border-t border-white/5 bg-slate-900/50 flex flex-col gap-4">
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-4 px-6 py-5 rounded-2xl text-slate-500 hover:bg-rose-500 hover:text-white transition-all font-black uppercase tracking-widest text-[10px] border border-white/5 shadow-inner group"
@@ -260,6 +260,9 @@ const DashboardLayout = () => {
             <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span>{t('nav.logout')}</span>
           </button>
+          <div className="text-center text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-50 mt-2">
+            Developed by Kalide Technology
+          </div>
         </div>
       </aside>
       {/* Command Palette Modal */}

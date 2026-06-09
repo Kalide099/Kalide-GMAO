@@ -64,7 +64,7 @@ const SuperAdminLayout = () => {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-slate-800">
+                <div className="p-4 border-t border-slate-800 flex flex-col gap-4">
                     <button 
                         onClick={logout}
                         className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors w-full p-2"
@@ -72,6 +72,9 @@ const SuperAdminLayout = () => {
                         <LogOut size={20} className="text-rose-500" />
                         {t('common.logout')}
                     </button>
+                    <div className="text-center text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-50 mt-2">
+                        Developed by Kalide Technology
+                    </div>
                 </div>
             </aside>
 

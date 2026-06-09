@@ -106,9 +106,14 @@ const PublicFooter = () => {
 
             {/* Bottom Bar */}
             <div className="max-w-7xl mx-auto pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
-                    {t('footer.copyright')}
-                </p>
+                <div className="flex flex-col md:items-start items-center gap-2">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+                        {t('footer.copyright')}
+                    </p>
+                    <p className="text-[10px] font-black text-yellow-500/70 uppercase tracking-[0.2em]">
+                        Developed by Kalide Technology
+                    </p>
+                </div>
                 <div className="flex items-center gap-8">
                     <div className="flex items-center gap-2">
                         <Globe size={14} className="text-slate-600" />
