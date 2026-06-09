@@ -4,7 +4,15 @@ const bcrypt = require('bcryptjs');
 
 const REGISTRATION_REQUEST_COLUMNS = {
     admin_phone: 'ALTER TABLE registration_requests ADD COLUMN admin_phone VARCHAR(50) NULL AFTER admin_email',
-    preferred_language: "ALTER TABLE registration_requests ADD COLUMN preferred_language CHAR(2) NOT NULL DEFAULT 'en' AFTER password_hash"
+    preferred_language: "ALTER TABLE registration_requests ADD COLUMN preferred_language CHAR(2) NOT NULL DEFAULT 'en' AFTER password_hash",
+    requested_plan: "ALTER TABLE registration_requests ADD COLUMN requested_plan ENUM('basic', 'pro', 'enterprise') NOT NULL DEFAULT 'basic' AFTER preferred_language"
+};
+
+const VALID_PLANS = new Set(['basic', 'pro', 'enterprise']);
+
+const normalizePlan = (plan) => {
+    const normalized = String(plan || 'basic').toLowerCase();
+    return VALID_PLANS.has(normalized) ? normalized : 'basic';
 };
 
 const isMissingCompanyDefaultLanguageColumn = (error) => (
@@ -31,6 +39,7 @@ const ensureRegistrationRequestsSchema = async () => {
             admin_phone VARCHAR(50) NULL,
             password_hash VARCHAR(255) NOT NULL,
             preferred_language CHAR(2) NOT NULL DEFAULT 'en',
+            requested_plan ENUM('basic', 'pro', 'enterprise') NOT NULL DEFAULT 'basic',
             status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
             notes TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,7 +54,7 @@ const ensureRegistrationRequestsSchema = async () => {
          FROM information_schema.columns
          WHERE table_schema = DATABASE()
            AND table_name = 'registration_requests'
-           AND column_name IN ('admin_phone', 'preferred_language')`
+           AND column_name IN ('admin_phone', 'preferred_language', 'requested_plan')`
     );
 
     const existingColumns = new Set(columns.map((column) => column.column_name));
@@ -65,6 +74,7 @@ const ensureRegistrationRequestsSchema = async () => {
 exports.createRequest = async (data) => {
     const { companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone, password, preferredLanguage } = data;
     const id = uuidv4();
+    const requestedPlan = normalizePlan(data.plan || data.requestedPlan || data.requested_plan);
 
     await ensureRegistrationRequestsSchema();
     
@@ -73,8 +83,8 @@ exports.createRequest = async (data) => {
     
     try {
         await pool.query(
-            'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash, preferredLanguage]
+            'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, preferred_language, requested_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash, preferredLanguage, requestedPlan]
         );
     } catch (error) {
         if (error.code === 'ER_BAD_FIELD_ERROR') {
@@ -132,8 +142,8 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
             // 3. Create Company
             try {
                 await connection.query(
-                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, default_language) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', r.preferred_language || 'en']
+                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, default_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', normalizePlan(r.requested_plan), r.preferred_language || 'en']
                 );
             } catch (error) {
                 if (!isMissingCompanyDefaultLanguageColumn(error)) {
@@ -141,8 +151,8 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
                 }
 
                 await connection.query(
-                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status) VALUES (?, ?, ?, ?, ?, ?)',
-                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active']
+                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', normalizePlan(r.requested_plan)]
                 );
             }
 

@@ -42,10 +42,16 @@ const AdminRegistrations = () => {
         }
     };
 
+    const formatPlan = (plan) => {
+        const normalized = plan || 'basic';
+        return t(`pricing.tiers.${normalized}.name`) || normalized;
+    };
+
     const filteredRequests = requests.filter(r => 
         r.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.admin_email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.admin_last_name?.toLowerCase().includes(searchQuery.toLowerCase())
+        r.admin_last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.requested_plan?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -101,13 +107,14 @@ const AdminRegistrations = () => {
                                     <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('admin.companyIdentity')}</th>
                                     <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('admin.adminPersona')}</th>
                                     <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">{t('admin.industrySector')}</th>
+                                    <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">Plan</th>
                                     <th className="px-12 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-center">{t('admin.status')}</th>
                                     <th className="px-12 py-8 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{t('common.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {filteredRequests.length === 0 ? (
-                                    <tr><td colSpan="5" className="px-12 py-32 text-center text-slate-300 font-black uppercase tracking-widest text-[10px] italic">{t('admin_registrations.zeroRequests')}</td></tr>
+                                    <tr><td colSpan="6" className="px-12 py-32 text-center text-slate-300 font-black uppercase tracking-widest text-[10px] italic">{t('admin_registrations.zeroRequests')}</td></tr>
                                 ) : (
                                     filteredRequests.map((req) => (
                                         <tr key={req.id} className="hover:bg-slate-50/50 transition-all group">
@@ -135,6 +142,11 @@ const AdminRegistrations = () => {
                                             <td className="px-12 py-10 text-center">
                                                 <span className="px-5 py-2 bg-slate-100 text-slate-500 border border-slate-200 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
                                                     {req.industry}
+                                                </span>
+                                            </td>
+                                            <td className="px-12 py-10 text-center">
+                                                <span className="px-5 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
+                                                    {formatPlan(req.requested_plan)}
                                                 </span>
                                             </td>
                                             <td className="px-12 py-10">
@@ -248,6 +260,10 @@ const AdminRegistrations = () => {
                                         <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                             <Phone size={14} className="text-slate-400" /> {selectedRequest.admin_phone || 'N/A'}
                                         </div>
+                                    </div>
+                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Requested Plan</div>
+                                        <div className="text-sm font-bold text-slate-700">{formatPlan(selectedRequest.requested_plan)}</div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 border-l-4 border-l-emerald-500">
                                         <div className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">Password Status</div>

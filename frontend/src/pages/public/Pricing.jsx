@@ -62,7 +62,7 @@ const Pricing = () => {
                             </div>
                             
                             <Link 
-                                to="/register" 
+                                to={`/register?plan=${tier.id}`}
                                 className={`mt-8 block w-full py-3 px-4 rounded-xl text-center font-bold transition-all ${tier.isPopular ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-900'}`}
                             >
                                 {t('marketing.startTrialBtn')}

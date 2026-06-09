@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { Mail, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock, Languages, Phone, Eye, EyeOff } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
@@ -7,6 +7,9 @@ import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api/axiosConfig';
 const Register = () => {
     const { t } = useTranslation();
+    const [searchParams] = useSearchParams();
+    const routePlan = searchParams.get('plan');
+    const initialPlan = ['basic', 'pro', 'enterprise'].includes(routePlan) ? routePlan : 'basic';
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +21,8 @@ const Register = () => {
         adminEmail: '',
         adminPhone: '',
         password: '',
-        preferredLanguage: 'en'
+        preferredLanguage: 'en',
+        plan: initialPlan
     });
 
     const languageOptions = [
@@ -40,6 +44,12 @@ const Register = () => {
         { id: 'construction', label: t('marketing.industries.construction'), icon: '🏗️' },
         { id: 'retail', label: t('marketing.industries.retail'), icon: '🛒' },
         { id: 'public_works', icon: '🏛️', label: t('marketing.industries.public_works') }
+    ];
+
+    const planOptions = [
+        { value: 'basic', label: t('pricing.tiers.basic.name'), price: '$49' },
+        { value: 'pro', label: t('pricing.tiers.pro.name'), price: '$129' },
+        { value: 'enterprise', label: t('pricing.tiers.enterprise.name'), price: t('pricing.custom') }
     ];
 
     const [error, setError] = useState(null);
@@ -114,6 +124,25 @@ const Register = () => {
                                                 {languageOptions.map((option) => (
                                                     <option key={option.value} value={option.value}>
                                                         {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Plan</label>
+                                        <div className="relative">
+                                            <select
+                                                name="plan"
+                                                value={formData.plan}
+                                                onChange={handleChange}
+                                                required
+                                                className="input-field appearance-none bg-white cursor-pointer"
+                                            >
+                                                {planOptions.map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label} - {option.price}
                                                     </option>
                                                 ))}
                                             </select>

@@ -476,6 +476,7 @@ CREATE TABLE IF NOT EXISTS registration_requests (
     admin_phone VARCHAR(50),
     password_hash VARCHAR(255) NOT NULL,
     preferred_language CHAR(2) NOT NULL DEFAULT 'en',
+    requested_plan ENUM('basic', 'pro', 'enterprise') NOT NULL DEFAULT 'basic',
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
