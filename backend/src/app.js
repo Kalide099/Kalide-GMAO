@@ -160,6 +160,7 @@ app.get('/metrics', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/companies', companyRoutes);
+app.use('/api/v1/company', companyRoutes);
 app.use('/api/v1/assets', assetRoutes);
 app.use('/api/v1/work-orders', workOrderRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);

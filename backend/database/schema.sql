@@ -2,7 +2,7 @@
 
 -- Clean Purge for Shared Hosting (where DROP DATABASE is restricted)
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS integration_webhooks, system_plugins, inventory_transactions, warehouse_locations, ot_security_alerts, sla_contracts, blockchain_ledger, esg_telemetry, digital_twin_snapshots, ai_prescriptions, user_certifications, certifications, expert_sessions, asset_telemetrics, asset_financial_models, safety_permits, registration_requests, technician_kpis, energy_readings, purchase_orders, iot_readings, asset_sensor_configs, role_permissions, permissions, audit_logs, notifications, work_order_parts, failure_predictions, maintenance_schedules, work_order_history, work_order_comments, work_order_translations, work_orders, inventory_items, suppliers, assets, users, subscriptions, zones, sites, companies, subscription_plan_translations, subscription_plans;
+DROP TABLE IF EXISTS integration_webhooks, system_plugins, inventory_transactions, warehouse_locations, ot_security_alerts, sla_contracts, blockchain_ledger, esg_telemetry, digital_twin_snapshots, ai_prescriptions, user_certifications, certifications, expert_sessions, asset_telemetrics, asset_financial_models, safety_permits, sso_configs, registration_requests, technician_kpis, energy_readings, purchase_orders, iot_readings, asset_sensor_configs, role_permissions, permissions, audit_logs, notifications, work_order_parts, failure_predictions, maintenance_schedules, work_order_history, work_order_comments, work_order_translations, work_orders, inventory_items, suppliers, assets, users, subscriptions, zones, sites, companies, subscription_plan_translations, subscription_plans;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ==========================================
@@ -152,6 +152,20 @@ CREATE TABLE IF NOT EXISTS mfa_backup_codes (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_mfa_backup_user_id (user_id),
     INDEX idx_mfa_backup_used_at (used_at)
+);
+
+CREATE TABLE IF NOT EXISTS sso_configs (
+    id CHAR(36) PRIMARY KEY,
+    company_id CHAR(36) NOT NULL,
+    provider_name VARCHAR(100) NOT NULL DEFAULT '',
+    idp_entity_id VARCHAR(512) NOT NULL DEFAULT '',
+    sso_url VARCHAR(512) NOT NULL DEFAULT '',
+    public_certificate TEXT NULL,
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
+    INDEX idx_sso_company (company_id)
 );
 
 

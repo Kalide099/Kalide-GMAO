@@ -9,10 +9,95 @@ const { writeAuthAudit } = require('../utils/auditLogger');
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
+const SSO_COLUMNS = {
+    provider_name: "ALTER TABLE sso_configs ADD COLUMN provider_name VARCHAR(100) NOT NULL DEFAULT '' AFTER company_id",
+    idp_entity_id: "ALTER TABLE sso_configs ADD COLUMN idp_entity_id VARCHAR(512) NOT NULL DEFAULT '' AFTER provider_name",
+    sso_url: "ALTER TABLE sso_configs ADD COLUMN sso_url VARCHAR(512) NOT NULL DEFAULT '' AFTER idp_entity_id",
+    public_certificate: "ALTER TABLE sso_configs ADD COLUMN public_certificate TEXT NULL AFTER sso_url",
+    is_enabled: "ALTER TABLE sso_configs ADD COLUMN is_enabled BOOLEAN NOT NULL DEFAULT TRUE AFTER public_certificate",
+    updated_at: "ALTER TABLE sso_configs ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at"
+};
+
+const ensureSSOConfigSchema = async () => {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS sso_configs (
+            id CHAR(36) PRIMARY KEY,
+            company_id CHAR(36) NOT NULL,
+            provider_name VARCHAR(100) NOT NULL DEFAULT '',
+            idp_entity_id VARCHAR(512) NOT NULL DEFAULT '',
+            sso_url VARCHAR(512) NOT NULL DEFAULT '',
+            public_certificate TEXT NULL,
+            is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_sso_company (company_id),
+            FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+        )
+    `);
+
+    const [columns] = await pool.query(
+        `SELECT column_name AS column_name
+         FROM information_schema.columns
+         WHERE table_schema = DATABASE()
+           AND table_name = 'sso_configs'`
+    );
+
+    const existingColumns = new Set(columns.map((column) => column.column_name));
+    for (const [columnName, alterSql] of Object.entries(SSO_COLUMNS)) {
+        if (!existingColumns.has(columnName)) {
+            try {
+                await pool.query(alterSql);
+            } catch (error) {
+                if (error.code !== 'ER_DUP_FIELDNAME') {
+                    throw error;
+                }
+            }
+        }
+    }
+
+    const refreshedColumns = new Set([...existingColumns, ...Object.keys(SSO_COLUMNS)]);
+    if (refreshedColumns.has('provider') || refreshedColumns.has('entry_point') || refreshedColumns.has('cert')) {
+        await pool.query(`
+            UPDATE sso_configs
+            SET provider_name = COALESCE(NULLIF(provider_name, ''), provider, 'SAML'),
+                sso_url = COALESCE(NULLIF(sso_url, ''), entry_point, ''),
+                public_certificate = COALESCE(public_certificate, cert)
+            WHERE (provider_name = '' OR sso_url = '' OR public_certificate IS NULL)
+        `).catch((error) => {
+            if (error.code !== 'ER_BAD_FIELD_ERROR') {
+                throw error;
+            }
+        });
+    }
+};
+
+const normalizeSSOConfigPayload = (body) => ({
+    provider_name: String(body.provider_name || '').trim(),
+    idp_entity_id: String(body.idp_entity_id || '').trim(),
+    sso_url: String(body.sso_url || '').trim(),
+    public_certificate: String(body.public_certificate || '').trim() || null
+});
+
+const isValidUrl = (value) => {
+    try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'https:';
+    } catch (_) {
+        return false;
+    }
+};
+
 exports.getSSOConfigs = async (req, res, next) => {
     try {
         const lang = req.lang || 'en';
-        const [rows] = await pool.query('SELECT * FROM sso_configs WHERE company_id = ?', [req.user.company_id]);
+        await ensureSSOConfigSchema();
+        const [rows] = await pool.query(
+            `SELECT id, company_id, provider_name, idp_entity_id, sso_url, public_certificate, is_enabled, created_at, updated_at
+             FROM sso_configs
+             WHERE company_id = ?
+             ORDER BY created_at DESC`,
+            [req.user.company_id]
+        );
         return successResponse(res, 200, t('auth.sso_retrieved', lang), rows);
     } catch (err) {
         next(err);
@@ -23,13 +108,38 @@ exports.createSSOConfig = async (req, res, next) => {
     try {
         const id = uuidv4();
         const lang = req.lang || 'en';
-        const { provider_name, idp_entity_id, sso_url, public_certificate } = req.body;
-        await pool.query(
-            `INSERT INTO sso_configs (id, company_id, provider_name, idp_entity_id, sso_url, public_certificate) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [id, req.user.company_id, provider_name, idp_entity_id, sso_url, public_certificate]
-        );
-        return successResponse(res, 201, t('auth.sso_established', lang), { id, provider_name });
+        const payload = normalizeSSOConfigPayload(req.body);
+
+        if (!payload.provider_name || !payload.idp_entity_id || !payload.sso_url) {
+            return errorResponse(res, 400, 'Provider name, IDP entity ID, and SSO URL are required.');
+        }
+
+        if (!isValidUrl(payload.idp_entity_id) || !isValidUrl(payload.sso_url)) {
+            return errorResponse(res, 400, 'IDP entity ID and SSO URL must be valid HTTPS URLs.');
+        }
+
+        await ensureSSOConfigSchema();
+
+        try {
+            await pool.query(
+                `INSERT INTO sso_configs (id, company_id, provider_name, idp_entity_id, sso_url, public_certificate, is_enabled)
+                 VALUES (?, ?, ?, ?, ?, ?, TRUE)`,
+                [id, req.user.company_id, payload.provider_name, payload.idp_entity_id, payload.sso_url, payload.public_certificate]
+            );
+        } catch (error) {
+            if (error.code !== 'ER_DUP_ENTRY') {
+                throw error;
+            }
+
+            await pool.query(
+                `UPDATE sso_configs
+                 SET provider_name = ?, idp_entity_id = ?, sso_url = ?, public_certificate = ?, is_enabled = TRUE
+                 WHERE company_id = ?`,
+                [payload.provider_name, payload.idp_entity_id, payload.sso_url, payload.public_certificate, req.user.company_id]
+            );
+        }
+
+        return successResponse(res, 201, t('auth.sso_established', lang), { id, provider_name: payload.provider_name });
     } catch (err) {
         next(err);
     }
@@ -39,6 +149,8 @@ exports.deleteSSOConfig = async (req, res, next) => {
     try {
         const lang = req.lang || 'en';
         const { id } = req.params;
+
+        await ensureSSOConfigSchema();
 
         const [result] = await pool.query(
             'DELETE FROM sso_configs WHERE id = ? AND company_id = ?',

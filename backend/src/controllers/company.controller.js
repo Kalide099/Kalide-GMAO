@@ -7,7 +7,21 @@ const { successResponse, errorResponse } = require('../utils/responseHandler');
 exports.getCompanyDetails = async (req, res, next) => {
     try {
         const [rows] = await pool.query(
-            'SELECT id, name, industry, status, subscription_status, currency, timezone, created_at FROM companies WHERE id = ? AND deleted_at IS NULL',
+            `SELECT id,
+                    name_en,
+                    name_fr,
+                    COALESCE(name_en, name_fr) AS name,
+                    industry_en,
+                    industry_fr,
+                    COALESCE(industry_en, industry_fr) AS industry,
+                    subscription_status AS status,
+                    subscription_status,
+                    plan,
+                    currency,
+                    timezone,
+                    created_at
+             FROM companies
+             WHERE id = ? AND deleted_at IS NULL`,
             [req.user.company_id]
         );
         

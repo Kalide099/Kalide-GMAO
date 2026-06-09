@@ -5,6 +5,7 @@ const { authenticate } = require('../middlewares/auth.middleware');
 
 router.use(authenticate);
 
+router.get('/', energyController.getESGOverview);
 router.get('/overview', energyController.getESGOverview);
 router.get('/asset/:assetId', energyController.getAssetEnergy);
 
