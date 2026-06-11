@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS companies (
     subscription_status ENUM('trial', 'active', 'suspended', 'expired', 'cancelled') DEFAULT 'trial',
     plan ENUM('basic', 'pro', 'enterprise') DEFAULT 'basic',
     enabled_modules JSON NULL, -- e.g., ["safety", "finance", "gis", "iot", "predictive"]
+    industry_type VARCHAR(50) NULL, -- Normalized key for AI routing
     api_key CHAR(64) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -326,6 +327,8 @@ CREATE TABLE IF NOT EXISTS failure_predictions (
     asset_id CHAR(36) NOT NULL,
     predicted_failure_date DATE NOT NULL,
     confidence_score DECIMAL(5,2),
+    ai_model_archetype VARCHAR(100) NULL,
+    ai_confidence DECIMAL(5,4) NULL,
     recommendation_en TEXT,
     recommendation_fr TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

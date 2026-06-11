@@ -1,8 +1,10 @@
 const pool = require('../config/db');
+const aiGateway = require('./ai_gateway.service');
 
 /**
  * Enterprise Predictive Maintenance Engine
- * Calculates MTBF/MTTR and predicts failure vectors based on historical Work Order telemetry.
+ * Combines statistical MTBF/MTTR analysis with AI-powered ML predictions.
+ * Falls back to statistics when the AI microservice is unavailable.
  */
 
 exports.calculateAssetMetrics = async (companyId, assetId) => {
@@ -61,13 +63,66 @@ exports.calculateAssetMetrics = async (companyId, assetId) => {
             : "Actif fonctionnant selon les paramètres nominaux."
     };
 
+    // 5. AI-Enhanced Prediction (NEW)
+    // Attempt to get ML-powered prediction from the AI microservice
+    let aiPrediction = null;
+    try {
+        // Fetch company's industry type
+        const [companies] = await pool.query(
+            'SELECT industry_en FROM companies WHERE id = ?',
+            [companyId]
+        );
+
+        if (companies.length > 0) {
+            const industryType = companies[0].industry_en || 'manufacturing';
+
+            // Fetch latest IoT sensor readings for this asset
+            const [readings] = await pool.query(
+                `SELECT sensor_type, reading_value 
+                 FROM iot_readings 
+                 WHERE asset_id = ? 
+                 ORDER BY recorded_at DESC 
+                 LIMIT 21`,
+                [assetId]
+            );
+
+            // Build sensor data object from readings
+            const sensorData = {};
+            readings.forEach(r => {
+                sensorData[r.sensor_type] = parseFloat(r.reading_value);
+            });
+
+            // Add statistical context to sensor data
+            sensorData.mtbf_hours = mtbfHours;
+            sensorData.mttr_hours = mttrHours;
+            sensorData.health_score = healthScore;
+            sensorData.failure_count = orders.length;
+
+            // Request AI prediction
+            const aiResult = await aiGateway.requestAIPrediction(
+                industryType, sensorData, assetId
+            );
+
+            if (aiResult && aiResult.success) {
+                aiPrediction = {
+                    model_archetype: aiResult.model_archetype,
+                    ...aiResult.prediction
+                };
+            }
+        }
+    } catch (err) {
+        // Silently ignore AI errors — statistical fallback is always available
+        console.warn('[Predictive] AI prediction unavailable, using statistical fallback:', err.message);
+    }
+
     return {
         assetId,
         mttr: mttrHours.toFixed(2),
         mtbf: mtbfHours.toFixed(2),
         predictedFailureDate,
         healthScore: Math.round(healthScore),
-        recommendations // Return both, controller will choose
+        recommendations, // Return both, controller will choose
+        aiPrediction // null if AI service unavailable — backward compatible
     };
 };
 

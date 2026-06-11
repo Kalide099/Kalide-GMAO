@@ -6,6 +6,7 @@ const { authenticate, authorize } = require('../middlewares/auth.middleware');
 router.use(authenticate);
 
 router.get('/', authorize('admin', 'manager'), predictiveController.getFleetOverview);
+router.get('/ai-status', authorize('admin', 'manager'), predictiveController.getAIStatus);
 router.get('/asset/:assetId', authorize('admin', 'manager'), predictiveController.getAssetPredictions);
 
 module.exports = router;

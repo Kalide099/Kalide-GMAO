@@ -20,7 +20,11 @@
     "release:restore-db": "powershell -ExecutionPolicy Bypass -File scripts/release/restore-db.ps1",
     "postinstall": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
     "build": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
-    "start": "node server.js"
+    "start": "node server.js",
+    "ai:install": "pip install -r ai_service/requirements.txt",
+    "ai:train": "python ai_service/train_all.py",
+    "ai:start": "python ai_service/main.py",
+    "dev:full": "concurrently -n \"BACKEND,FRONTEND,AI\" -c \"green,blue,magenta\" --kill-others \"npm run backend\" \"npm run frontend\" \"npm run ai:start\""
   },
   "main": "desktop/main.js",
   "dependencies": {
