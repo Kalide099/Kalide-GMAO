@@ -25,7 +25,7 @@
     "viewTable": "Table View",
     "viewKanban": "Kanban Board",
     "timestamp": "Timestamp",
-    "brandNameFull": "Kalide Global Business Analytics",
+    "brandNameFull": "KGMAO - A Product of KALIDE SARL",
     "status": {
       "active": "Active",
       "inactive": "Inactive",
@@ -525,8 +525,8 @@
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
     "enterpriseHQ": "Enterprise HQ",
-    "address": "Pôle Entreprise, 404 Business Blvd, Global System Center, KG 9042",
-    "copyright": "© 2026 Kalide Global Business Suite. Deep Infrastructure Secured.",
+    "address": "Department: Borgou, Municipality: Parakou, City: Parakou, Area: Guema, Block: 1674, Plot: M/AMADOU BABIO, Telephone: +229 01 66 98 33 83, email: kalideglobal@gmail.com",
+    "copyright": "© 2026 KGMAO. A product of KALIDE SARL. Deep Infrastructure Secured.",
     "globalOps": "Global Ops: Cluster 09"
   },
   "audit": {
@@ -1424,9 +1424,9 @@
       "partnership": "Partnership System",
       "billing": "Billing Operations"
     },
-    "addressLine1": "404 Business Blvd, Suite 9000",
-    "addressLine2": "Center System Global, KG 9042",
-    "phoneNumber": "+1 (800) KG-MAO-OPS",
+    "addressLine1": "Department: Borgou, Municipality: Parakou, City: Parakou",
+    "addressLine2": "Area: Guema, Block: 1674, Plot: M/AMADOU BABIO",
+    "phoneNumber": "+229 01 66 98 33 83",
     "mttrValue": "MTTR : 15 Min",
     "encryptionStandard": "Lien AES-256",
     "placeholders": {
@@ -1586,7 +1586,7 @@
       "acceptance": {
         "title": "Acceptance of Processs",
         "p1": "By initializing a session on the KGMAO platform, you explicitly agree to adhere to these governance processs. Our system is an enterprise-grade business suite; use without explicit authorization or beyond the defined operational scope is strictly prohibited.",
-        "p2": "These terms constitute a legally binding agreement between your Enterprise Entity and Kalide Global Business Suite."
+        "p2": "These terms constitute a legally binding agreement between your Enterprise Entity and KALIDE SARL."
       },
       "sovereignty": {
         "title": "Data Adminty",
@@ -1595,7 +1595,7 @@
       },
       "ip": {
         "title": "Intellectual Property System",
-        "p1": "The KGMAO source core, UI/UX aesthetics, and proprietary diagnostic models are the sole intellectual property of Kalide Global. Any attempt to reverse-engineer, decompile, or bypass the security encryption layers will trigger an immediate termination sequence and legal audit."
+        "p1": "The KGMAO source core, UI/UX aesthetics, and proprietary diagnostic models are the sole intellectual property of KALIDE SARL. Any attempt to reverse-engineer, decompile, or bypass the security encryption layers will trigger an immediate termination sequence and legal audit."
       }
     },
     "sla": {
@@ -1740,7 +1740,7 @@
   "aboutPage": {
     "architecting": "Architecting the Future",
     "title": "Redefining Business Analytics",
-    "subtitle": "Kalide Global is a mission-critical infrastructure conglomerate dedicated to bridging the gap between raw business power and advanced smart analytics.",
+    "subtitle": "KALIDE SARL is a mission-critical infrastructure conglomerate dedicated to bridging the gap between raw business power and advanced smart analytics.",
     "join": "Join the System",
     "contact": "Contact HQ",
     "sovereignty": "Business Adminty",
@@ -1761,7 +1761,7 @@
       "p3Desc": "Designed for the global system, our interface synchronizes instantly across English and French centers for unified command."
     },
     "ctaTitle": "Ready to Initiate Operational Adminty?",
-    "ctaSubtitle": "Deploy Kalide Global in your business ecosystem today.",
+    "ctaSubtitle": "Deploy KALIDE SARL in your business ecosystem today.",
     "ctaBtn": "Start Secure Onboarding"
   },
   "globalPricingPage": {

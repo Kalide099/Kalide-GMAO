@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
       "title": "KGMAO Core SaaS API",
-      "description": "Global API documentation organically mapping the Kalide Global Multi-tenant architecture securely.",
+      "description": "Global API documentation organically mapping the KALIDE SARL Multi-tenant architecture securely.",
       "version": "2.0.0"
     },
     "servers": [

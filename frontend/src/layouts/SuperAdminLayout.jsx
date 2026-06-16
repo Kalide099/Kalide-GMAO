@@ -73,7 +73,7 @@ const SuperAdminLayout = () => {
                         {t('common.logout')}
                     </button>
                     <div className="text-center text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-50 mt-2">
-                        Developed by Kalide Technology
+                        A Product of KALIDE SARL
                     </div>
                 </div>
             </aside>

@@ -25,7 +25,7 @@
     "viewTable": "Vue en Tableau",
     "viewKanban": "Tableau Kanban",
     "timestamp": "Trace Temporelle",
-    "brandNameFull": "Kalide Global Business Intelligence",
+    "brandNameFull": "KGMAO - Un Produit de KALIDE SARL",
     "idPrefix": "ID-",
     "idSuffix": "",
     "refPrefix": "REF :",
@@ -525,8 +525,8 @@
     "terms": "Conditions d'Utilisation",
     "privacy": "Politique de Confidentialité",
     "enterpriseHQ": "Siège de l'Entreprise",
-    "address": "Pôle Entreprise, 404 Business Blvd, Center Espace Global, KG 9042",
-    "copyright": "© 2026 Kalide Global Business Suite. Infrastructure Profonde Sécurisée.",
+    "address": "Département: Borgou, Commune: Parakou, Arrondissement: Parakou 3, Quartier: Guema, Ilot: 1674, Parcelle: M/AMADOU BABIO, Téléphone: +2290166983383, email: kalideglobal@gmail.com",
+    "copyright": "© 2026 KGMAO. Un produit de KALIDE SARL. Infrastructure Profonde Sécurisée.",
     "globalOps": "Opérations Globales : Cluster 09"
   },
   "audit": {
@@ -1424,9 +1424,9 @@
       "partnership": "Espace de Partenariat",
       "billing": "Opérations de Facturation"
     },
-    "addressLine1": "404 Business Blvd, Suite 9000",
-    "addressLine2": "Center Espace Global, KG 9042",
-    "phoneNumber": "+1 (800) KG-MAO-OPS",
+    "addressLine1": "Département: Borgou, Commune: Parakou, Arrondissement: Parakou 3",
+    "addressLine2": "Quartier: Guema, Ilot: 1674, Parcelle: M/AMADOU BABIO",
+    "phoneNumber": "+2290166983383",
     "mttrValue": "MTTR : 15 Min",
     "encryptionStandard": "Lien AES-256",
     "placeholders": {
@@ -1574,7 +1574,7 @@
       "acceptance": {
         "title": "Acceptation des Protocoles",
         "p1": "En initialisant une session sur la plateforme KGMAO, vous acceptez explicitement d'adhérer à ces protocoles de gouvernance.",
-        "p2": "Ces conditions constituent un accord juridiquement contraignant entre votre entité d'entreprise et Kalide Global Business Suite."
+        "p2": "Ces conditions constituent un accord juridiquement contraignant entre votre entité d'entreprise et KALIDE SARL."
       },
       "sovereignty": {
         "title": "Souveraineté des Données",
@@ -1583,7 +1583,7 @@
       },
       "ip": {
         "title": "Espace de Propriété Intellectuelle",
-        "p1": "Le cœur source de KGMAO, l'esthétique UI/UX et les modèles de diagnostic propriétaires sont la propriété intellectuelle exclusive de Kalide Global."
+        "p1": "Le cœur source de KGMAO, l'esthétique UI/UX et les modèles de diagnostic propriétaires sont la propriété intellectuelle exclusive de KALIDE SARL."
       }
     },
     "stream": {
@@ -1740,7 +1740,7 @@
   "aboutPage": {
     "architecting": "Architecturer le Futur",
     "title": "Redéfinir l'Intelligence Industrielle",
-    "subtitle": "Kalide Global est un conglomérat d'infrastructures critiques dédié à combler le fossé entre la puissance industrielle brute et l'analyse neurale avancée.",
+    "subtitle": "KALIDE SARL est un conglomérat d'infrastructures critiques dédié à combler le fossé entre la puissance industrielle brute et l'analyse neurale avancée.",
     "join": "Rejoindre la Espace",
     "contact": "Contacter le QG",
     "sovereignty": "Souveraineté Industrielle",
@@ -1761,7 +1761,7 @@
       "p3Desc": "Conçue pour la espace mondiale, notre interface se synchronise instantanément entre les hubs anglais et français pour une commande unifiée."
     },
     "ctaTitle": "Prêt à Initier la Souveraineté Opérationnelle ?",
-    "ctaSubtitle": "Déployez Kalide Global dans votre écosystème métier dès aujourd'hui.",
+    "ctaSubtitle": "Déployez KALIDE SARL dans votre écosystème métier dès aujourd'hui.",
     "ctaBtn": "Démarrer l'Intégration Sécurisée"
   },
   "globalPricingPage": {

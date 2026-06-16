@@ -83,7 +83,7 @@ const TenantSettings = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500">{t('tenantSettings.companyName')}</label>
-                                    <input type="text" defaultValue={user?.company_name || 'Kalide Global'} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+                                    <input type="text" defaultValue={user?.company_name || 'KALIDE SARL'} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500">{t('tenantSettings.industrySector')}</label>

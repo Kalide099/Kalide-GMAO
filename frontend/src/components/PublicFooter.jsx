@@ -111,7 +111,7 @@ const PublicFooter = () => {
                         {t('footer.copyright')}
                     </p>
                     <p className="text-[10px] font-black text-yellow-500/70 uppercase tracking-[0.2em]">
-                        Developed by Kalide Technology
+                        A Product of KALIDE SARL
                     </p>
                 </div>
                 <div className="flex items-center gap-8">

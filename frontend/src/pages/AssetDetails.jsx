@@ -238,7 +238,7 @@ const AssetDetails = () => {
                 </div>
                 
                 <div className="text-center space-y-4 mb-16">
-                    <h1 className="text-xs font-black uppercase tracking-[0.4em] text-indigo-600">{t('common.brandNameFull') || 'Kalide Global Business Platform'}</h1>
+                    <h1 className="text-xs font-black uppercase tracking-[0.4em] text-indigo-600">{t('common.brandNameFull') || 'KGMAO - A Product of KALIDE SARL'}</h1>
                     <h2 className="text-5xl font-black uppercase tracking-tighter">{t('workOrders.healthCertificate')}</h2>
                     <div className="h-1 w-24 bg-slate-900 mx-auto"></div>
                 </div>
