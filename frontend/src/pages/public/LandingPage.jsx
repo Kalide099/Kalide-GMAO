@@ -97,10 +97,6 @@ const LandingPage = () => {
                             {t('marketing.startTrialBtn')}
                             <ArrowRight size={18} />
                         </Link>
-                        <a href="/downloads/KGMAO-Desktop-Setup.exe" download="KGMAO-Desktop-Setup.exe" className="px-8 lg:px-10 py-5 bg-yellow-400 hover:bg-white text-slate-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 text-center leading-tight">
-                            {t('marketing.downloadDesktop')}
-                            <Download size={18} />
-                        </a>
                         <Link to="/login" className="px-8 lg:px-10 py-5 bg-transparent border-2 border-white/20 hover:border-yellow-400 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] backdrop-blur-md transition-all flex items-center justify-center gap-3 group text-center leading-tight">
                             {t('marketing.login')}
                             <Zap size={14} className="text-yellow-400 opacity-50 group-hover:opacity-100 transition-opacity" />
