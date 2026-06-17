@@ -90,14 +90,14 @@ const ContactUs = () => {
 
                 {/* Right Side: Communication Matrix (Form) */}
                 <div className="lg:w-1/2 p-5 sm:p-8 lg:p-16 xl:p-24 flex items-center justify-center order-1 lg:order-2">
-                    <div className="w-full max-w-xl space-y-8 sm:space-y-12">
+                    <div className="w-full max-w-md space-y-8 sm:space-y-12">
                         <div className="space-y-3">
                             <span className="inline-flex max-w-full px-4 py-1.5 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-[0.08em] sm:tracking-[0.3em] rounded-full">{t('contact.secureTransmission')}</span>
                             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{t('contact.terminalTitle')}</h2>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                            <div className="space-y-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.fullName')}</label>
                                     <input type="text" className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />

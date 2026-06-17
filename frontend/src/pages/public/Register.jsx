@@ -79,7 +79,7 @@ const Register = () => {
         <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
             <PublicNavbar />
             <div className="flex-1 flex items-center justify-center px-4 py-8 sm:p-6">
-                <div className="w-full max-w-2xl">
+                <div className="w-full max-w-md">
                     <div className="bg-white p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-slate-900/5 relative overflow-hidden border border-slate-100">
                         {/* Premium Accent */}
                         <div className="absolute top-0 left-0 w-full h-2 bg-yellow-400"></div>
@@ -149,7 +149,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <div className="space-y-6 sm:space-y-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.companyName')}</label>
                                             <div className="relative">
@@ -182,7 +182,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <div className="space-y-6 sm:space-y-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.adminFirstName')}</label>
                                             <div className="relative">
@@ -213,7 +213,7 @@ const Register = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <div className="space-y-6 sm:space-y-8">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">{t('marketing.workEmail')}</label>
                                             <div className="relative">

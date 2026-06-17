@@ -75,8 +75,8 @@ const FreeTrial = () => {
                     </div>
 
                     {/* Right: Registration Card */}
-                    <div className="lg:w-1/2 w-full animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                        <div className="bg-white rounded-[4rem] p-12 lg:p-16 text-slate-900 shadow-2xl relative overflow-hidden group">
+                    <div className="lg:w-1/2 w-full animate-fade-in-up flex justify-center lg:justify-end" style={{ animationDelay: '0.2s' }}>
+                        <div className="w-full max-w-md bg-white rounded-[4rem] p-12 lg:p-16 text-slate-900 shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-12 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
                                 <Clock size={200} />
                             </div>
