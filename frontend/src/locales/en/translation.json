@@ -525,7 +525,7 @@
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
     "enterpriseHQ": "Enterprise HQ",
-    "address": "Department: Borgou, Municipality: Parakou, City: Parakou, Area: Guema, Block: 1674, Plot: M/AMADOU BABIO, Telephone: +229 01 66 98 33 83, email: kalideglobal@gmail.com",
+    "address": "1674, Benin phone:+229 01 66 98 33 83 mail : kalideglobal@gmail.com",
     "copyright": "© 2026 KGMAO. A product of KALIDE SARL. Deep Infrastructure Secured.",
     "globalOps": "Global Ops: Cluster 09"
   },
@@ -1424,8 +1424,8 @@
       "partnership": "Partnership System",
       "billing": "Billing Operations"
     },
-    "addressLine1": "Department: Borgou, Municipality: Parakou, City: Parakou",
-    "addressLine2": "Area: Guema, Block: 1674, Plot: M/AMADOU BABIO",
+    "addressLine1": "1674, Benin",
+    "addressLine2": "mail : kalideglobal@gmail.com",
     "phoneNumber": "+229 01 66 98 33 83",
     "mttrValue": "MTTR : 15 Min",
     "encryptionStandard": "Lien AES-256",

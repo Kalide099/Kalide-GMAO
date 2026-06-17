@@ -525,7 +525,7 @@
     "terms": "Conditions d'Utilisation",
     "privacy": "Politique de Confidentialité",
     "enterpriseHQ": "Siège de l'Entreprise",
-    "address": "Département: Borgou, Commune: Parakou, Arrondissement: Parakou 3, Quartier: Guema, Ilot: 1674, Parcelle: M/AMADOU BABIO, Téléphone: +2290166983383, email: kalideglobal@gmail.com",
+    "address": "1674, Benin phone:+229 01 66 98 33 83 mail : kalideglobal@gmail.com",
     "copyright": "© 2026 KGMAO. Un produit de KALIDE SARL. Infrastructure Profonde Sécurisée.",
     "globalOps": "Opérations Globales : Cluster 09"
   },
@@ -1424,9 +1424,9 @@
       "partnership": "Espace de Partenariat",
       "billing": "Opérations de Facturation"
     },
-    "addressLine1": "Département: Borgou, Commune: Parakou, Arrondissement: Parakou 3",
-    "addressLine2": "Quartier: Guema, Ilot: 1674, Parcelle: M/AMADOU BABIO",
-    "phoneNumber": "+2290166983383",
+    "addressLine1": "1674, Benin",
+    "addressLine2": "mail : kalideglobal@gmail.com",
+    "phoneNumber": "+229 01 66 98 33 83",
     "mttrValue": "MTTR : 15 Min",
     "encryptionStandard": "Lien AES-256",
     "placeholders": {
