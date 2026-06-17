@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
+const { getModulesForPlan } = require('../config/industryTemplates');
 
 const REGISTRATION_REQUEST_COLUMNS = {
     admin_phone: 'ALTER TABLE registration_requests ADD COLUMN admin_phone VARCHAR(50) NULL AFTER admin_email',
@@ -15,6 +16,10 @@ const normalizePlan = (plan) => {
     return VALID_PLANS.has(normalized) ? normalized : 'basic';
 };
 
+const normalizeLanguage = (language) => (
+    String(language || 'en').toLowerCase() === 'fr' ? 'fr' : 'en'
+);
+
 const isMissingCompanyDefaultLanguageColumn = (error) => (
     error &&
     error.code === 'ER_BAD_FIELD_ERROR' &&
@@ -25,6 +30,12 @@ const isMissingUserPreferredLanguageColumn = (error) => (
     error &&
     error.code === 'ER_BAD_FIELD_ERROR' &&
     String(error.sqlMessage || '').toLowerCase().includes('preferred_language')
+);
+
+const isMissingCompanyEnabledModulesColumn = (error) => (
+    error &&
+    error.code === 'ER_BAD_FIELD_ERROR' &&
+    String(error.sqlMessage || '').toLowerCase().includes('enabled_modules')
 );
 
 const ensureRegistrationRequestsSchema = async () => {
@@ -72,15 +83,16 @@ const ensureRegistrationRequestsSchema = async () => {
 };
 
 exports.createRequest = async (data) => {
-    const { companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone, password, preferredLanguage } = data;
+    const { companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone, password } = data;
     const id = uuidv4();
     const requestedPlan = normalizePlan(data.plan || data.requestedPlan || data.requested_plan);
+    const preferredLanguage = normalizeLanguage(data.preferredLanguage || data.preferred_language);
 
     await ensureRegistrationRequestsSchema();
-    
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
-    
+
     try {
         await pool.query(
             'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, preferred_language, requested_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -91,18 +103,18 @@ exports.createRequest = async (data) => {
             const msg = String(error.sqlMessage || '').toLowerCase();
             if (msg.includes('preferred_language') && msg.includes('admin_phone')) {
                 await pool.query(
-                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash]
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash, requested_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash, requestedPlan]
                 );
             } else if (msg.includes('admin_phone')) {
                 await pool.query(
-                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash, preferredLanguage]
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, password_hash, preferred_language, requested_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, passwordHash, preferredLanguage, requestedPlan]
                 );
             } else if (msg.includes('preferred_language')) {
                 await pool.query(
-                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash]
+                    'INSERT INTO registration_requests (id, company_name, industry, admin_first_name, admin_last_name, admin_email, admin_phone, password_hash, requested_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [id, companyName, industry, adminFirstName, adminLastName, adminEmail, adminPhone || null, passwordHash, requestedPlan]
                 );
             } else {
                 throw error;
@@ -111,7 +123,7 @@ exports.createRequest = async (data) => {
             throw error;
         }
     }
-    
+
     return { id };
 };
 
@@ -125,42 +137,81 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
     await connection.beginTransaction();
 
     try {
-        // 1. Update Request Status
         await connection.query(
             'UPDATE registration_requests SET status = ?, processed_at = NOW(), processed_by = ?, notes = ? WHERE id = ?',
             [status, processorId, notes, id]
         );
 
         if (status === 'approved') {
-            // 2. Fetch request details
             const [requests] = await connection.query('SELECT * FROM registration_requests WHERE id = ?', [id]);
             const r = requests[0];
 
-            const companyId = uuidv4();
-            const userId = uuidv4();
-
-            // 3. Create Company
-            try {
-                await connection.query(
-                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, default_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', normalizePlan(r.requested_plan), r.preferred_language || 'en']
-                );
-            } catch (error) {
-                if (!isMissingCompanyDefaultLanguageColumn(error)) {
-                    throw error;
-                }
-
-                await connection.query(
-                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', normalizePlan(r.requested_plan)]
-                );
+            if (!r) {
+                const err = new Error('Registration request not found.');
+                err.statusCode = 404;
+                throw err;
             }
 
-            // 4. Create Admin User (Using the stored hash from application)
+            const companyId = uuidv4();
+            const userId = uuidv4();
+            const approvedPlan = normalizePlan(r.requested_plan);
+            const preferredLanguage = normalizeLanguage(r.preferred_language);
+            const assignedModules = getModulesForPlan(r.industry, approvedPlan);
+
+            try {
+                await connection.query(
+                    'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, default_language, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', approvedPlan, preferredLanguage, JSON.stringify(assignedModules)]
+                );
+            } catch (error) {
+                if (isMissingCompanyEnabledModulesColumn(error)) {
+                    try {
+                        await connection.query(
+                            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, default_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                            [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', approvedPlan, preferredLanguage]
+                        );
+                    } catch (fallbackError) {
+                        if (!isMissingCompanyDefaultLanguageColumn(fallbackError)) {
+                            throw fallbackError;
+                        }
+
+                        await connection.query(
+                            'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                            [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', approvedPlan]
+                        );
+                    }
+                } else if (isMissingCompanyDefaultLanguageColumn(error)) {
+                    await connection.query(
+                        'INSERT INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                        [companyId, r.company_name, r.company_name, r.industry, r.industry, 'active', approvedPlan, JSON.stringify(assignedModules)]
+                    );
+                } else {
+                    throw error;
+                }
+            }
+
+            try {
+                await connection.query('UPDATE companies SET plan = ?, enabled_modules = ? WHERE id = ?', [approvedPlan, JSON.stringify(assignedModules), companyId]);
+            } catch (syncModulesError) {
+                if (!isMissingCompanyEnabledModulesColumn(syncModulesError)) {
+                    throw syncModulesError;
+                }
+
+                await connection.query('UPDATE companies SET plan = ? WHERE id = ?', [approvedPlan, companyId]);
+            }
+
+            try {
+                await connection.query('UPDATE companies SET default_language = ? WHERE id = ?', [preferredLanguage, companyId]);
+            } catch (syncLanguageError) {
+                if (!isMissingCompanyDefaultLanguageColumn(syncLanguageError)) {
+                    throw syncLanguageError;
+                }
+            }
+
             try {
                 await connection.query(
                     'INSERT INTO users (id, company_id, first_name, last_name, email, password_hash, role, status, preferred_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    [userId, companyId, r.admin_first_name, r.admin_last_name, r.admin_email, r.password_hash, 'admin', 'active', r.preferred_language || 'en']
+                    [userId, companyId, r.admin_first_name, r.admin_last_name, r.admin_email, r.password_hash, 'admin', 'active', preferredLanguage]
                 );
             } catch (error) {
                 if (!isMissingUserPreferredLanguageColumn(error)) {
@@ -172,14 +223,20 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
                     [userId, companyId, r.admin_first_name, r.admin_last_name, r.admin_email, r.password_hash, 'admin', 'active']
                 );
             }
-            
+
             await connection.commit();
-            return { companyId, userId, approved: true };
+            return {
+                companyId,
+                userId,
+                approved: true,
+                plan: approvedPlan,
+                enabledModules: assignedModules,
+                preferredLanguage
+            };
         }
 
         await connection.commit();
         return { approved: false };
-
     } catch (err) {
         await connection.rollback();
         throw err;

@@ -1,8 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const LanguageSwitcher = () => {
   const { i18n, t } = useTranslation();
+  const { user } = useAuth();
+
+  // Tenant language is account-driven after login; keep toggle for unauthenticated pages and super admins.
+  if (user && user.role !== 'super_admin') {
+    return null;
+  }
 
   const toggleLanguage = () => {
     const newLang = i18n.language.startsWith('en') ? 'fr' : 'en';

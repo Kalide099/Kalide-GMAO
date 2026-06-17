@@ -4,7 +4,7 @@ const { t } = require('../utils/i18n');
 const pool = require('../config/db');
 const { config, getEnv } = require('../config/env');
 
-const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
+const JWT_SECRET = getEnv('JWT_SECRET', config.isProd ? '' : 'kgmao_development_secret_321');
 
 /**
  * Middleware to authenticate user via JWT

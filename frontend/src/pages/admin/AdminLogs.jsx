@@ -9,6 +9,76 @@ const AdminLogs = () => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const parseDetails = (details) => {
+        if (!details) return null;
+        if (typeof details === 'object') return details;
+        if (typeof details !== 'string') return null;
+        try {
+            return JSON.parse(details);
+        } catch (_err) {
+            return null;
+        }
+    };
+
+    const formatDetails = (details, action) => {
+        const parsed = parseDetails(details);
+        if (!parsed) return details || t('admin.emptyPayload');
+
+        if (action === 'admin_update_status' && parsed.new_status) {
+            return `Company status updated to ${String(parsed.new_status).toUpperCase()}`;
+        }
+
+        if (action === 'admin_update_plan' && parsed.new_plan) {
+            const modules = Array.isArray(parsed.assigned_modules) ? parsed.assigned_modules.join(', ') : 'none';
+            return `Plan updated to ${String(parsed.new_plan).toUpperCase()} with modules: ${modules}`;
+        }
+
+        if (action === 'admin_update_modules' && Array.isArray(parsed.enabled_modules)) {
+            return `Enabled modules (${parsed.enabled_modules.length}): ${parsed.enabled_modules.join(', ')}`;
+        }
+
+        return Object.entries(parsed)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : String(value)}`)
+            .join(' | ');
+    };
+
+    const getActionBadge = (action) => {
+        const value = String(action || '').toLowerCase();
+
+        if (value.includes('update_plan')) {
+            return {
+                label: 'PLAN UPDATE',
+                className: 'text-cyan-300 bg-cyan-500/10 border border-cyan-500/20'
+            };
+        }
+
+        if (value.includes('update_modules')) {
+            return {
+                label: 'MODULE UPDATE',
+                className: 'text-indigo-300 bg-indigo-500/10 border border-indigo-500/20'
+            };
+        }
+
+        if (value.includes('update_status') || value.includes('suspend') || value.includes('revoke')) {
+            return {
+                label: 'STATUS UPDATE',
+                className: 'text-amber-300 bg-amber-500/10 border border-amber-500/20'
+            };
+        }
+
+        if (value.includes('auth_') || value.includes('login') || value.includes('logout') || value.includes('password')) {
+            return {
+                label: 'AUTH EVENT',
+                className: 'text-emerald-300 bg-emerald-500/10 border border-emerald-500/20'
+            };
+        }
+
+        return {
+            label: String(action || 'EVENT').replace(/_/g, ' ').toUpperCase(),
+            className: 'text-rose-300 bg-rose-500/10 border border-rose-500/20'
+        };
+    };
+
     const fetchLogs = async () => {
         setLoading(true);
         try {
@@ -95,14 +165,16 @@ const AdminLogs = () => {
                                 <p className="text-xs uppercase tracking-[0.4em]">{t('admin.noLogs')}</p>
                             </div>
                         ) : (
-                            filteredLogs.map(log => (
+                            filteredLogs.map(log => {
+                                const badge = getActionBadge(log.action);
+                                return (
                                 <div key={log.id} className="group/log border-b border-white/5 pb-6 hover:bg-white/5 rounded-2xl p-6 transition-all">
                                     <div className="flex flex-wrap items-center gap-4 mb-3">
                                         <span className="text-emerald-500 font-black text-[10px] tracking-tight bg-emerald-500/10 px-3 py-1 rounded-md">
                                             [{new Date(log.created_at).toISOString().replace('T', ' ').slice(0, 19)}]
                                         </span>
-                                        <span className="text-rose-500 font-black text-[10px] tracking-[0.2em] uppercase bg-rose-500/10 px-3 py-1 rounded-md">
-                                            {log.action}
+                                        <span className={`font-black text-[10px] tracking-[0.2em] uppercase px-3 py-1 rounded-md ${badge.className}`}>
+                                            {badge.label}
                                         </span>
                                         <span className="text-indigo-400 font-black text-[10px] tracking-widest uppercase italic">
                                             {t('admin.logSource')}: {log.user_name || t('admin.systemCore')}
@@ -115,12 +187,13 @@ const AdminLogs = () => {
                                         <div className="flex items-start gap-4">
                                             <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-2.5 shrink-0"></div>
                                             <p className="text-slate-400 text-xs leading-relaxed break-all font-medium italic">
-                                                {log.details || t('admin.emptyPayload')}
+                                                {formatDetails(log.details, log.action)}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 

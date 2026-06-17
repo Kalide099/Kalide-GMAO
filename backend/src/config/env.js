@@ -66,17 +66,17 @@ const validateEnv = (config) => {
     });
 
     if (missing.length > 0) {
-        console.warn(`[WARNING] Missing environment variables: ${missing.join(', ')}`);
+        throw new Error(`Missing environment variables: ${missing.join(', ')}`);
     }
 
     const jwtSecret = process.env.JWT_SECRET || '';
     if (UNSAFE_JWT_SECRETS.has(jwtSecret) || jwtSecret.length < 32) {
-        console.warn('[WARNING] JWT_SECRET is weak or missing. Please update it for security.');
+        throw new Error('JWT_SECRET is weak or missing. Please provide a strong secret (32+ chars).');
     }
 
     const isDesktopRuntime = Boolean(process.env.DESKTOP_BACKEND_PORT);
     if (!isDesktopRuntime && config.corsOrigin === '*') {
-        console.warn('[WARNING] CORS_ORIGIN is set to "*". Consider restricting it.');
+        throw new Error('CORS_ORIGIN cannot be "*" in production unless running desktop runtime.');
     }
 
     if (config.appVersion === '1.0.0' || config.buildSha === 'local') {

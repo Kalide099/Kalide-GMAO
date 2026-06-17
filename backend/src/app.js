@@ -54,12 +54,13 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     const startedAtNs = process.hrtime.bigint();
+    const requestPath = req.originalUrl.split('?')[0];
 
     res.on('finish', () => {
         const durationMs = Number(process.hrtime.bigint() - startedAtNs) / 1_000_000;
         recordRequest({
             method: req.method,
-            path: req.originalUrl,
+            path: requestPath,
             statusCode: res.statusCode,
             durationMs
         });
@@ -67,7 +68,7 @@ app.use((req, res, next) => {
         logger.info('Request completed', {
             requestId: req.requestId,
             method: req.method,
-            path: req.originalUrl,
+            path: requestPath,
             statusCode: res.statusCode,
             durationMs: Number(durationMs.toFixed(2))
         });
@@ -76,7 +77,7 @@ app.use((req, res, next) => {
     logger.info('Incoming request', {
         requestId: req.requestId,
         method: req.method,
-        path: req.originalUrl
+        path: requestPath
     });
     next();
 });
@@ -90,10 +91,11 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = config.corsOrigin === '*'
     ? true
     : config.corsOrigin.split(',').map((item) => item.trim()).filter(Boolean);
+const credentialsEnabled = config.corsOrigin !== '*';
 
 app.use(cors({
     origin: allowedOrigins,
-    credentials: true
+    credentials: credentialsEnabled
 }));
 app.use(helmet());
 app.use(xssSanitizer);

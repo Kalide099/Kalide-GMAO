@@ -2,10 +2,10 @@ const pool = require('../config/db');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { getEnv } = require('../config/env');
+const { config, getEnv } = require('../config/env');
 const { getModulesForPlan } = require('../config/industryTemplates');
 
-const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
+const JWT_SECRET = getEnv('JWT_SECRET', config.isProd ? '' : 'kgmao_development_secret_321');
 
 exports.getPlatformAnalytics = async (req, res, next) => {
     try {

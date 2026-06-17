@@ -4,12 +4,24 @@
  * Razorpay for India, and abstracted Mobile Money APIs for Africa dynamically.
  */
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock');
 const axios = require('axios');
+const { config } = require('../../config/env');
+
+const getStripeClient = () => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        if (config.isProd) {
+            throw new Error('STRIPE_SECRET_KEY is required in production.');
+        }
+        return null;
+    }
+
+    return require('stripe')(process.env.STRIPE_SECRET_KEY);
+};
 
 class StripeProvider {
     async createCheckoutSession(companyId, amount, currency, returnUrl) {
-        if (!process.env.STRIPE_SECRET_KEY) {
+        const stripeClient = getStripeClient();
+        if (!stripeClient) {
             console.warn(`[STRIPE MOCK] No secret key. Returning mock URL.`);
             return { 
                 provider: 'stripe_mock',
@@ -19,7 +31,7 @@ class StripeProvider {
         }
 
         try {
-            const session = await stripe.checkout.sessions.create({
+            const session = await stripeClient.checkout.sessions.create({
                 payment_method_types: ['card'],
                 line_items: [{
                     price_data: {
@@ -53,6 +65,10 @@ class StripeProvider {
 
 class RazorpayProvider {
     async createCheckoutSession(companyId, amount, currency, returnUrl) {
+        if (config.isProd) {
+            throw new Error('Razorpay provider is not configured for production.');
+        }
+
         // Mock Razorpay API
         console.log(`[RAZORPAY] Initiating Checkout for ${companyId} - ${amount} ${currency}`);
         return { 
@@ -66,6 +82,10 @@ class RazorpayProvider {
 class MobileMoneyProvider {
     async createCheckoutSession(companyId, amount, currency, returnUrl) {
         if (!process.env.PAYSTACK_SECRET_KEY) {
+            if (config.isProd) {
+                throw new Error('PAYSTACK_SECRET_KEY is required in production for Mobile Money payments.');
+            }
+
             console.warn(`[PAYSTACK MOCK] No secret key. Returning mock URL for Mobile Money.`);
             return { 
                 provider: 'paystack_mock',

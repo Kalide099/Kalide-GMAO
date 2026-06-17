@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { decodeJWT } from '../../utils/jwt';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || '/api/v1',
@@ -10,10 +11,16 @@ const api = axios.create({
 // Request interceptor to attach JWT and Language
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('kgmao_token');
-    const lang = localStorage.getItem('kgmao_language') || 'en';
+    let lang = localStorage.getItem('kgmao_language') || 'en';
     
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        const decoded = decodeJWT(token);
+        const preferred = decoded?.preferred_language;
+        if (preferred === 'en' || preferred === 'fr') {
+            lang = preferred;
+            localStorage.setItem('kgmao_language', preferred);
+        }
     }
     
     // Pass the current locale to the backend for localized data fetching (name_en vs name_fr)

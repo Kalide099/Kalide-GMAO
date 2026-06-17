@@ -8,11 +8,39 @@ exports.submitRequest = async (req, res, next) => {
             return errorResponse(res, 400, 'Missing required registration fields.');
         }
 
-        if (plan && !['basic', 'pro', 'enterprise'].includes(plan)) {
+        const normalizedEmail = String(adminEmail).trim().toLowerCase();
+        const normalizedLanguage = String(preferredLanguage).trim().toLowerCase();
+        const normalizedPlan = plan ? String(plan).trim().toLowerCase() : undefined;
+
+        if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+            return errorResponse(res, 400, 'Invalid admin email format.');
+        }
+
+        if (String(password).length < 8) {
+            return errorResponse(res, 400, 'Password must be at least 8 characters.');
+        }
+
+        if (!['en', 'fr'].includes(normalizedLanguage)) {
+            return errorResponse(res, 400, 'Invalid preferred language.');
+        }
+
+        if (normalizedPlan && !['basic', 'pro', 'enterprise'].includes(normalizedPlan)) {
             return errorResponse(res, 400, 'Invalid registration plan.');
         }
 
-        const result = await registrationService.createRequest(req.body);
+        const payload = {
+            companyName: String(companyName).trim(),
+            industry: String(industry).trim(),
+            adminFirstName: String(adminFirstName).trim(),
+            adminLastName: String(adminLastName).trim(),
+            adminEmail: normalizedEmail,
+            password: String(password),
+            preferredLanguage: normalizedLanguage,
+            adminPhone: adminPhone ? String(adminPhone).trim() : null,
+            plan: normalizedPlan || 'basic'
+        };
+
+        const result = await registrationService.createRequest(payload);
         return successResponse(res, 201, 'Application submitted for review.', result);
     } catch (err) {
         next(err);

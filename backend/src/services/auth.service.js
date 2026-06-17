@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 const { config, getEnv } = require('../config/env');
 const logger = require('../config/logger');
 
-const JWT_SECRET = getEnv('JWT_SECRET', 'kgmao_development_secret_321');
+const JWT_SECRET = getEnv('JWT_SECRET', config.isProd ? '' : 'kgmao_development_secret_321');
 const JWT_EXPIRES_IN = getEnv('JWT_EXPIRES_IN', '24h');
 
 const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');

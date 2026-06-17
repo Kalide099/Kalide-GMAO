@@ -12,6 +12,49 @@ const AdminUsers = () => {
     const [auditLogs, setAuditLogs] = useState([]);
     const [auditLoading, setAuditLoading] = useState(false);
 
+    const parseDetails = (details) => {
+        if (!details) return null;
+        if (typeof details === 'object') return details;
+        if (typeof details !== 'string') return null;
+        try {
+            return JSON.parse(details);
+        } catch (_err) {
+            return null;
+        }
+    };
+
+    const formatDetails = (details) => {
+        const parsed = parseDetails(details);
+        if (!parsed) return String(details || '-');
+
+        return Object.entries(parsed)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : String(value)}`)
+            .join(' | ');
+    };
+
+    const getActionBadge = (action) => {
+        const value = String(action || '').toLowerCase();
+
+        if (value.includes('update_status') || value.includes('suspend') || value.includes('revoke')) {
+            return {
+                label: 'STATUS UPDATE',
+                className: 'bg-amber-50 text-amber-700 border border-amber-100'
+            };
+        }
+
+        if (value.includes('auth_') || value.includes('login') || value.includes('logout') || value.includes('password')) {
+            return {
+                label: 'AUTH EVENT',
+                className: 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+            };
+        }
+
+        return {
+            label: String(action || 'EVENT').replace(/_/g, ' ').toUpperCase(),
+            className: 'bg-slate-900 text-white border border-slate-900'
+        };
+    };
+
     const fetchUsers = async () => {
         setLoading(true);
         try {
@@ -226,15 +269,18 @@ const AdminUsers = () => {
                             ) : auditLogs.length === 0 ? (
                                 <div className="py-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest">{t('admin.noAuditRecords')}</div>
                             ) : (
-                                auditLogs.map(log => (
+                                auditLogs.map(log => {
+                                    const badge = getActionBadge(log.action);
+                                    return (
                                     <div key={log.id} className="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest">{log.action}</span>
+                                            <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${badge.className}`}>{badge.label}</span>
                                             <span className="text-[8px] text-slate-400 font-bold">{new Date(log.created_at).toLocaleString()}</span>
                                         </div>
-                                        <p className="text-xs font-bold text-slate-600 line-clamp-2">{JSON.stringify(log.details)}</p>
+                                        <p className="text-xs font-bold text-slate-600 line-clamp-2">{formatDetails(log.details)}</p>
                                     </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                         <div className="p-10 bg-slate-50 border-t border-slate-100">

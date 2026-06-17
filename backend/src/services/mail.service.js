@@ -4,12 +4,17 @@
  */
 
 const { Resend } = require('resend');
+const { config } = require('../config/env');
 
 const resendClient = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
 const mailFrom = process.env.MAIL_FROM_ADDRESS || 'noreply@kgmao.com';
 
 class SendGridProvider {
     async sendEmail(to, subject, htmlBody) {
+        if (config.isProd) {
+            throw new Error('SendGrid provider is not configured for production in this build.');
+        }
+
         // Mock SendGrid SDK integration
         console.log(`[SENDGRID] Resolving outbound email to: ${to} | Subject: ${subject}`);
         return { success: true, provider: 'sendgrid', messageId: `sg_${Date.now()}` };
@@ -19,6 +24,10 @@ class SendGridProvider {
 class ResendProvider {
     async sendEmail(to, subject, htmlBody) {
         if (!process.env.RESEND_API_KEY) {
+            if (config.isProd) {
+                throw new Error('RESEND_API_KEY is required in production.');
+            }
+
             console.warn(`[RESEND MOCK] No API Key found. Skipping actual email to ${to}`);
             return { success: true, provider: 'resend_mock', messageId: `re_mock_${Date.now()}` };
         }

@@ -8,7 +8,9 @@
     "dev": "nodemon src/server.js",
     "init-db": "node init-db.js",
     "sync-db": "node database/migrations/run_v10.js",
-    "diagnose-login": "node diagnose-login.js"
+    "diagnose-login": "node diagnose-login.js",
+    "sync:tenant-config": "node src/scripts/sync-tenant-plan-language.js",
+    "sync:tenant-config:dry": "node src/scripts/sync-tenant-plan-language.js --dry-run"
   },
   "dependencies": {
     "axios": "^1.18.0",

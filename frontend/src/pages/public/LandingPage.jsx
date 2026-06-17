@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Zap, ShieldCheck, Globe, ArrowRight, Activity, BrainCircuit, TrendingUp, Building2, HeartPulse, GraduationCap, UtensilsCrossed, ShoppingCart, Truck, Factory, Leaf, Waves, Download } from 'lucide-react';
+import { Zap, ShieldCheck, Globe, ArrowRight, Activity, BrainCircuit, TrendingUp, Building2, HeartPulse, GraduationCap, UtensilsCrossed, ShoppingCart, Truck, Factory, Leaf, Waves } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 
