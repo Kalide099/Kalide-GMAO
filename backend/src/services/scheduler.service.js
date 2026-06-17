@@ -1,4 +1,3 @@
-const cron = require('node-cron');
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
