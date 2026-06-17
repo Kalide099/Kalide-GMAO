@@ -3,6 +3,11 @@
  * Natively supports swapping SendGrid, Resend, or standard AWS SES infrastructures seamlessly.
  */
 
+const { Resend } = require('resend');
+
+const resendClient = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
+const mailFrom = process.env.MAIL_FROM_ADDRESS || 'noreply@kgmao.com';
+
 class SendGridProvider {
     async sendEmail(to, subject, htmlBody) {
         // Mock SendGrid SDK integration
@@ -13,9 +18,30 @@ class SendGridProvider {
 
 class ResendProvider {
     async sendEmail(to, subject, htmlBody) {
-        // Mock Resend SDK integration natively built for React/Next ecosystems
-        console.log(`[RESEND] Resolving outbound email to: ${to} | Subject: ${subject}`);
-        return { success: true, provider: 'resend', messageId: `re_${Date.now()}` };
+        if (!process.env.RESEND_API_KEY) {
+            console.warn(`[RESEND MOCK] No API Key found. Skipping actual email to ${to}`);
+            return { success: true, provider: 'resend_mock', messageId: `re_mock_${Date.now()}` };
+        }
+        
+        try {
+            const { data, error } = await resendClient.emails.send({
+                from: `KGMAO <${mailFrom}>`,
+                to: [to],
+                subject: subject,
+                html: htmlBody
+            });
+
+            if (error) {
+                console.error('[RESEND] Email delivery failed:', error);
+                return { success: false, error };
+            }
+
+            console.log(`[RESEND] Email sent successfully to: ${to} [ID: ${data.id}]`);
+            return { success: true, provider: 'resend', messageId: data.id };
+        } catch (err) {
+            console.error('[RESEND] Critical error in email service:', err);
+            return { success: false, error: err };
+        }
     }
 }
 

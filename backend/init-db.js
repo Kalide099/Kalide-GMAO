@@ -37,8 +37,12 @@ async function initLocalXamppDatabase() {
         // ==========================================
         // 1. RECONSTRUCT SUPER ADMIN
         // ==========================================
-        const adminEmail = 'root@kgmao.com';
-        const adminPass = 'RootMaster2026!';
+        const adminEmail = process.env.ADMIN_EMAIL || 'root@kgmao.com';
+        const adminPass = process.env.ADMIN_PASSWORD || uuidv4();
+        if (!process.env.ADMIN_PASSWORD) {
+            console.log(`[SECURITY] Auto-generated Admin Password: ${adminPass}`);
+            console.log(`[SECURITY] Please save this password. It will not be shown again.`);
+        }
         const adminHash = await bcrypt.hash(adminPass, salt);
         const adminId = '00000000-0000-0000-0000-000000000000';
 
@@ -72,69 +76,71 @@ async function initLocalXamppDatabase() {
         );
 
         // ==========================================
-        // 3. CREATE SAMPLE BILINGUAL TENANT
+        // 3. CREATE SAMPLE BILINGUAL TENANT (IF ENABLED)
         // ==========================================
-        const tenantEmail = 'demo@kgmao.com';
-        const tenantPass = 'DemoUser2026!';
-        const tenantHash = await bcrypt.hash(tenantPass, salt);
-        const companyId = uuidv4();
-        const tenantUserId = uuidv4();
+        if (process.env.SEED_DEMO_DATA === 'true') {
+            const tenantEmail = 'demo@kgmao.com';
+            const tenantPass = 'DemoUser2026!';
+            const tenantHash = await bcrypt.hash(tenantPass, salt);
+            const companyId = uuidv4();
+            const tenantUserId = uuidv4();
 
-        console.log(`Creating Bilingual Tenant [Kalide Solutions]...`);
+            console.log(`Creating Bilingual Tenant [Kalide Solutions]...`);
 
-        await connection.query(
-            'INSERT IGNORE INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [companyId, 'Kalide Solutions', 'Solutions Kalide', 'Technology', 'Technologie', 'active', 'pro', JSON.stringify(['safety', 'iot', 'predictive', 'global', 'finance', 'map', 'skills', 'warehouse', 'command', 'twin', 'ar', 'hub', 'esg'])]
-        );
+            await connection.query(
+                'INSERT IGNORE INTO companies (id, name_en, name_fr, industry_en, industry_fr, subscription_status, plan, enabled_modules) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [companyId, 'Kalide Solutions', 'Solutions Kalide', 'Technology', 'Technologie', 'active', 'pro', JSON.stringify(['safety', 'iot', 'predictive', 'global', 'finance', 'map', 'skills', 'warehouse', 'command', 'twin', 'ar', 'hub', 'esg'])]
+            );
 
-        await connection.query(
-            'INSERT IGNORE INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [tenantUserId, companyId, 'John', 'Tenant', tenantEmail, tenantHash, 'admin', 'active']
-        );
+            await connection.query(
+                'INSERT IGNORE INTO users (id, company_id, first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [tenantUserId, companyId, 'John', 'Tenant', tenantEmail, tenantHash, 'admin', 'active']
+            );
 
-        // Link company to Pro Plan
-        await connection.query(
-            'INSERT IGNORE INTO subscriptions (id, company_id, plan_id, start_date, end_date, status) VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 YEAR), ?)',
-            [uuidv4(), companyId, proPlanId, 'active']
-        );
+            // Link company to Pro Plan
+            await connection.query(
+                'INSERT IGNORE INTO subscriptions (id, company_id, plan_id, start_date, end_date, status) VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 YEAR), ?)',
+                [uuidv4(), companyId, proPlanId, 'active']
+            );
 
-        // ==========================================
-        // 4. SEED BILINGUAL ASSET + IOT CONFIG
-        // ==========================================
-        const assetId = uuidv4();
-        await connection.query(
-            'INSERT IGNORE INTO assets (id, company_id, name_en, name_fr, description_en, description_fr, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [assetId, companyId, 'Industrial HVAC 01', 'CVC Industriel 01', 'Main production floor cooling', 'Refroidissement de l\'étage de production principal', 'active']
-        );
+            // ==========================================
+            // 4. SEED BILINGUAL ASSET + IOT CONFIG
+            // ==========================================
+            const assetId = uuidv4();
+            await connection.query(
+                'INSERT IGNORE INTO assets (id, company_id, name_en, name_fr, description_en, description_fr, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [assetId, companyId, 'Industrial HVAC 01', 'CVC Industriel 01', 'Main production floor cooling', 'Refroidissement de l\'étage de production principal', 'active']
+            );
 
-        // Configure IoT Anomaly Detection: Trigger if Temp > 80C
-        await connection.query(
-            'INSERT IGNORE INTO asset_sensor_configs (id, asset_id, sensor_type, max_threshold, unit) VALUES (?, ?, ?, ?, ?)',
-            [uuidv4(), assetId, 'temperature', 80.00, '°C']
-        );
+            // Configure IoT Anomaly Detection: Trigger if Temp > 80C
+            await connection.query(
+                'INSERT IGNORE INTO asset_sensor_configs (id, asset_id, sensor_type, max_threshold, unit) VALUES (?, ?, ?, ?, ?)',
+                [uuidv4(), assetId, 'temperature', 80.00, '°C']
+            );
 
-        // ==========================================
-        // 5. SEED WORK ORDER WITH TRANSLATIONS
-        // ==========================================
-        const woId = uuidv4();
-        await connection.query(
-            'INSERT IGNORE INTO work_orders (id, company_id, asset_id, creator_id, type, priority, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [woId, companyId, assetId, tenantUserId, 'corrective', 'high', 'pending']
-        );
+            // ==========================================
+            // 5. SEED WORK ORDER WITH TRANSLATIONS
+            // ==========================================
+            const woId = uuidv4();
+            await connection.query(
+                'INSERT IGNORE INTO work_orders (id, company_id, asset_id, creator_id, type, priority, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [woId, companyId, assetId, tenantUserId, 'corrective', 'high', 'pending']
+            );
 
-        await connection.query(
-            'INSERT IGNORE INTO work_order_translations (id, work_order_id, language_code, title, description) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
-            [
-                uuidv4(), woId, 'en', 'Check strange noise in motor', 'Vibration detected by field operator.',
-                uuidv4(), woId, 'fr', 'Vérifier bruit moteur', 'Vibration détectée par l\'opérateur.'
-            ]
-        );
+            await connection.query(
+                'INSERT IGNORE INTO work_order_translations (id, work_order_id, language_code, title, description) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
+                [
+                    uuidv4(), woId, 'en', 'Check strange noise in motor', 'Vibration detected by field operator.',
+                    uuidv4(), woId, 'fr', 'Vérifier bruit moteur', 'Vibration détectée par l\'opérateur.'
+                ]
+            );
 
-        // Standard Suppliers
-        await connection.query(
-            'INSERT IGNORE INTO suppliers (id, company_id, name_en, name_fr, email) VALUES (?, ?, ?, ?, ?)',
-            [uuidv4(), companyId, 'Kalide Parts', 'Kalide Pièces', 'parts@kgmao.com']
-        );
+            // Standard Suppliers
+            await connection.query(
+                'INSERT IGNORE INTO suppliers (id, company_id, name_en, name_fr, email) VALUES (?, ?, ?, ?, ?)',
+                [uuidv4(), companyId, 'Kalide Parts', 'Kalide Pièces', 'parts@kgmao.com']
+            );
+        }
 
         console.log("============ SUCCESS ============");
         console.log("Tiered SaaS Architecture Hydrated with Digital Twins.");
