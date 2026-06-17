@@ -966,9 +966,10 @@
     "save20": "Économisez 20%",
     "mostPopular": "Le Plus Populaire",
     "custom": "Personnalisé",
+    "tbd": "À DÉTERMINER",
     "tiers": {
       "basic": {
-        "name": "CŒUR OPÉRATIONNEL",
+        "name": "BASIQUE",
         "description": "Infrastructure essentielle pour les petites installations industrielles.",
         "features": [
           "50 Actifs Intégrés",
@@ -979,7 +980,7 @@
         ]
       },
       "pro": {
-        "name": "MATRICE DE SANTÉ",
+        "name": "MOYEN",
         "description": "Surveillance de santé avancée avec données en direct IA prédictive.",
         "features": [
           "Actifs Illimités",
@@ -991,7 +992,7 @@
         ]
       },
       "enterprise": {
-        "name": "ENTITÉ SOUVERAINE",
+        "name": "PREMIUM",
         "description": "Synchronisation complète de la plateforme pour les entreprises mondiales multi-sites.",
         "features": [
           "Centre d'Activité Global",

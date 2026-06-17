@@ -11,17 +11,17 @@ const Pricing = () => {
 
     const tiers = [
         {
-            id: 'basic', name: t('pricing.tiers.basic.name'), priceMonthly: 49, priceYearly: 39,
+            id: 'basic', name: t('pricing.tiers.basic.name'), priceMonthly: t('pricing.tbd'), priceYearly: t('pricing.tbd'),
             description: t('pricing.tiers.basic.description'),
             features: t('pricing.tiers.basic.features', { returnObjects: true })
         },
         {
-            id: 'pro', name: t('pricing.tiers.pro.name'), priceMonthly: 129, priceYearly: 99,
+            id: 'pro', name: t('pricing.tiers.pro.name'), priceMonthly: t('pricing.tbd'), priceYearly: t('pricing.tbd'),
             description: t('pricing.tiers.pro.description'), isPopular: true,
             features: t('pricing.tiers.pro.features', { returnObjects: true })
         },
         {
-            id: 'enterprise', name: t('pricing.tiers.enterprise.name'), priceMonthly: t('pricing.custom'), priceYearly: t('pricing.custom'),
+            id: 'enterprise', name: t('pricing.tiers.enterprise.name'), priceMonthly: t('pricing.tbd'), priceYearly: t('pricing.tbd'),
             description: t('pricing.tiers.enterprise.description'),
             features: t('pricing.tiers.enterprise.features', { returnObjects: true })
         }

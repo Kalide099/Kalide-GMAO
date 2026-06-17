@@ -966,9 +966,10 @@
     "save20": "Save 20%",
     "mostPopular": "Most Popular",
     "custom": "Custom",
+    "tbd": "TBD",
     "tiers": {
       "basic": {
-        "name": "CORE OPS",
+        "name": "BASICS",
         "description": "Essential infrastructure for small business facilities.",
         "features": [
           "50 Integrated Assets",
@@ -979,7 +980,7 @@
         ]
       },
       "pro": {
-        "name": "HEALTH DASHBOARD",
+        "name": "MEDIUM",
         "description": "Advanced health monitoring with predictive AI data.",
         "features": [
           "Unlimited Assets",
@@ -991,7 +992,7 @@
         ]
       },
       "enterprise": {
-        "name": "ENTERPRISE PLAN",
+        "name": "PREMIUM",
         "description": "Full platform synchronization for global multi-site enterprises.",
         "features": [
           "Global Activity Center",

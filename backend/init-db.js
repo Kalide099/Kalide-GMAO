@@ -63,7 +63,7 @@ async function initLocalXamppDatabase() {
         );
         await connection.query(
             'INSERT IGNORE INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
-            [uuidv4(), proPlanId, 'en', 'Pro Plan', uuidv4(), proPlanId, 'fr', 'Plan Pro']
+            [uuidv4(), proPlanId, 'en', 'MEDIUM', uuidv4(), proPlanId, 'fr', 'MOYEN']
         );
 
         await connection.query(
@@ -72,7 +72,7 @@ async function initLocalXamppDatabase() {
         );
         await connection.query(
             'INSERT IGNORE INTO subscription_plan_translations (id, plan_id, language_code, name) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
-            [uuidv4(), entPlanId, 'en', 'Enterprise Plan', uuidv4(), entPlanId, 'fr', 'Plan Entreprise']
+            [uuidv4(), entPlanId, 'en', 'PREMIUM', uuidv4(), entPlanId, 'fr', 'PREMIUM']
         );
 
         // ==========================================

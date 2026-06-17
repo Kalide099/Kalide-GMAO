@@ -12,7 +12,7 @@ const GlobalPricing = () => {
     const plans = [
         {
             name: t('pricing.tiers.basic.name'),
-            price: isYearly ? 1400 : 1900,
+            price: t('pricing.tbd'),
             desc: t('pricing.tiers.basic.desc'),
             features: [],
             icon: Cpu,
@@ -20,7 +20,7 @@ const GlobalPricing = () => {
         },
         {
             name: t('pricing.tiers.pro.name'),
-            price: isYearly ? 4800 : 5900,
+            price: t('pricing.tbd'),
             desc: t('pricing.tiers.pro.desc'),
             features: [],
             isPopular: true,
@@ -29,7 +29,7 @@ const GlobalPricing = () => {
         },
         {
             name: t('pricing.tiers.enterprise.name'),
-            price: t('pricing.custom'),
+            price: t('pricing.tbd'),
             desc: t('pricing.tiers.enterprise.desc'),
             features: [],
             icon: Shield,

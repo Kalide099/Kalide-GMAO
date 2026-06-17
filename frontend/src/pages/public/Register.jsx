@@ -47,9 +47,9 @@ const Register = () => {
     ];
 
     const planOptions = [
-        { value: 'basic', label: t('pricing.tiers.basic.name'), price: '$49' },
-        { value: 'pro', label: t('pricing.tiers.pro.name'), price: '$129' },
-        { value: 'enterprise', label: t('pricing.tiers.enterprise.name'), price: t('pricing.custom') }
+        { value: 'basic', label: t('pricing.tiers.basic.name') },
+        { value: 'pro', label: t('pricing.tiers.pro.name') },
+        { value: 'enterprise', label: t('pricing.tiers.enterprise.name') }
     ];
 
     const [error, setError] = useState(null);
@@ -142,7 +142,7 @@ const Register = () => {
                                             >
                                                 {planOptions.map((option) => (
                                                     <option key={option.value} value={option.value}>
-                                                        {option.label} - {option.price}
+                                                        {option.label}
                                                     </option>
                                                 ))}
                                             </select>
