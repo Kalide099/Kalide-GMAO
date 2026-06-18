@@ -2,15 +2,13 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Thermometer, Calendar, AlertCircle, CheckCircle2, History, ShieldCheck, Plus, X, Tag, Globe } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const CalibrationRegistry = () => {
     const { t, i18n } = useTranslation();
     const [instruments, setInstruments] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [simModalOpen, setSimModalOpen] = useState(false);
-
+    
     const [formData, setFormData] = useState({ tag: '', frequency: 180, name_en: '', name_fr: '' });
 
     const fetchInstruments = async () => {
@@ -135,7 +133,7 @@ const CalibrationRegistry = () => {
                                         </div>
                                     </td>
                                     <td className="p-10 text-right">
-                                        <button onClick={() => setSimModalOpen(true)} className="px-6 py-3 bg-slate-50 text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all">
+                                        <button onClick={() => handleGenericAction()} className="px-6 py-3 bg-slate-50 text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all">
                                             {t('nexus.calibration.recalibrate')}
                                         </button>
                                     </td>
@@ -202,14 +200,7 @@ const CalibrationRegistry = () => {
                 </div>
             )}
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Initiating OTA Calibration" 
-                processingText="Synchronizing with metrology node..." 
-                successText="Calibration Nominal"
-                onSuccessCallback={() => toast.success('Sensor offset successfully zeroed.')}
-            />
+            
         </div>
     );
 };

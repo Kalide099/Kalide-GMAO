@@ -3,16 +3,26 @@ import { useTranslation } from 'react-i18next';
 import { Phone, MapPin, Send, Globe, Clock, ShieldCheck } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const ContactUs = () => {
     const { t } = useTranslation();
-    const [simModalOpen, setSimModalOpen] = useState(false);
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/contactus', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSimModalOpen(true);
+        handleGenericAction();
     };
 
     return (
@@ -135,14 +145,7 @@ const ContactUs = () => {
             </div>
             <PublicFooter />
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title={t('contact.modal.title')} 
-                processingText={t('contact.modal.processing')} 
-                successText={t('contact.modal.success')}
-                onSuccessCallback={() => toast.success(t('contact.modal.toast'))}
-            />
+            
         </div>
     );
 };

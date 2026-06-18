@@ -2,13 +2,23 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileText, Upload, Folder, FileCode, FileImage, FileStack, QrCode, ExternalLink } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const DocumentVault = () => {
     const { t } = useTranslation();
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
-    const docs = [
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/documentvault', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+            const docs = [
         { id: 1, name: 'MainPump_Blueprint.dwg', type: 'CAD', size: '12.4 MB', date: '2024-03-12' },
         { id: 2, name: 'Electrical_Schematics_V4.pdf', type: 'PDF', size: '4.8 MB', date: '2024-04-01' },
         { id: 3, name: 'Safety_Manual_FR.pdf', type: 'PDF', size: '2.1 MB', date: '2023-11-20' },
@@ -32,7 +42,7 @@ const DocumentVault = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'upload' })} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3 active:scale-95">
+                    <button onClick={() => handleGenericAction()} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3 active:scale-95">
                         <Upload size={18} /> {t('nexus.dms.upload')}
                     </button>
                 </div>
@@ -50,7 +60,7 @@ const DocumentVault = () => {
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t('nexus.dms.total_files')}</p>
                     <p className="text-3xl font-black text-slate-900">{"248"}</p>
                 </div>
-                <div onClick={() => setSimModal({ isOpen: true, type: 'qr' })} className="bg-slate-50 p-10 rounded-[3rem] flex flex-col items-center justify-center space-y-4 group cursor-pointer hover:bg-blue-600 transition-colors">
+                <div onClick={() => handleGenericAction()} className="bg-slate-50 p-10 rounded-[3rem] flex flex-col items-center justify-center space-y-4 group cursor-pointer hover:bg-blue-600 transition-colors">
                      <QrCode className="text-slate-400 group-hover:text-white" size={40} />
                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{t('nexus.dms.gen_qr')}</p>
                 </div>
@@ -71,7 +81,7 @@ const DocumentVault = () => {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${doc.type === 'CAD' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
                                     {doc.type === 'CAD' ? <FileCode /> : <FileImage />}
                                 </div>
-                                <button onClick={() => setSimModal({ isOpen: true, type: 'preview' })} className="p-3 text-slate-300 hover:text-slate-900 transition-colors">
+                                <button onClick={() => handleGenericAction()} className="p-3 text-slate-300 hover:text-slate-900 transition-colors">
                                     <ExternalLink size={18} />
                                 </button>
                             </div>
@@ -83,7 +93,7 @@ const DocumentVault = () => {
                                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{doc.date}</span>
                                 </div>
                             </div>
-                            <button onClick={() => setSimModal({ isOpen: true, type: 'preview' })} className="w-full py-4 bg-white border border-slate-200 rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
+                            <button onClick={() => handleGenericAction()} className="w-full py-4 bg-white border border-slate-200 rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
                                 {t('nexus.dms.open_preview')}
                             </button>
                         </div>
@@ -91,16 +101,7 @@ const DocumentVault = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'upload' ? 'Encrypting Upload' : simModal.type === 'qr' ? 'Generating AR Tag' : 'Fetching Rendering Context'} 
-                processingText={simModal.type === 'upload' ? 'Executing AES-256 block cipher...' : simModal.type === 'qr' ? 'Hashing asset locator...' : 'Decompressing vector assets...'} 
-                successText="Action Complete"
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'upload' ? 'File uploaded securely to vault.' : simModal.type === 'qr' ? 'QR Code ready for printing.' : 'Document opened in secure sandbox.');
-                }}
-            />
+            
         </div>
     );
 };

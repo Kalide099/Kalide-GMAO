@@ -3,12 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { Search, Book, Cpu, ShieldCheck, Mail, MessageSquare, Zap, Globe, Radio } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const HelpCenter = () => {
     const { t } = useTranslation();
-    const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/helpcenter', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
     const categories = [
         { icon: <Zap className="text-yellow-400" />, title: t('help.categories.gettingStarted.title'), desc: t('help.categories.gettingStarted.desc') },
@@ -91,11 +102,11 @@ const HelpCenter = () => {
                              <p className="text-slate-500 font-medium text-sm">{t('help.supportDesc')}</p>
                         </div>
                         <div className="space-y-4 pt-4">
-                            <button onClick={() => setSimModalOpen({ isOpen: true, type: 'chat' })} className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
+                            <button onClick={() => handleGenericAction()} className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
                                 <MessageSquare size={18} className="text-yellow-400" />
                                 {t('help.startChat')}
                             </button>
-                            <button onClick={() => setSimModalOpen({ isOpen: true, type: 'ticket' })} className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
+                            <button onClick={() => handleGenericAction()} className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
                                 <Mail size={18} className="text-indigo-600" />
                                 {t('help.openTicket')}
                             </button>
@@ -111,14 +122,7 @@ const HelpCenter = () => {
             </div>
             <PublicFooter />
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen.isOpen} 
-                onClose={() => setSimModalOpen({ isOpen: false, type: null })} 
-                title={simModalOpen.type === 'chat' ? t('help.modals.chatTitle') : t('help.modals.ticketTitle')} 
-                processingText={simModalOpen.type === 'chat' ? t('help.modals.chatProcessing') : t('help.modals.ticketProcessing')} 
-                successText={simModalOpen.type === 'chat' ? t('help.modals.chatSuccess') : t('help.modals.ticketSuccess')}
-                onSuccessCallback={() => toast.success(simModalOpen.type === 'chat' ? t('help.modals.chatToast') : t('help.modals.ticketToast'))}
-            />
+            
         </div>
     );
 };

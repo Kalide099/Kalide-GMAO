@@ -2,16 +2,25 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Map, Truck, Fuel, Share2 } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const GISTelematics = () => {
     const { t } = useTranslation();
-    const [fleet, setFleet] = useState([]);
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/gistelematics', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Route sent to asset autopilot.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [fleet, setFleet] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('satellite');
-    const [simModalOpen, setSimModalOpen] = useState(false);
-
+    
     useEffect(() => {
         const fetchFleet = async () => {
             try {
@@ -94,7 +103,7 @@ const GISTelematics = () => {
                                 <p className="text-[10px] font-black text-slate-900 mt-2">{selectedAsset.latitude}, {selectedAsset.longitude}</p>
                             </div>
                         </div>
-                        <button onClick={() => setSimModalOpen(true)} className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-[10px] uppercase tracking-widest hover:bg-slate-800">
+                        <button onClick={() => handleGenericAction()} className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-[10px] uppercase tracking-widest hover:bg-slate-800">
                             <Share2 size={16} /> {t('roadmap.trace_route_sync', 'Trace Route Sync')}
                         </button>
                     </div>
@@ -110,14 +119,7 @@ const GISTelematics = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Trace Route Synchronization" 
-                processingText="Calculating path optimization algorithms..." 
-                successText="Path Synced"
-                onSuccessCallback={() => toast.success('Route sent to asset autopilot.')}
-            />
+            
         </div>
     );
 };

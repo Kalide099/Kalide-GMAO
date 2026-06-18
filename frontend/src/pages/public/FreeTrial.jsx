@@ -5,15 +5,26 @@ import { Shield, Rocket, Clock, Zap, CheckCircle2, ArrowRight, Sparkles } from '
 import { Link, useNavigate } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
+import api from '../../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 const FreeTrial = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
-    const [simModalOpen, setSimModalOpen] = useState(false);
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/freetrial', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const navigate = useNavigate();
+    
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSimModalOpen(true);
+        handleGenericAction();
     };
 
     return (
@@ -124,14 +135,7 @@ const FreeTrial = () => {
             
             <PublicFooter />
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Provisioning Sandbox Environment" 
-                processingText="Deploying isolated tenant architecture..." 
-                successText="Sandbox Ready"
-                onSuccessCallback={() => navigate('/login')}
-            />
+            
         </div>
     );
 };

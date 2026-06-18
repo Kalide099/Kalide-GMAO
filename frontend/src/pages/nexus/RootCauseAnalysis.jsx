@@ -1,17 +1,27 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Plus, Save, ArrowRight, BrainCircuit, Share2 } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const RootCauseAnalysis = () => {
     const { t } = useTranslation();
-    const [whys, setWhys] = useState(['', '', '', '', '']);
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/rootcauseanalysis', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [whys, setWhys] = useState(['', '', '', '', '']);
     const [ishikawa, setIshikawa] = useState({
         man: '', machine: '', method: '', material: '', environment: ''
     });
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
-
+    
     return (
         <div className="space-y-12 animate-fade-in-up pb-20">
             {/* Header */}
@@ -30,10 +40,10 @@ const RootCauseAnalysis = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'save' })} className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3">
+                    <button onClick={() => handleGenericAction()} className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3">
                         <Save size={16} /> {t('common.save')}
                     </button>
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'export' })} className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-3">
+                    <button onClick={() => handleGenericAction()} className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-3">
                         <Share2 size={16} /> {t('nexus.rca.export_protocol')}
                     </button>
                 </div>
@@ -110,16 +120,7 @@ const RootCauseAnalysis = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'save' ? 'Storing RCA Data' : 'Generating Protocol Report'} 
-                processingText={simModal.type === 'save' ? 'Encrypting matrix fields...' : 'Compiling PDF footprint...'} 
-                successText={simModal.type === 'save' ? 'Data Stored' : 'Protocol Exported'}
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'save' ? 'Root Cause Analysis saved securely.' : 'RCA Document downloaded to Vault.');
-                }}
-            />
+            
         </div>
     );
 };

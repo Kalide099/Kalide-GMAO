@@ -2,16 +2,25 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Leaf, ShieldAlert, Zap, Globe, AlertTriangle, ShieldCheck, Activity, Download } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const ESGCyber = () => {
     const { t } = useTranslation();
-    const [view, setView] = useState('esg'); // 'esg' or 'cyber'
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/esgcyber', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [view, setView] = useState('esg'); // 'esg' or 'cyber'
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
-
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -84,7 +93,7 @@ const ESGCyber = () => {
                                     <h3 className="text-4xl font-black italic tracking-tighter">{t('roadmap.esg.analytics')}</h3>
                                     <p className="text-slate-400 font-black text-[10px] tracking-widest uppercase">{t('roadmap.esg.intensity')}</p>
                                 </div>
-                                <button onClick={() => setSimModal({ isOpen: true, type: 'esg' })} className="p-6 bg-white/5 border border-white/10 rounded-3xl hover:bg-white hover:text-slate-900 transition-all">
+                                <button onClick={() => handleGenericAction()} className="p-6 bg-white/5 border border-white/10 rounded-3xl hover:bg-white hover:text-slate-900 transition-all">
                                     <Download size={24} />
                                 </button>
                             </div>
@@ -162,7 +171,7 @@ const ESGCyber = () => {
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={() => setSimModal({ isOpen: true, type: 'cyber' })} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-[10px] tracking-widest hover:scale-105 transition-all">
+                            <button onClick={() => handleGenericAction()} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-[10px] tracking-widest hover:scale-105 transition-all">
                                 {t('roadmap.esg.deepScan')}
                             </button>
                         </div>
@@ -170,16 +179,7 @@ const ESGCyber = () => {
                 </div>
             )}
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'esg' ? 'Generating ESG Ledger' : 'Deep OT Cybersecurity Scan'} 
-                processingText={simModal.type === 'esg' ? 'Compiling Carbon Equivalency Metrics...' : 'Analyzing IoT Node Packet Flow...'} 
-                successText={simModal.type === 'esg' ? 'Ledger Ready' : 'Scan Complete. Posture Green.'}
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'esg' ? 'ESG Protocol exported.' : 'No unauthorized tunneling detected.');
-                }}
-            />
+            
         </div>
     );
 };

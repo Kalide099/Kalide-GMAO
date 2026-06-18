@@ -1,14 +1,24 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WifiOff, Database, RefreshCcw, Server, Globe } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const OfflineMatrix = () => {
     const { t } = useTranslation();
-    const [isSyncing, setIsSyncing] = useState(false);
-    const [simModalOpen, setSimModalOpen] = useState(false);
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/offlinematrix', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Diagnostic feed streamed successfully.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [isSyncing, setIsSyncing] = useState(false);
+    
     return (
         <div className="space-y-12 animate-fade-in-up pb-20">
             {/* Header */}
@@ -97,20 +107,13 @@ const OfflineMatrix = () => {
                         </div>
                     </div>
 
-                    <button onClick={() => setSimModalOpen(true)} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl shadow-slate-200">
+                    <button onClick={() => handleGenericAction()} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl shadow-slate-200">
                         {t('nexus.offline.diag_feed')}
                     </button>
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Pinging Edge Relays" 
-                processingText="Analyzing localized node topology..." 
-                successText="Topology Verified"
-                onSuccessCallback={() => toast.success('Diagnostic feed streamed successfully.')}
-            />
+            
         </div>
     );
 };

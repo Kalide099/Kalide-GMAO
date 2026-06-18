@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Zap, Box, Maximize2, Layers, Cpu, Database } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const BimExplorer = () => {
     const { t } = useTranslation();
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/bimexplorer', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        
     return (
         <div className="space-y-12 animate-fade-in-up pb-20">
             {/* Header */}
@@ -26,7 +36,7 @@ const BimExplorer = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'capture' })} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3">
+                    <button onClick={() => handleGenericAction()} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-3">
                         <Maximize2 size={18} /> {t('nexus.bim.reality_capture')}
                     </button>
                 </div>
@@ -75,22 +85,13 @@ const BimExplorer = () => {
                         <h4 className="text-sm font-black text-slate-900 uppercase italic">{t('nexus.bim.digital_twin_data')}</h4>
                     </div>
                     <p className="text-[10px] text-slate-400 font-medium leading-relaxed">{t('nexus.bim.telemetry_stream')}</p>
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'diagnostics' })} className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all">
+                    <button onClick={() => handleGenericAction()} className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all">
                         {t('nexus.bim.examine_diagnostics')}
                     </button>
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'capture' ? 'Activating LiDAR Scan' : 'Fetching Asset Telemetry'} 
-                processingText={simModal.type === 'capture' ? 'Constructing point cloud mesh...' : 'Extracting real-time database schema...'} 
-                successText="Rendering Complete"
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'capture' ? '3D Environment Synchronized.' : 'Diagnostics Data Loaded to HUD.');
-                }}
-            />
+            
         </div>
     );
 };

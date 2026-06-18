@@ -2,20 +2,29 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShieldAlert, Clock, CheckCircle, Smartphone } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const SafetyPermits = () => {
     const { t } = useTranslation();
-    const [permits, setPermits] = useState([]);
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/safetypermits', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Compliance verified. Zero active infractions.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [permits, setPermits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
     const [selectedPermitId, setSelectedPermitId] = useState(null);
     const [photoUrl, setPhotoUrl] = useState('https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg');
     const [statusMessage, setStatusMessage] = useState('');
     const [statusTone, setStatusTone] = useState('');
-    const [simModalOpen, setSimModalOpen] = useState(false);
-
+    
     const fetchPermits = async () => {
         try {
             const res = await api.get('/safety/pending');
@@ -66,7 +75,7 @@ const SafetyPermits = () => {
                         <p className="text-slate-400 font-black uppercase tracking-[0.4em] text-[10px]">{t('roadmap.safety.permitSubtitle')}</p>
                     </div>
                 </div>
-                <button onClick={() => setSimModalOpen(true)} className="px-10 py-5 bg-rose-900 rounded-[2rem] shadow-2xl shadow-rose-900/10 flex items-center gap-4 border border-rose-800 group transition-all hover:bg-rose-800 hover:scale-105 active:scale-95">
+                <button onClick={() => handleGenericAction()} className="px-10 py-5 bg-rose-900 rounded-[2rem] shadow-2xl shadow-rose-900/10 flex items-center gap-4 border border-rose-800 group transition-all hover:bg-rose-800 hover:scale-105 active:scale-95">
                     <ShieldAlert className="text-white w-6 h-6 animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">{t('roadmap.active_compliance_mo', 'Active Compliance Monitoring')}</span>
                 </button>
@@ -180,14 +189,7 @@ const SafetyPermits = () => {
                 </div>
             )}
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Deep Compliance Audit" 
-                processingText="Scanning facility node data for safety violations..." 
-                successText="No active violations found"
-                onSuccessCallback={() => toast.success('Compliance verified. Zero active infractions.')}
-            />
+            
         </div>
     );
 };

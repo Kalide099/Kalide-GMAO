@@ -2,15 +2,24 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Package, QrCode, ArrowRightLeft, AlertCircle, TrendingUp, MapPin, Truck } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const SmartWarehouse = () => {
     const { t } = useTranslation();
-    const [data, setData] = useState({ locations: [], metrics: { total_items: 0, total_units: 0, active_bins: 0 } });
-    const [loading, setLoading] = useState(true);
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/smartwarehouse', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [data, setData] = useState({ locations: [], metrics: { total_items: 0, total_units: 0, active_bins: 0 } });
+    const [loading, setLoading] = useState(true);
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -40,7 +49,7 @@ const SmartWarehouse = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => setSimModal({ isOpen: true, type: 'scan' })} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] shadow-2xl shadow-slate-900/10 flex items-center gap-4 border border-slate-800 hover:scale-105 active:scale-95 transition-all">
+                    <button onClick={() => handleGenericAction()} className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] shadow-2xl shadow-slate-900/10 flex items-center gap-4 border border-slate-800 hover:scale-105 active:scale-95 transition-all">
                         <QrCode className="text-yellow-400 w-6 h-6" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('roadmap.warehouse.scan')}</span>
                     </button>
@@ -120,23 +129,14 @@ const SmartWarehouse = () => {
                                 </div>
                             ))}
                         </div>
-                        <button onClick={() => setSimModal({ isOpen: true, type: 'audit' })} className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-white hover:bg-white hover:text-slate-900 transition-all tracking-widest">
+                        <button onClick={() => handleGenericAction()} className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-white hover:bg-white hover:text-slate-900 transition-all tracking-widest">
                             {t('roadmap.warehouse.ledger')}
                         </button>
                     </div>
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'scan' ? 'Mobile Node Linking' : 'Cryptographic Audit'} 
-                processingText={simModal.type === 'scan' ? 'Initializing AR Camera...' : 'Validating Blockchain Flow...'} 
-                successText={simModal.type === 'scan' ? 'Camera Linked' : 'Audit Complete'}
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'scan' ? 'AR Scanner active on mobile node.' : 'Ledger synced to HQ.');
-                }}
-            />
+            
         </div>
     );
 };

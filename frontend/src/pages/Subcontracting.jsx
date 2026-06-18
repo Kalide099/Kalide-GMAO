@@ -6,16 +6,25 @@ import {
     Trash2, Hammer, Terminal
 } from 'lucide-react';
 
-import SimulatedProcessModal from '../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const Subcontracting = () => {
     const { t } = useTranslation();
-    const [subcontractors, setSubcontractors] = useState([]);
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/subcontracting', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Subcontractor Registered successfully.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [subcontractors, setSubcontractors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [simModalOpen, setSimModalOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
+        const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         contact_email: '',
@@ -150,7 +159,7 @@ const Subcontracting = () => {
                             </div>
 
                             <div className="flex gap-4">
-                                <button onClick={() => setSimModalOpen(true)} className="flex-1 py-4 bg-slate-50 text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-900 hover:text-white transition-all border border-slate-100">
+                                <button onClick={() => handleGenericAction()} className="flex-1 py-4 bg-slate-50 text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-900 hover:text-white transition-all border border-slate-100">
                                     {t('cmms.subcontracting.view_reports')}
                                 </button>
                                 <button onClick={() => handleDelete(sub.id)} className="px-5 py-4 bg-slate-50 text-slate-400 rounded-2xl hover:text-rose-600 transition-all border border-slate-100">
@@ -233,14 +242,7 @@ const Subcontracting = () => {
                 </div>
             )}
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Generating Forensic Report" 
-                processingText="Compiling Partner Service Telemetry..." 
-                successText="Report Generated & Available"
-                onSuccessCallback={() => toast.success('Report cached in Document Vault.')}
-            />
+            
         </div>
     );
 };

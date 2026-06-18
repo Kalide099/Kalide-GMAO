@@ -6,7 +6,6 @@ import {
     Globe, List, CheckCircle2, MoreHorizontal, Hammer, 
     Trash2, Search, Kanban as KanbanIcon
 } from 'lucide-react';
-import SimulatedProcessModal from '../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const WorkOrders = () => {
@@ -15,8 +14,7 @@ const WorkOrders = () => {
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [simModalOpen, setSimModalOpen] = useState(false);
-    const [viewMode, setViewMode] = useState('kanban'); 
+        const [viewMode, setViewMode] = useState('kanban'); 
     const [searchQuery, setSearchQuery] = useState('');
     
     // Form state
@@ -243,7 +241,7 @@ const WorkOrders = () => {
                                                 </div>
                                                 <span className="text-[9px] font-black uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</span>
                                             </div>
-                                            <button onClick={() => setSimModalOpen(true)} className="p-2 hover:bg-slate-100 rounded-xl transition-all opacity-40 hover:opacity-100">
+                                            <button onClick={() => handleGenericAction()} className="p-2 hover:bg-slate-100 rounded-xl transition-all opacity-40 hover:opacity-100">
                                                 <MoreHorizontal size={18} />
                                             </button>
                                         </div>
@@ -306,7 +304,7 @@ const WorkOrders = () => {
                                             </td>
                                             <td className="px-12 py-10">
                                                 <div className="flex justify-end gap-4 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                                                    <button onClick={() => setSimModalOpen(true)} className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                                    <button onClick={() => handleGenericAction()} className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
                                                         <MoreHorizontal size={20} />
                                                     </button>
                                                     <button 
@@ -444,14 +442,7 @@ const WorkOrders = () => {
                 </div>
             )}
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Deep Diagnostic Scan" 
-                processingText="Querying AI Models for Asset Anomalies..." 
-                successText="No anomalies found"
-                onSuccessCallback={() => toast.success('Diagnostic complete. Operations nominal.')}
-            />
+            
         </div>
     );
 };

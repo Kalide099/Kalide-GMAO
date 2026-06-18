@@ -1,14 +1,24 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, TrendingDown, ArrowUpRight, ShoppingCart, RefreshCcw, Gauge } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 import { Button } from '../../components/ui/Button';
+import api from '../../services/api/axiosConfig';
 
 const PredictiveInventory = () => {
     const { t } = useTranslation();
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/predictiveinventory', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        
     const parts = [
         { id: 1, name: t('nexus.inventory.parts.p1'), current: 14, min: 20, predicted: 8, status: 'urgent' },
         { id: 2, name: t('nexus.inventory.parts.p2'), current: 45, min: 30, predicted: 12, status: 'stable' },
@@ -34,7 +44,7 @@ const PredictiveInventory = () => {
                 </div>
                 <div className="flex gap-4">
                     <Button
-                        onClick={() => setSimModal({ isOpen: true, type: 'retrain' })}
+                        onClick={() => handleGenericAction()}
                         variant="primary"
                         className="flex items-center gap-3"
                     >
@@ -60,7 +70,7 @@ const PredictiveInventory = () => {
                     <p className="text-5xl font-black tracking-tighter">14</p>
                 </div>
                 <div
-                    onClick={() => setSimModal({ isOpen: true, type: 'auto_purchase' })}
+                    onClick={() => handleGenericAction()}
                     className="bg-slate-50 p-10 rounded-[3rem] border border-slate-100 flex flex-col justify-center items-center gap-4 group cursor-pointer hover:bg-emerald-500 transition-colors"
                 >
                     <ShoppingCart className="text-slate-400 group-hover:text-white" size={40} />
@@ -100,7 +110,7 @@ const PredictiveInventory = () => {
                             </div>
 
                             <Button
-                                onClick={() => part.status !== 'stable' && setSimModal({ isOpen: true, type: 'order' })}
+                                onClick={() => part.status !== 'stable' && handleGenericAction()}
                                 disabled={part.status === 'stable'}
                                 variant={part.status === 'stable' ? 'secondary' : 'primary'}
                             >
@@ -111,16 +121,7 @@ const PredictiveInventory = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'retrain' ? 'Deep AI Retraining' : simModal.type === 'auto_purchase' ? 'Enabling Auto-Procurement' : 'Purchase Authorization'} 
-                processingText={simModal.type === 'retrain' ? 'Ingesting recent consumption metrics...' : simModal.type === 'auto_purchase' ? 'Configuring threshold triggers...' : 'Securing transaction payload...'} 
-                successText={simModal.type === 'retrain' ? 'Model Weights Updated' : simModal.type === 'auto_purchase' ? 'Automation Enabled' : 'Order Dispatched'}
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'retrain' ? 'Inventory AI model retrained (+2.1% Accuracy).' : simModal.type === 'auto_purchase' ? 'Predictive auto-purchasing activated.' : 'Smart contract purchase executed.');
-                }}
-            />
+            
         </div>
     );
 };

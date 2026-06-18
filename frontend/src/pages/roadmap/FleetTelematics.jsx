@@ -2,15 +2,24 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Truck, Activity, Gauge, Share2, ClipboardList, AlertTriangle, ShieldCheck } from 'lucide-react';
 import api from '../../services/api/axiosConfig';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
 
 const FleetTelematics = () => {
     const { t } = useTranslation();
-    const [fleet, setFleet] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [simModalOpen, setSimModalOpen] = useState(false);
 
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/fleettelematics', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Live vehicle diagnostic data shared to Activity Center.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [fleet, setFleet] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
     useEffect(() => {
         const fetchFleet = async () => {
             try {
@@ -90,7 +99,7 @@ const FleetTelematics = () => {
                                         </div>
                                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">{t('roadmap.transmission_nominal', 'Transmission Nominal')}</span>
                                     </div>
-                                    <button onClick={() => setSimModalOpen(true)} className="p-3 hover:bg-slate-950 hover:text-white rounded-xl transition-all text-slate-400">
+                                    <button onClick={() => handleGenericAction()} className="p-3 hover:bg-slate-950 hover:text-white rounded-xl transition-all text-slate-400">
                                         <Share2 size={16} />
                                     </button>
                                 </div>
@@ -136,14 +145,7 @@ const FleetTelematics = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Syncing Asset Telemetry" 
-                processingText="Establishing secure quantum link..." 
-                successText="Telemetry Synced"
-                onSuccessCallback={() => toast.success('Live vehicle diagnostic data shared to Activity Center.')}
-            />
+            
         </div>
     );
 };

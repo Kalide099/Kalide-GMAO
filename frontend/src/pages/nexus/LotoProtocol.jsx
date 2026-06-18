@@ -1,19 +1,29 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShieldAlert, CheckCircle2, Lock, Key, FileSignature, AlertCircle } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const LotoProtocol = () => {
     const { t } = useTranslation();
-    const [steps, setSteps] = useState([
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/lotoprotocol', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Machine successfully locked out and tagged.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+        const [steps, setSteps] = useState([
         { id: 1, title: t('nexus.loto.steps.s1'), status: 'pending', energyType: t('nexus.loto.energy.elec') },
         { id: 2, title: t('nexus.loto.steps.s2'), status: 'pending', energyType: t('nexus.loto.energy.pneu') },
         { id: 3, title: t('nexus.loto.steps.s3'), status: 'pending', energyType: t('nexus.loto.energy.resid') },
     ]);
     const [isSigned, setIsSigned] = useState(false);
-    const [simModalOpen, setSimModalOpen] = useState(false);
-
+    
     const toggleStep = (id) => {
         setSteps(steps.map(s => s.id === id ? { ...s, status: s.status === 'completed' ? 'pending' : 'completed' } : s));
     };
@@ -97,7 +107,7 @@ const LotoProtocol = () => {
 
                     <button 
                         disabled={!allCompleted || !isSigned}
-                        onClick={() => setSimModalOpen(true)}
+                        onClick={() => handleGenericAction()}
                         className={`w-full py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] transition-all ${allCompleted && isSigned ? 'bg-yellow-400 text-slate-950 hover:bg-yellow-300 shadow-2xl shadow-yellow-400/20 active:scale-95' : 'bg-white/10 text-white/20 cursor-not-allowed'}`}
                     >
                         {t('nexus.loto.verify_lock')}
@@ -111,14 +121,7 @@ const LotoProtocol = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Verifying LOTO Protocol" 
-                processingText="Validating digital signatures and energy isolation..." 
-                successText="LOTO Verified"
-                onSuccessCallback={() => toast.success('Machine successfully locked out and tagged.')}
-            />
+            
         </div>
     );
 };

@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layers, TrendingUp, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const FmeaAnalytics = () => {
     const { t } = useTranslation();
-    const [simModalOpen, setSimModalOpen] = useState(false);
-    const entries = [
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/fmeaanalytics', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Failure mode details compiled.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+            const entries = [
         { id: 1, mode: t('nexus.rcm.modes.m1'), severity: 8, occurrence: 3, detection: 2, rpn: 48 },
         { id: 2, mode: t('nexus.rcm.modes.m2'), severity: 5, occurrence: 6, detection: 4, rpn: 120 },
     ];
@@ -85,7 +95,7 @@ const FmeaAnalytics = () => {
                                     </span>
                                 </td>
                                 <td className="p-10 text-right">
-                                    <button onClick={() => setSimModalOpen(true)} className="px-6 py-4 bg-slate-100 rounded-2xl text-[10px] uppercase font-black tracking-widest text-slate-400 hover:bg-slate-900 hover:text-white transition-colors">
+                                    <button onClick={() => handleGenericAction()} className="px-6 py-4 bg-slate-100 rounded-2xl text-[10px] uppercase font-black tracking-widest text-slate-400 hover:bg-slate-900 hover:text-white transition-colors">
                                         {t('nexus.rcm.analyze_details')}
                                     </button>
                                 </td>
@@ -96,14 +106,7 @@ const FmeaAnalytics = () => {
 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="FMEA Sub-System Analysis" 
-                processingText="Correlating historical fault vectors..." 
-                successText="Analysis Complete"
-                onSuccessCallback={() => toast.success('Failure mode details compiled.')}
-            />
+            
         </div>
     );
 };

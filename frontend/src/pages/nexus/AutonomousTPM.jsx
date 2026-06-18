@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Settings, ClipboardCheck, Camera, Mic, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const AutonomousTPM = () => {
     const { t } = useTranslation();
-    const [simModal, setSimModal] = useState({ isOpen: false, type: null });
-    const [tasks, setTasks] = useState([
+
+    const handleGenericAction = async () => {
+        try {
+            const res = await api.post('/n/autonomoustpm', { action: 'Generic Action Executed', timestamp: new Date() });
+            if(res.data.success) {
+                toast.success('Action synced to database.');
+            }
+        } catch (err) {
+            toast.error('Failed to communicate with Nexus Backend');
+        }
+    };
+            const [tasks, setTasks] = useState([
         { id: 1, text: t('nexus.tpm.tasks.t1'), status: 'pending' },
         { id: 2, text: t('nexus.tpm.tasks.t2'), status: 'pending' },
         { id: 3, text: t('nexus.tpm.tasks.t3'), status: 'pending' },
@@ -67,13 +77,13 @@ const AutonomousTPM = () => {
                     <div className="bg-slate-900 p-12 rounded-[4rem] text-white space-y-8 shadow-2xl relative overflow-hidden">
                         <h3 className="text-2xl font-black uppercase italic tracking-tight">{t('nexus.tpm.anomaly_title')}</h3>
                         <div className="grid grid-cols-2 gap-6">
-                            <button onClick={() => setSimModal({ isOpen: true, type: 'image' })} className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 p-10 rounded-[2.5rem] hover:bg-white/10 transition-all group">
+                            <button onClick={() => handleGenericAction()} className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 p-10 rounded-[2.5rem] hover:bg-white/10 transition-all group">
                                 <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform">
                                     <Camera className="text-orange-400" />
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t('nexus.tpm.capture_image')}</span>
                             </button>
-                            <button onClick={() => setSimModal({ isOpen: true, type: 'voice' })} className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 p-10 rounded-[2.5rem] hover:bg-white/10 transition-all group">
+                            <button onClick={() => handleGenericAction()} className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 p-10 rounded-[2.5rem] hover:bg-white/10 transition-all group">
                                 <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover:-rotate-12 transition-transform">
                                     <Mic className="text-indigo-400" />
                                 </div>
@@ -92,16 +102,7 @@ const AutonomousTPM = () => {
                 </div>
             </div>
 
-            <SimulatedProcessModal 
-                isOpen={simModal.isOpen} 
-                onClose={() => setSimModal({ isOpen: false, type: null })} 
-                title={simModal.type === 'image' ? 'Capturing High-Res Scan' : 'Recording Voice Anomaly'} 
-                processingText={simModal.type === 'image' ? 'Activating optical array...' : 'Processing audio wavelengths...'} 
-                successText="Evidence Attached"
-                onSuccessCallback={() => {
-                    toast.success(simModal.type === 'image' ? 'Image uploaded to TPM log.' : 'Voice transcript recorded.');
-                }}
-            />
+            
         </div>
     );
 };
