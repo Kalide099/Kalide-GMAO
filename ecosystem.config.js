@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'kgmao-backend',
-      script: 'backend/src/server.js',
+      script: 'src/server.js',
+      cwd: './backend',
       instances: 'max', // or a specific number of instances like 2 or 4
       exec_mode: 'cluster',
       autorestart: true,
