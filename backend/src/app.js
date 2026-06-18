@@ -43,6 +43,7 @@ const customFormRoutes = require('./routes/custom_form.routes');
 const attachmentRoutes = require('./routes/attachment.routes');
 const nexusRoutes = require('./routes/nexus.routes');
 const dynamicModuleRoutes = require('./routes/dynamic_module.routes');
+const webhookRoutes = require('./routes/webhook.routes');
 
 const app = express();
 
@@ -86,6 +87,9 @@ app.use((req, res, next) => {
 app.set('trust proxy', config.trustProxy ? 1 : false);
 
 // Global Middlewares
+// Webhooks need raw body, so we define them before express.json()
+app.use('/api/v1/webhooks', webhookRoutes);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

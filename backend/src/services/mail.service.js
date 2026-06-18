@@ -83,3 +83,43 @@ exports.sendVerificationEmail = async (userEmail, magicToken, languageCode = 'en
         bodies[languageCode] || bodies['en']
     );
 };
+
+exports.sendPasswordResetEmail = async (userEmail, resetToken, languageCode = 'en') => {
+    const provider = MailFactory.getProvider();
+    
+    const subjects = {
+        en: 'Reset your KGMAO Password',
+        fr: 'Réinitialiser votre mot de passe KGMAO'
+    };
+    
+    const bodies = {
+        en: `<h1>Password Reset</h1><p>We received a request to reset your password.</p><p>Click <a href="https://kgmao.com/reset-password?token=${resetToken}">here</a> to reset it.</p><p>If you didn't request this, you can safely ignore this email.</p>`,
+        fr: `<h1>Réinitialisation du mot de passe</h1><p>Nous avons reçu une demande pour réinitialiser votre mot de passe.</p><p>Cliquez <a href="https://kgmao.com/reset-password?token=${resetToken}">ici</a> pour le réinitialiser.</p><p>Si vous n'avez pas fait cette demande, veuillez ignorer cet e-mail.</p>`
+    };
+
+    return await provider.sendEmail(
+        userEmail, 
+        subjects[languageCode] || subjects['en'], 
+        bodies[languageCode] || bodies['en']
+    );
+};
+
+exports.sendWelcomeEmail = async (userEmail, languageCode = 'en') => {
+    const provider = MailFactory.getProvider();
+    
+    const subjects = {
+        en: 'Welcome to KGMAO - Your Next-Gen CMMS',
+        fr: 'Bienvenue sur KGMAO - Votre GMAO Nouvelle Génération'
+    };
+    
+    const bodies = {
+        en: `<h1>Welcome to KGMAO!</h1><p>Your tenant environment has been successfully provisioned.</p><p>Log in at <a href="https://kgmao.com/login">kgmao.com/login</a> to explore the real-time AI and Asset Management features.</p>`,
+        fr: `<h1>Bienvenue sur KGMAO!</h1><p>Votre environnement a été créé avec succès.</p><p>Connectez-vous sur <a href="https://kgmao.com/login">kgmao.com/login</a> pour explorer les fonctionnalités d'IA en temps réel.</p>`
+    };
+
+    return await provider.sendEmail(
+        userEmail, 
+        subjects[languageCode] || subjects['en'], 
+        bodies[languageCode] || bodies['en']
+    );
+};

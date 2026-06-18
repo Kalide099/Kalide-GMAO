@@ -2,22 +2,31 @@ module.exports = {
   apps: [
     {
       name: 'kgmao-backend',
-      script: 'server.js',
-      cwd: '/home/u633695266/domains/kgmao.com/public_html',
-      instances: 1,       // Single instance for stability on shared/limited hosting
-      exec_mode: 'cluster',   // Cluster mode for load balancing
+      script: 'backend/src/server.js',
+      instances: 'max', // or a specific number of instances like 2 or 4
+      exec_mode: 'cluster',
+      autorestart: true,
       watch: false,
-      max_memory_restart: '1G', // Prevent memory leaks from destroying the server
+      max_memory_restart: '1G',
       env: {
-        NODE_ENV: 'production'
-      },
-      env_development: {
         NODE_ENV: 'development'
       },
-      log_date_format: 'YYYY-MM-DD HH:mm Z',
-      error_file: 'backend/logs/pm2-error.log',
-      out_file: 'backend/logs/pm2-out.log',
-      merge_logs: true
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
+      name: 'kgmao-ai-engine',
+      script: 'uvicorn',
+      args: 'main:app --host 0.0.0.0 --port 8100 --workers 4',
+      cwd: './ai_service',
+      interpreter: 'python3',
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '2G',
+      env: {
+        PYTHONUNBUFFERED: "1"
+      }
     }
   ]
 };

@@ -7,6 +7,7 @@ const QRCode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
 const { config, getEnv } = require('../config/env');
 const logger = require('../config/logger');
+const mailService = require('./mail.service');
 
 const JWT_SECRET = getEnv('JWT_SECRET', config.isProd ? '' : 'kgmao_development_secret_321');
 const JWT_EXPIRES_IN = getEnv('JWT_EXPIRES_IN', '24h');
@@ -161,6 +162,11 @@ exports.registerCompanyAndAdmin = async (data) => {
 
         await connection.commit();
         
+        // Dispatch Welcome Email asynchronously
+        mailService.sendWelcomeEmail(email, preferredLanguage || 'en').catch(err => {
+            logger.error('Failed to send welcome email during registration', { error: err, email });
+        });
+
         return {
             userId,
             companyId,
@@ -343,6 +349,11 @@ exports.issuePasswordReset = async (email, requestMeta = {}) => {
         logger.warn('password_reset_tokens table not found; returning generic reset response', { error });
         return { requested: false, userId: user.id };
     }
+
+    // Dispatch Password Reset Email asynchronously
+    mailService.sendPasswordResetEmail(email, rawToken, user.preferred_language || 'en').catch(err => {
+        logger.error('Failed to send password reset email', { error: err, email });
+    });
 
     return {
         requested: true,
