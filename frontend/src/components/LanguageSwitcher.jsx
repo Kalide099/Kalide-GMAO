@@ -23,7 +23,7 @@ const LanguageSwitcher = () => {
       title={t('nav.switchLang')}
     >
       <Globe className="w-4 h-4" />
-      <span>{i18n.language.startsWith('en') ? 'FR' : 'EN'}</span>
+      <span>{i18n.language.startsWith('en') ? 'EN' : 'FR'}</span>
     </button>
   );
 };
