@@ -23,22 +23,10 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            if (!id.includes('node_modules')) {
-              return undefined
-            }
-
-            const modulePath = id.split('node_modules/')[1]
-            if (!modulePath) {
-              return 'vendor-misc'
-            }
-
-            const parts = modulePath.split('/')
-            if (parts[0].startsWith('@') && parts.length > 1) {
-              return `vendor-${parts[0].slice(1)}-${parts[1]}`
-            }
-
-            return `vendor-${parts[0]}`
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            i18n: ['i18next', 'react-i18next'],
+            ui: ['lucide-react']
           }
         }
       }
