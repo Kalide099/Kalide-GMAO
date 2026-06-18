@@ -36,6 +36,10 @@ if [ ! -f "backend/.env" ]; then
     echo "✅ Created temporary .env. PLEASE EDIT backend/.env WITH REAL KEYS LATER."
 fi
 
+# Force PORT=5000 in the .env so Nginx proxy works correctly
+sed -i 's/PORT=3000/PORT=5000/g' backend/.env
+sed -i 's/AI_SERVICE_URL=http:\/\/localhost:8000/AI_SERVICE_URL=http:\/\/localhost:8100/g' backend/.env
+
 # 6. Setup Python Environment for AI Service
 echo "🐍 Setting up Python AI Engine..."
 cd ai_service
