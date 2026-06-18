@@ -11,9 +11,11 @@ const CalibrationRegistry = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [simModalOpen, setSimModalOpen] = useState(false);
 
+    const [formData, setFormData] = useState({ tag: '', frequency: 180, name_en: '', name_fr: '' });
+
     const fetchInstruments = async () => {
         try {
-            const res = await api.get('/nexus/calibration');
+            const res = await api.get('/n/calibration');
             if (res.data.success) setInstruments(res.data.data);
         } catch (err) {
             console.error('Calibration fetch failed', err);
@@ -27,12 +29,22 @@ const CalibrationRegistry = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Need a post route for this, let's assume it exists or call add instrument logic
-            // For now, we simulate success
-            setIsModalOpen(false);
-            toast.success('Instrument enrolled to metrology ledger.');
+            const payload = {
+                ...formData,
+                lastCal: new Date().toISOString().split('T')[0],
+                nextCal: new Date(Date.now() + formData.frequency * 86400000).toISOString().split('T')[0],
+                drift: "0.0",
+                status: "nominal"
+            };
+            const res = await api.post('/n/calibration', payload);
+            if(res.data.success) {
+                setIsModalOpen(false);
+                toast.success('Instrument enrolled to metrology ledger.');
+                fetchInstruments();
+                setFormData({ tag: '', frequency: 180, name_en: '', name_fr: '' });
+            }
         } catch (err) {
-            // handle error
+            toast.error("Failed to enroll instrument");
         }
     };
 
@@ -152,14 +164,14 @@ const CalibrationRegistry = () => {
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.tag_id')}</label>
                                     <div className="relative">
                                         <Tag className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                                        <input type="text" required placeholder={t('nexus.calibration.form.tag_placeholder')} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" value={formData.tag} onChange={e => setFormData({...formData, tag: e.target.value})} required placeholder={t('nexus.calibration.form.tag_placeholder')} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.frequency')}</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                                        <input type="number" required placeholder={"180"} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="number" value={formData.frequency} onChange={e => setFormData({...formData, frequency: Number(e.target.value)})} required placeholder={"180"} className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                             </div>
@@ -169,14 +181,14 @@ const CalibrationRegistry = () => {
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.name_en')}</label>
                                     <div className="relative">
                                         <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-400" size={16} />
-                                        <input type="text" required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" value={formData.name_en} onChange={e => setFormData({...formData, name_en: e.target.value})} required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">{t('nexus.calibration.name_fr')}</label>
                                     <div className="relative">
                                         <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-400" size={16} />
-                                        <input type="text" required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
+                                        <input type="text" value={formData.name_fr} onChange={e => setFormData({...formData, name_fr: e.target.value})} required className="w-full pl-14 sm:pl-16 pr-4 sm:pr-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-emerald-600 transition-all font-black text-slate-950 text-xs" />
                                     </div>
                                 </div>
                             </div>

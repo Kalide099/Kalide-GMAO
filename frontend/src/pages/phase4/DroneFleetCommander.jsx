@@ -1,16 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crosshair, Battery, SignalHigh, Wind, Activity, CheckCircle, Navigation } from 'lucide-react';
+import { Crosshair, Battery, SignalHigh, Wind, Activity, CheckCircle, Navigation, Plus } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
+import api from '../../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 
 const DroneFleetCommander = () => {
     const { t } = useTranslation();
-    const [drones] = useState([
-        { id: 'DRN-A01', status: 'Active', battery: 84, location: 'Sector 7G', altitude: '120m', mission: 'Perimeter Sweep' },
-        { id: 'DRN-X42', status: 'Charging', battery: 12, location: 'Base Station Alpha', altitude: '0m', mission: 'None' },
-        { id: 'ROB-K9', status: 'Deployed', battery: 92, location: 'Warehouse 4', altitude: 'Ground', mission: 'Spill Cleanup' },
-        { id: 'DRN-T11', status: 'Maintenance', battery: 0, location: 'Hangar C', altitude: '0m', mission: 'Rotor Replacement' },
-    ]);
+    const [drones, setDrones] = useState([]);
+
+    const fetchDrones = async () => {
+        try {
+            const res = await api.get('/n/drone_fleet');
+            if (res.data.success) {
+                // Map the generic payload back to the drone array
+                const loadedDrones = res.data.data.map(item => ({
+                    id: item.droneId,
+                    status: item.status,
+                    battery: item.battery,
+                    location: item.location,
+                    altitude: item.altitude,
+                    mission: item.mission
+                }));
+                setDrones(loadedDrones);
+            }
+        } catch (err) {
+            console.error("Failed to load drone fleet telemetry", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchDrones();
+    }, []);
+
+    const deployRandomDrone = async () => {
+        const newDrone = {
+            droneId: `DRN-${Math.floor(Math.random() * 1000)}`,
+            status: 'Deployed',
+            battery: Math.floor(Math.random() * 100),
+            location: 'Sector Alpha',
+            altitude: `${Math.floor(Math.random() * 200)}m`,
+            mission: 'Patrol'
+        };
+        try {
+            const res = await api.post('/n/drone_fleet', newDrone);
+            if(res.data.success) {
+                toast.success(`Drone ${newDrone.droneId} uplink established.`);
+                fetchDrones();
+            }
+        } catch(err) {
+            toast.error("Failed to deploy drone");
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -59,9 +100,15 @@ const DroneFleetCommander = () => {
 
                 <div className="space-y-6">
                     <Card className="bg-slate-950 text-white border-slate-800">
-                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{t("generated.pages.phase4.dronefleetcommander.fleet_telemetry_7", "Fleet Telemetry")}</h3>
-                        <div className="space-y-4">
-                            {drones.map((drone) => (
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{t("generated.pages.phase4.dronefleetcommander.fleet_telemetry_7", "Fleet Telemetry")}</h3>
+                            <button onClick={deployRandomDrone} className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors">
+                                <Plus size={12} />
+                                Deploy Drone
+                            </button>
+                        </div>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                            {drones.length > 0 ? drones.map((drone) => (
                                 <div key={drone.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-yellow-400/30 transition-all group">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="font-black tracking-widest text-sm text-yellow-400">{drone.id}</div>
@@ -91,7 +138,9 @@ const DroneFleetCommander = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="text-[10px] font-black text-slate-500 uppercase text-center py-10">No Drones Online</div>
+                            )}
                         </div>
                     </Card>
                 </div>

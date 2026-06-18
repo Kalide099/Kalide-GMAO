@@ -42,6 +42,7 @@ const subcontractorRoutes = require('./routes/subcontractor.routes');
 const customFormRoutes = require('./routes/custom_form.routes');
 const attachmentRoutes = require('./routes/attachment.routes');
 const nexusRoutes = require('./routes/nexus.routes');
+const dynamicModuleRoutes = require('./routes/dynamic_module.routes');
 
 const app = express();
 
@@ -188,6 +189,7 @@ app.use('/api/v1/subcontractors', subcontractorRoutes);
 app.use('/api/v1/custom-forms', customFormRoutes);
 app.use('/api/v1/attachments', attachmentRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
+app.use('/api/v1/n', dynamicModuleRoutes);
 
 // Handle React Routing - Serve index.html for non-API routes
 app.get('*', (req, res, next) => {

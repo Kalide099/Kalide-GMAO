@@ -1,15 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Boxes, Thermometer, ShieldCheck, Play, Save, History, Cpu } from 'lucide-react';
-import SimulatedProcessModal from '../../components/SimulatedProcessModal';
 import toast from 'react-hot-toast';
+import api from '../../services/api/axiosConfig';
 
 const DigitalTwin = () => {
     const { t } = useTranslation();
 
     const [simulationMode, setSimulationMode] = useState(false);
     const [load, setLoad] = useState(74);
-    const [simModalOpen, setSimModalOpen] = useState(false);
+    const [snapshots, setSnapshots] = useState([]);
+
+    const fetchSnapshots = async () => {
+        try {
+            const res = await api.get('/n/digital_twin');
+            if (res.data.success) {
+                // Map generic data back to expected UI format
+                const formatted = res.data.data.map(item => ({
+                    date: item.created_at.split('T')[0],
+                    state: item.state,
+                    load: item.load
+                }));
+                setSnapshots(formatted);
+            }
+        } catch (err) {
+            console.error('Digital Twin fetch failed', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchSnapshots();
+    }, []);
+
+    const handleSaveSnapshot = async () => {
+        try {
+            const res = await api.post('/n/digital_twin', {
+                state: load > 90 ? t('roadmap.twin.preFailure') : t('roadmap.twin.baseLine'),
+                load: load
+            });
+            if (res.data.success) {
+                toast.success('3D Twin parameters securely frozen.');
+                fetchSnapshots();
+            }
+        } catch (err) {
+            toast.error('Failed to save snapshot');
+        }
+    };
 
     return (
         <div className="space-y-12 animate-fade-in-up uppercase">
@@ -32,7 +68,7 @@ const DigitalTwin = () => {
                         <Play size={18} className={simulationMode ? 'animate-pulse' : ''} />
                         {simulationMode ? t('roadmap.twin.exitSim') : t('roadmap.twin.enterSim')}
                     </button>
-                    <button onClick={() => setSimModalOpen(true)} className="p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:bg-slate-50 transition-all">
+                    <button onClick={handleSaveSnapshot} className="p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:bg-slate-50 transition-all">
                         <Save size={24} className="text-slate-900" />
                     </button>
                 </div>
@@ -106,29 +142,19 @@ const DigitalTwin = () => {
                                 <History size={14} /> {t('roadmap.twin.snapshots')}
                             </h4>
                             <div className="space-y-4">
-                                {[
-                                    { date: '2026-04-10', state: t('roadmap.twin.preFailure') },
-                                    { date: '2026-03-24', state: t('roadmap.twin.baseLine') }
-                                ].map((snap, i) => (
+                                {snapshots.length > 0 ? snapshots.map((snap, i) => (
                                     <div key={i} className="flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-indigo-50 hover:border-indigo-100 transition-all cursor-pointer">
                                         <span className="text-[10px] font-black text-slate-900">{snap.date}</span>
-                                        <span className="text-[9px] font-black text-indigo-600 bg-white px-3 py-1 rounded-full uppercase">{snap.state}</span>
+                                        <span className="text-[9px] font-black text-indigo-600 bg-white px-3 py-1 rounded-full uppercase">{snap.state} (Load: {snap.load}%)</span>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="text-[10px] font-black text-slate-400 italic">No snapshots saved yet.</div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <SimulatedProcessModal 
-                isOpen={simModalOpen} 
-                onClose={() => setSimModalOpen(false)} 
-                title="Capturing Blockchain Snapshot" 
-                processingText="Serializing multidimensional mesh nodes..." 
-                successText="Snapshot Archived"
-                onSuccessCallback={() => toast.success('3D Twin parameters securely frozen.')}
-            />
         </div>
     );
 };
