@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bot, Send, Loader2, Terminal, Sparkles, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getSocket } from '../utils/socketClient';
+
 const AICopilot = () => {
     const { t } = useTranslation();
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([
-        { role: 'system', content: 'AI Copilot is ready. Welcome to your operations center. How can I help today?' }
+        { role: 'system', content: 'AI Copilot initialized. Live telemetry and predictive models are online. Waiting for signals...' }
     ]);
     const [isTyping, setIsTyping] = useState(false);
+    const [liveDataStatus, setLiveDataStatus] = useState('Standby');
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -18,6 +21,46 @@ const AICopilot = () => {
         scrollToBottom();
     }, [messages, isTyping]);
 
+    // WebSocket Integration
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const handleTelemetry = (data) => {
+            setLiveDataStatus(`Ingesting: ${data.assetName} (${Object.keys(data.sensorData).join(', ')})`);
+        };
+
+        const handleAIPrediction = (data) => {
+            const { prediction, assetName, model_archetype } = data;
+            
+            // Only alert if it's critical
+            const isCritical = 
+                prediction.anomaly === -1 || 
+                (prediction.rul !== undefined && prediction.rul < 15) ||
+                (prediction.failure_probability !== undefined && prediction.failure_probability > 0.80);
+
+            if (isCritical) {
+                const message = `🚨 CRITICAL ALERT [${model_archetype.toUpperCase()}]: Imminent anomaly detected on ${assetName}. Probability of failure: ${((prediction.failure_probability || 0.95)*100).toFixed(1)}%. Initiating auto-remediation protocol.`;
+                setMessages(prev => [...prev, { role: 'system', content: message }]);
+            }
+        };
+
+        const handleWODrafted = (data) => {
+            const message = `✅ AUTO-ACTION: Corrective Work Order [${data.woId}] successfully drafted for ${data.assetId}. Technician dispatch is pending approval.`;
+            setMessages(prev => [...prev, { role: 'system', content: message }]);
+        };
+
+        socket.on('telemetry_update', handleTelemetry);
+        socket.on('ai_prediction', handleAIPrediction);
+        socket.on('wo_auto_drafted', handleWODrafted);
+
+        return () => {
+            socket.off('telemetry_update', handleTelemetry);
+            socket.off('ai_prediction', handleAIPrediction);
+            socket.off('wo_auto_drafted', handleWODrafted);
+        };
+    }, []);
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
@@ -27,23 +70,17 @@ const AICopilot = () => {
         setMessages(prev => [...prev, { role: 'user', content: userText }]);
         setIsTyping(true);
 
-        // Simulate AI thinking and responding
+        // Standard chat response fallback
         setTimeout(() => {
-            let reply = "I have analyzed your live data.";
+            let reply = "The predictive models are actively monitoring. No immediate manual action required.";
             
-            if (userText.toLowerCase().includes('vibration') || userText.toLowerCase().includes('pump')) {
-                reply = "Based on past maintenance records, a vibration of 40mm/s on Pump #4 suggests a serious bearing issue. I recommend creating a repair work order now. Would you like me to draft it?";
-            } else if (userText.toLowerCase().includes('order') || userText.toLowerCase().includes('draft')) {
-                reply = "Work Order drafted for Pump #4 (Bearing Replacement). Estimated MTTR: 2 Hours. Required Part: Bearing Kit K7. Status: Pending Approval.";
-            } else if (userText.toLowerCase().includes('esg') || userText.toLowerCase().includes('carbon')) {
-                reply = "Your site is using 12% more energy than your normal baseline. I suggest optimizing HVAC Unit A to save about 140kg CO2 per day.";
-            } else {
-                reply = "I am cross-referencing your request with the global CMMS knowledge base. Please specify the asset or module you are inquiring about.";
+            if (userText.toLowerCase().includes('status')) {
+                reply = "All edge ML pipelines are running nominal. The fleet simulator is currently generating telemetry for real-time analysis.";
             }
 
             setMessages(prev => [...prev, { role: 'system', content: reply }]);
             setIsTyping(false);
-        }, 1500);
+        }, 1000);
     };
 
     return (
@@ -57,17 +94,17 @@ const AICopilot = () => {
                     </div>
                     <div>
                         <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">{t('copilot.title', 'AI Copilot')}</h1>
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">{t('copilot.subtitle', 'Smart Assistant')}</p>
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">Live Python Predictor Engine</p>
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-4 text-slate-400 z-10">
                     <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.model', 'Model: GPT-4.5')}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.model', 'Model: KGMAO-ML-EDGE')}</span>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                        <Activity className="w-4 h-4 text-indigo-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{t('copilot.telemetry', 'Live Data: On')}</span>
+                    <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10 overflow-hidden max-w-[200px]">
+                        <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-widest truncate">{liveDataStatus}</span>
                     </div>
                 </div>
                 
@@ -78,17 +115,19 @@ const AICopilot = () => {
             {/* Chat Area */}
             <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-slate-50 space-y-8 custom-scrollbar">
                 <div className="text-center mb-8">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 bg-white px-6 py-2 rounded-full shadow-sm border border-slate-100 inline-block">
-                        {t('copilot.secure_session', 'Secure session started')}
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 bg-emerald-50 px-6 py-2 rounded-full shadow-sm border border-emerald-100 inline-block animate-pulse">
+                        ● Live Telemetry Socket Connected
                     </span>
                 </div>
                 
                 {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] p-6 rounded-[2rem] text-base font-medium leading-relaxed shadow-sm ${
+                        <div className={`max-w-[85%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${
                             msg.role === 'user' 
                                 ? 'bg-slate-900 text-white rounded-tr-sm' 
-                                : 'bg-white text-slate-800 rounded-tl-sm border border-slate-100'
+                                : msg.content.includes('CRITICAL') 
+                                    ? 'bg-rose-50 text-rose-900 border-2 border-rose-200 rounded-tl-sm'
+                                    : 'bg-white text-slate-800 rounded-tl-sm border border-slate-100'
                         }`}>
                             {msg.content}
                         </div>
@@ -99,7 +138,7 @@ const AICopilot = () => {
                     <div className="flex justify-start">
                         <div className="bg-white border border-slate-100 p-6 rounded-[2rem] rounded-tl-sm shadow-sm flex items-center gap-4">
                             <Loader2 className="w-6 h-6 animate-spin text-yellow-500" />
-                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">{t('copilot.parsing', 'Reading your data...')}</span>
+                            <span className="text-sm text-slate-400 font-bold uppercase tracking-widest italic">{t('copilot.parsing', 'Processing...')}</span>
                         </div>
                     </div>
                 )}
@@ -113,7 +152,7 @@ const AICopilot = () => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder={t('copilot.placeholder', 'Ask AI Copilot for diagnostics, ESG insights, or draft work orders...')}
+                        placeholder="Request manual diagnostic override..."
                         className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-base rounded-[2rem] pl-8 pr-16 py-6 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium font-medium shadow-inner"
                     />
                     <button type="submit" 

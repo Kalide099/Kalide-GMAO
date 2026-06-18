@@ -13,6 +13,10 @@ const server = app.listen(config.port, "0.0.0.0", () => {
     logger.info('Server started', { port: config.port, env: config.nodeEnv });
 });
 
+// Initialize WebSockets
+const { initSocket } = require('./config/socket');
+initSocket(server);
+
 server.on('error', (error) => {
     logger.error('HTTP server startup/runtime error', { error, port: config.port });
     if (error.code === 'EADDRINUSE') {
@@ -33,6 +37,10 @@ const connectDB = async (retries = config.dbConnectRetries, delay = config.dbCon
             const queueService = require('./services/queue.service');
             require('./services/processors'); // Load all job processors
             queueService.startWorker();
+
+            // Start IoT simulation
+            const iotService = require('./services/iot.service');
+            iotService.startContinuousSimulation();
             
             return;
         } catch (error) {

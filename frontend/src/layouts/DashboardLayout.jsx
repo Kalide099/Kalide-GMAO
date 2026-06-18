@@ -13,6 +13,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import CommandPalette from '../components/CommandPalette';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api/axiosConfig';
+import { initializeSocket, disconnectSocket } from '../utils/socketClient';
 
 const DashboardLayout = () => {
   const { t } = useTranslation();
@@ -35,7 +36,17 @@ const DashboardLayout = () => {
   useEffect(() => {
     fetchNotifications();
     const timer = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(timer);
+    
+    // Initialize real-time socket
+    const token = localStorage.getItem('kgmao_token');
+    if (token) {
+        initializeSocket(token);
+    }
+
+    return () => {
+        clearInterval(timer);
+        disconnectSocket();
+    };
   }, []);
 
   const unreadCount = Array.isArray(notifications) 

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, Briefcase, Activity, Zap, TrendingUp, Globe, ArrowRight, Layers } from 'lucide-react';
+import { Wrench, Briefcase, Activity, Zap, TrendingUp, Globe, ArrowRight, Layers, Bot, Radio } from 'lucide-react';
 import useIndustryIndustry from '../hooks/useIndustryIndustry';
 import api from '../services/api/axiosConfig';
+import { getSocket } from '../utils/socketClient';
 
 const Dashboard = () => {
     const { t } = useTranslation();
@@ -25,7 +26,55 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
+        };
         fetchStats();
+    }, []);
+
+    const [liveFeed, setLiveFeed] = useState([]);
+
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const handleTelemetry = (data) => {
+            setLiveFeed(prev => [{
+                type: 'TELEMETRY',
+                message: `Live data ingested: ${data.assetName}`,
+                details: Object.keys(data.sensorData).join(', '),
+                timestamp: data.timestamp,
+                icon: <Radio className="text-indigo-400" size={16} />
+            }, ...prev].slice(0, 15));
+        };
+
+        const handleAIPrediction = (data) => {
+            setLiveFeed(prev => [{
+                type: 'AI_INSIGHT',
+                message: `AI Engine analysed ${data.assetName}`,
+                details: `Anomaly score: ${data.prediction.anomaly}`,
+                timestamp: data.timestamp,
+                icon: <Bot className="text-yellow-400" size={16} />
+            }, ...prev].slice(0, 15));
+        };
+
+        const handleWODrafted = (data) => {
+            setLiveFeed(prev => [{
+                type: 'WORK_ORDER',
+                message: `Work Order auto-drafted`,
+                details: data.title,
+                timestamp: new Date().toISOString(),
+                icon: <Wrench className="text-rose-400" size={16} />
+            }, ...prev].slice(0, 15));
+        };
+
+        socket.on('telemetry_update', handleTelemetry);
+        socket.on('ai_prediction', handleAIPrediction);
+        socket.on('wo_auto_drafted', handleWODrafted);
+
+        return () => {
+            socket.off('telemetry_update', handleTelemetry);
+            socket.off('ai_prediction', handleAIPrediction);
+            socket.off('wo_auto_drafted', handleWODrafted);
+        };
     }, []);
 
     const metrics = [
@@ -115,54 +164,50 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* High-Impact Activity Stream Placeholder */}
+            {/* High-Impact Activity Stream */}
             <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden min-h-[500px] flex flex-col relative group">
                 <div className="p-12 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
                     <div className="flex items-center gap-4">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">{t('dashboard.recentActivity')}</h3>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.8)]"></div>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Live Edge Intelligence Stream</h3>
                     </div>
                     <button 
-                        onClick={() => navigate('/app/audit')}
+                        onClick={() => navigate('/app/ai-copilot')}
                         className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
                     >
-                        {t('dashboard.viewAuditLog')}
+                        Launch AI Copilot
                     </button>
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 lg:p-20 space-y-6">
-                    {loading ? (
-                        <>
-                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner animate-pulse">
-                                <Activity className="text-slate-200" size={48} />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-slate-800 font-black uppercase tracking-widest text-xs italic">{t('dashboard.loadingForensic')}</p>
-                                <div className="flex justify-center gap-1">
-                                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}></div>)}
-                                </div>
-                            </div>
-                        </>
-                    ) : stats?.recentActivity?.length > 0 ? (
-                        <div className="w-full text-left space-y-4">
-                            {stats.recentActivity.map((activity, idx) => (
-                                <div key={idx} className="flex justify-between items-center bg-slate-50 p-6 rounded-3xl border border-slate-100 transition-all hover:bg-slate-100">
-                                    <div>
-                                        <p className="font-black text-slate-900 uppercase text-sm tracking-widest italic">{activity.action.replace(/_/g, ' ')}</p>
-                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2">{activity.entity_type}</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 lg:p-20 space-y-6 overflow-hidden">
+                    {liveFeed.length > 0 ? (
+                        <div className="w-full text-left space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-4">
+                            {liveFeed.map((activity, idx) => (
+                                <div key={idx} className={`flex justify-between items-center bg-slate-50 p-6 rounded-3xl border border-slate-100 transition-all hover:bg-white hover:shadow-lg animate-fade-in-up ${idx === 0 ? 'border-yellow-400/30 bg-yellow-50/20' : ''}`}>
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                                            {activity.icon}
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-slate-900 uppercase text-sm tracking-widest italic">{activity.message}</p>
+                                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2">{activity.details}</p>
+                                        </div>
                                     </div>
-                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        {new Date(activity.created_at).toLocaleDateString()}
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        {new Date(activity.timestamp).toLocaleTimeString()}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
                         <>
-                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner group-hover:rotate-12 transition-transform">
+                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-inner animate-pulse">
                                 <Activity className="text-slate-200" size={48} />
                             </div>
                             <div className="space-y-2">
-                                <p className="text-slate-400 font-black uppercase tracking-widest text-xs italic">{t('dashboard.noRecentActivity')}</p>
+                                <p className="text-slate-800 font-black uppercase tracking-widest text-xs italic">Awaiting live sensor data...</p>
+                                <div className="flex justify-center gap-1">
+                                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}></div>)}
+                                </div>
                             </div>
                         </>
                     )}
