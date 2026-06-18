@@ -26,7 +26,6 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
-        };
         fetchStats();
     }, []);
 
