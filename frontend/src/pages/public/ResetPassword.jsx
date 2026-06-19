@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, KeyRound, Loader2, ShieldCheck, AlertTriangle, Zap } from 'lucide-react';
+import { ArrowLeft, KeyRound, Loader2, ShieldCheck, AlertTriangle, Zap, Eye, EyeOff } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api/axiosConfig';
@@ -14,6 +14,8 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState({ type: '', message: '' });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const token = searchParams.get('token') || '';
 
@@ -84,12 +86,20 @@ const ResetPassword = () => {
                             <div className="relative">
                                 <KeyRound className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5 group-focus-within:text-indigo-600 transition-colors" />
                                 <input
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     required
-                                    className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2rem] pl-14 sm:pl-16 pr-4 sm:pr-6 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
+                                    className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2rem] pl-14 sm:pl-16 pr-14 sm:pr-16 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors z-20 focus:outline-none"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                             </div>
                         </div>
 
@@ -98,12 +108,20 @@ const ResetPassword = () => {
                             <div className="relative">
                                 <KeyRound className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5 group-focus-within:text-indigo-600 transition-colors" />
                                 <input
-                                    type="password"
+                                    type={showConfirmPassword ? 'text' : 'password'}
                                     required
-                                    className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2rem] pl-14 sm:pl-16 pr-4 sm:pr-6 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
+                                    className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2rem] pl-14 sm:pl-16 pr-14 sm:pr-16 text-slate-900 font-bold focus:bg-white focus:border-indigo-600 transition-all outline-none text-sm shadow-sm"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors z-20 focus:outline-none"
+                                    tabIndex={-1}
+                                >
+                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                             </div>
                         </div>
 

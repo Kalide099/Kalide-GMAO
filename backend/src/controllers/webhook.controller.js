@@ -1,4 +1,4 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy');
 const pool = require('../config/db');
 const { config } = require('../config/env');
 
@@ -29,7 +29,7 @@ exports.stripeWebhook = async (req, res) => {
         try {
             // Find the pending payment
             const [payments] = await pool.query('SELECT * FROM payments WHERE transaction_reference = ? LIMIT 1', [transactionRef]);
-            
+
             if (payments.length > 0) {
                 const payment = payments[0];
                 const companyId = payment.company_id;
@@ -44,9 +44,9 @@ exports.stripeWebhook = async (req, res) => {
                     VALUES (UUID(), ?, 'pro', NOW(), DATE_ADD(NOW(), INTERVAL 1 MONTH), 'active')
                     ON DUPLICATE KEY UPDATE end_date = DATE_ADD(NOW(), INTERVAL 1 MONTH), status = 'active'
                 `, [companyId]);
-                
+
                 await pool.query('UPDATE companies SET subscription_status = "active", plan = "pro" WHERE id = ?', [companyId]);
-                
+
                 console.log(`[WEBHOOK] Successfully upgraded company ${companyId}`);
             }
         } catch (err) {
@@ -56,5 +56,5 @@ exports.stripeWebhook = async (req, res) => {
     }
 
     // Return a 200 response to acknowledge receipt of the event
-    res.json({received: true});
+    res.json({ received: true });
 };

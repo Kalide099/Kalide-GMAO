@@ -1,125 +1,388 @@
 /**
- * Abstract Mail Service for transactional SaaS emails securely.
- * Natively supports swapping SendGrid, Resend, or standard AWS SES infrastructures seamlessly.
+ * KGMAO Mail Service — Hostinger SMTP via Nodemailer
+ * Sends transactional emails for: Registration, Password Reset, Account Approval.
+ * Bilingual support (EN/FR) on all templates.
+ * 
+ * SMTP Config (via .env):
+ *   SMTP_HOST=smtp.hostinger.com
+ *   SMTP_PORT=465
+ *   SMTP_USER=support@kgmao.com
+ *   SMTP_PASS=<your_password>
+ *   MAIL_FROM_ADDRESS=support@kgmao.com
+ *   MAIL_FROM_NAME=KGMAO
+ *   APP_URL=https://kgmao.com
  */
 
-const { Resend } = require('resend');
-const { config } = require('../config/env');
+const nodemailer = require('nodemailer');
+const logger = require('../config/logger');
 
-const resendClient = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
-const mailFrom = process.env.MAIL_FROM_ADDRESS || 'noreply@kgmao.com';
+// ============================================================
+// SMTP TRANSPORTER (Hostinger)
+// ============================================================
+const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+const smtpUser = process.env.SMTP_USER || 'support@kgmao.com';
+const smtpPass = process.env.SMTP_PASS || '';
+const mailFrom = process.env.MAIL_FROM_ADDRESS || 'support@kgmao.com';
+const mailFromName = process.env.MAIL_FROM_NAME || 'KGMAO';
+const appUrl = process.env.APP_URL || process.env.LIVE_PRODUCTION || 'https://kgmao.com';
 
-class SendGridProvider {
-    async sendEmail(to, subject, htmlBody) {
-        if (config.isProd) {
-            throw new Error('SendGrid provider is not configured for production in this build.');
-        }
+let transporter = null;
 
-        // Mock SendGrid SDK integration
-        console.log(`[SENDGRID] Resolving outbound email to: ${to} | Subject: ${subject}`);
-        return { success: true, provider: 'sendgrid', messageId: `sg_${Date.now()}` };
-    }
-}
+const getTransporter = () => {
+    if (transporter) return transporter;
 
-class ResendProvider {
-    async sendEmail(to, subject, htmlBody) {
-        if (!process.env.RESEND_API_KEY) {
-            if (config.isProd) {
-                throw new Error('RESEND_API_KEY is required in production.');
-            }
+    transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // true for 465 (SSL), false for 587 (STARTTLS)
+        auth: {
+            user: smtpUser,
+            pass: smtpPass,
+        },
+        tls: {
+            rejectUnauthorized: false // Allow self-signed certs on Hostinger
+        },
+        pool: true,        // Use connection pooling
+        maxConnections: 3,
+        maxMessages: 50,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+    });
 
-            console.warn(`[RESEND MOCK] No API Key found. Skipping actual email to ${to}`);
-            return { success: true, provider: 'resend_mock', messageId: `re_mock_${Date.now()}` };
-        }
-        
-        try {
-            const { data, error } = await resendClient.emails.send({
-                from: `KGMAO <${mailFrom}>`,
-                to: [to],
-                subject: subject,
-                html: htmlBody
-            });
-
-            if (error) {
-                console.error('[RESEND] Email delivery failed:', error);
-                return { success: false, error };
-            }
-
-            console.log(`[RESEND] Email sent successfully to: ${to} [ID: ${data.id}]`);
-            return { success: true, provider: 'resend', messageId: data.id };
-        } catch (err) {
-            console.error('[RESEND] Critical error in email service:', err);
-            return { success: false, error: err };
-        }
-    }
-}
-
-class MailFactory {
-    static getProvider() {
-        // Defaults to Resend natively
-        const providerName = process.env.MAIL_PROVIDER || 'resend';
-        if (providerName === 'sendgrid') return new SendGridProvider();
-        return new ResendProvider();
-    }
-}
-
-exports.sendVerificationEmail = async (userEmail, magicToken, languageCode = 'en') => {
-    const provider = MailFactory.getProvider();
-    
-    // Dynamic Translation logic applied heavily mapped for global compliance natively
-    const subjects = {
-        en: 'Verify your KGMAO Account',
-        fr: 'Vérifiez votre compte KGMAO'
-    };
-    
-    const bodies = {
-        en: `<h1>Welcome to KGMAO!</h1><p>Click <a href="https://kgmao.com/verify?token=${magicToken}">here</a> to activate your SaaS environment.</p>`,
-        fr: `<h1>Bienvenue sur KGMAO!</h1><p>Cliquez <a href="https://kgmao.com/verify?token=${magicToken}">ici</a> pour activer votre environnement SaaS.</p>`
-    };
-
-    return await provider.sendEmail(
-        userEmail, 
-        subjects[languageCode] || subjects['en'], 
-        bodies[languageCode] || bodies['en']
-    );
+    return transporter;
 };
 
-exports.sendPasswordResetEmail = async (userEmail, resetToken, languageCode = 'en') => {
-    const provider = MailFactory.getProvider();
-    
-    const subjects = {
-        en: 'Reset your KGMAO Password',
-        fr: 'Réinitialiser votre mot de passe KGMAO'
-    };
-    
-    const bodies = {
-        en: `<h1>Password Reset</h1><p>We received a request to reset your password.</p><p>Click <a href="https://kgmao.com/reset-password?token=${resetToken}">here</a> to reset it.</p><p>If you didn't request this, you can safely ignore this email.</p>`,
-        fr: `<h1>Réinitialisation du mot de passe</h1><p>Nous avons reçu une demande pour réinitialiser votre mot de passe.</p><p>Cliquez <a href="https://kgmao.com/reset-password?token=${resetToken}">ici</a> pour le réinitialiser.</p><p>Si vous n'avez pas fait cette demande, veuillez ignorer cet e-mail.</p>`
-    };
+// ============================================================
+// HTML EMAIL WRAPPER TEMPLATE
+// ============================================================
+const wrapInTemplate = (bodyContent, footerText) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGMAO</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f1f5f9; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9; padding:40px 20px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background:#0f172a; padding:32px 40px; border-radius:24px 24px 0 0; text-align:center;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center">
+                                        <div style="display:inline-block; background:#facc15; color:#0f172a; font-size:28px; font-weight:900; letter-spacing:-1px; padding:12px 24px; border-radius:16px; font-style:italic; text-transform:uppercase;">
+                                            KGMAO
+                                        </div>
+                                        <p style="color:#94a3b8; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin:12px 0 0;">
+                                            Enterprise Asset Intelligence
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-    return await provider.sendEmail(
-        userEmail, 
-        subjects[languageCode] || subjects['en'], 
-        bodies[languageCode] || bodies['en']
-    );
+                    <!-- Body -->
+                    <tr>
+                        <td style="background:#ffffff; padding:48px 40px;">
+                            ${bodyContent}
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background:#f8fafc; padding:24px 40px; border-radius:0 0 24px 24px; border-top:1px solid #e2e8f0; text-align:center;">
+                            <p style="color:#94a3b8; font-size:11px; line-height:1.6; margin:0;">
+                                ${footerText}
+                            </p>
+                            <p style="color:#cbd5e1; font-size:10px; margin:12px 0 0;">
+                                © ${new Date().getFullYear()} Kalide Global — KGMAO Platform
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+const ctaButton = (text, url, color = '#0f172a') => `
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:32px auto;">
+        <tr>
+            <td style="background:${color}; border-radius:16px; padding:0;">
+                <a href="${url}" target="_blank" style="display:inline-block; padding:16px 40px; color:#ffffff; font-size:13px; font-weight:800; text-decoration:none; text-transform:uppercase; letter-spacing:2px;">
+                    ${text}
+                </a>
+            </td>
+        </tr>
+    </table>`;
+
+// ============================================================
+// CORE SEND FUNCTION
+// ============================================================
+const sendEmail = async (to, subject, htmlBody) => {
+    if (!smtpPass) {
+        console.warn(`[MAIL] SMTP_PASS not configured. Skipping email to ${to} | Subject: ${subject}`);
+        logger.warn('SMTP_PASS not configured, email skipped', { to, subject });
+        return { success: false, reason: 'SMTP_PASS not configured' };
+    }
+
+    try {
+        const transport = getTransporter();
+        const info = await transport.sendMail({
+            from: `${mailFromName} <${mailFrom}>`,
+            to,
+            subject,
+            html: htmlBody,
+        });
+
+        console.log(`[MAIL] ✅ Sent to: ${to} | Subject: ${subject} | MessageId: ${info.messageId}`);
+        logger.info('Email sent successfully', { to, subject, messageId: info.messageId });
+        return { success: true, messageId: info.messageId };
+    } catch (err) {
+        console.error(`[MAIL] ❌ Failed to send to: ${to} | Error: ${err.message}`);
+        logger.error('Email send failed', { to, subject, error: err.message });
+        return { success: false, error: err.message };
+    }
 };
 
+// ============================================================
+// EMAIL TEMPLATES
+// ============================================================
+
+/**
+ * 1. WELCOME EMAIL — Sent when a user account is directly created (legacy register flow)
+ */
 exports.sendWelcomeEmail = async (userEmail, languageCode = 'en') => {
-    const provider = MailFactory.getProvider();
-    
-    const subjects = {
-        en: 'Welcome to KGMAO - Your Next-Gen CMMS',
-        fr: 'Bienvenue sur KGMAO - Votre GMAO Nouvelle Génération'
-    };
-    
-    const bodies = {
-        en: `<h1>Welcome to KGMAO!</h1><p>Your tenant environment has been successfully provisioned.</p><p>Log in at <a href="https://kgmao.com/login">kgmao.com/login</a> to explore the real-time AI and Asset Management features.</p>`,
-        fr: `<h1>Bienvenue sur KGMAO!</h1><p>Votre environnement a été créé avec succès.</p><p>Connectez-vous sur <a href="https://kgmao.com/login">kgmao.com/login</a> pour explorer les fonctionnalités d'IA en temps réel.</p>`
+    const isFr = languageCode === 'fr';
+
+    const subject = isFr
+        ? 'Bienvenue sur KGMAO — Votre GMAO Nouvelle Génération'
+        : 'Welcome to KGMAO — Your Next-Gen CMMS';
+
+    const body = wrapInTemplate(`
+        <h1 style="color:#0f172a; font-size:28px; font-weight:900; margin:0 0 8px; text-transform:uppercase; font-style:italic; letter-spacing:-0.5px;">
+            ${isFr ? 'Bienvenue sur KGMAO!' : 'Welcome to KGMAO!'}
+        </h1>
+        <div style="width:48px; height:4px; background:#facc15; border-radius:4px; margin:16px 0 24px;"></div>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 16px;">
+            ${isFr
+                ? 'Votre environnement a été créé avec succès. Vous pouvez maintenant accéder à toutes les fonctionnalités de maintenance prédictive, IoT en temps réel et gestion intelligente de vos actifs.'
+                : 'Your environment has been successfully provisioned. You can now access all predictive maintenance, real-time IoT, and intelligent asset management features.'}
+        </p>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 8px;">
+            ${isFr
+                ? 'Connectez-vous pour commencer :'
+                : 'Log in to get started:'}
+        </p>
+        ${ctaButton(
+            isFr ? 'ACCÉDER AU TABLEAU DE BORD' : 'GO TO DASHBOARD',
+            `${appUrl}/login`
+        )}
+        <p style="color:#94a3b8; font-size:12px; margin:24px 0 0;">
+            ${isFr
+                ? 'Si vous avez des questions, contactez notre support à support@kgmao.com'
+                : 'If you have any questions, contact our support at support@kgmao.com'}
+        </p>
+    `, isFr
+        ? 'Cet e-mail a été envoyé par la plateforme KGMAO. Si vous n\'avez pas créé de compte, veuillez ignorer cet e-mail.'
+        : 'This email was sent by the KGMAO platform. If you did not create an account, please ignore this email.'
+    );
+
+    return sendEmail(userEmail, subject, body);
+};
+
+/**
+ * 2. PASSWORD RESET EMAIL — Sent when user requests a password reset
+ */
+exports.sendPasswordResetEmail = async (userEmail, resetToken, languageCode = 'en') => {
+    const isFr = languageCode === 'fr';
+    const resetUrl = `${appUrl}/reset-password?token=${resetToken}`;
+
+    const subject = isFr
+        ? 'Réinitialiser votre mot de passe KGMAO'
+        : 'Reset Your KGMAO Password';
+
+    const body = wrapInTemplate(`
+        <h1 style="color:#0f172a; font-size:28px; font-weight:900; margin:0 0 8px; text-transform:uppercase; font-style:italic; letter-spacing:-0.5px;">
+            ${isFr ? 'Réinitialisation du mot de passe' : 'Password Reset'}
+        </h1>
+        <div style="width:48px; height:4px; background:#facc15; border-radius:4px; margin:16px 0 24px;"></div>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 16px;">
+            ${isFr
+                ? 'Nous avons reçu une demande de réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en créer un nouveau :'
+                : 'We received a request to reset your password. Click the button below to create a new one:'}
+        </p>
+        ${ctaButton(
+            isFr ? 'RÉINITIALISER MON MOT DE PASSE' : 'RESET MY PASSWORD',
+            resetUrl,
+            '#dc2626'
+        )}
+        <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:16px 20px; margin:24px 0;">
+            <p style="color:#991b1b; font-size:12px; font-weight:700; margin:0;">
+                ⚠️ ${isFr
+                    ? 'Ce lien expire dans 15 minutes. Si vous n\'avez pas fait cette demande, ignorez cet e-mail.'
+                    : 'This link expires in 15 minutes. If you did not request this, please ignore this email.'}
+            </p>
+        </div>
+        <p style="color:#94a3b8; font-size:11px; margin:16px 0 0; word-break:break-all;">
+            ${isFr ? 'Lien direct :' : 'Direct link:'} <a href="${resetUrl}" style="color:#6366f1;">${resetUrl}</a>
+        </p>
+    `, isFr
+        ? 'Cet e-mail a été envoyé suite à une demande de réinitialisation de mot de passe. Si ce n\'était pas vous, votre compte est en sécurité.'
+        : 'This email was sent due to a password reset request. If this wasn\'t you, your account is safe — no action needed.'
+    );
+
+    return sendEmail(userEmail, subject, body);
+};
+
+/**
+ * 3. ACCOUNT APPROVED EMAIL — Sent when super admin approves a registration request
+ */
+exports.sendAccountApprovedEmail = async (userEmail, firstName, companyName, plan, languageCode = 'en') => {
+    const isFr = languageCode === 'fr';
+
+    const planLabels = {
+        basic: 'Basic',
+        pro: 'Professional',
+        enterprise: 'Enterprise'
     };
 
-    return await provider.sendEmail(
-        userEmail, 
-        subjects[languageCode] || subjects['en'], 
-        bodies[languageCode] || bodies['en']
+    const subject = isFr
+        ? `✅ Votre compte KGMAO a été approuvé — ${companyName}`
+        : `✅ Your KGMAO Account Has Been Approved — ${companyName}`;
+
+    const body = wrapInTemplate(`
+        <h1 style="color:#0f172a; font-size:28px; font-weight:900; margin:0 0 8px; text-transform:uppercase; font-style:italic; letter-spacing:-0.5px;">
+            ${isFr ? `Félicitations, ${firstName}!` : `Congratulations, ${firstName}!`}
+        </h1>
+        <div style="width:48px; height:4px; background:#22c55e; border-radius:4px; margin:16px 0 24px;"></div>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 16px;">
+            ${isFr
+                ? `Votre demande d'inscription pour <strong>${companyName}</strong> a été approuvée. Votre environnement est maintenant actif et prêt à être utilisé.`
+                : `Your registration request for <strong>${companyName}</strong> has been approved. Your environment is now active and ready to use.`}
+        </p>
+
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:16px; padding:24px; margin:24px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding:8px 0;">
+                        <span style="color:#94a3b8; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:2px;">${isFr ? 'Entreprise' : 'Company'}</span><br>
+                        <span style="color:#0f172a; font-size:16px; font-weight:800;">${companyName}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 0;">
+                        <span style="color:#94a3b8; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:2px;">${isFr ? 'Plan' : 'Plan'}</span><br>
+                        <span style="color:#0f172a; font-size:16px; font-weight:800;">${planLabels[plan] || plan}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 0;">
+                        <span style="color:#94a3b8; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:2px;">${isFr ? 'Rôle' : 'Role'}</span><br>
+                        <span style="color:#0f172a; font-size:16px; font-weight:800;">Admin</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        ${ctaButton(
+            isFr ? 'SE CONNECTER MAINTENANT' : 'LOG IN NOW',
+            `${appUrl}/login`,
+            '#16a34a'
+        )}
+        <p style="color:#94a3b8; font-size:12px; margin:24px 0 0;">
+            ${isFr
+                ? 'Utilisez l\'adresse e-mail et le mot de passe que vous avez fournis lors de votre inscription.'
+                : 'Use the email and password you provided during registration to log in.'}
+        </p>
+    `, isFr
+        ? 'Votre compte a été approuvé par l\'administrateur KGMAO. Bienvenue dans l\'écosystème.'
+        : 'Your account has been approved by a KGMAO administrator. Welcome to the ecosystem.'
     );
+
+    return sendEmail(userEmail, subject, body);
+};
+
+/**
+ * 4. REGISTRATION RECEIVED EMAIL — Sent when someone submits a registration request
+ */
+exports.sendRegistrationReceivedEmail = async (userEmail, firstName, companyName, languageCode = 'en') => {
+    const isFr = languageCode === 'fr';
+
+    const subject = isFr
+        ? `📋 Demande reçue — ${companyName}`
+        : `📋 Registration Received — ${companyName}`;
+
+    const body = wrapInTemplate(`
+        <h1 style="color:#0f172a; font-size:28px; font-weight:900; margin:0 0 8px; text-transform:uppercase; font-style:italic; letter-spacing:-0.5px;">
+            ${isFr ? `Merci, ${firstName}!` : `Thank you, ${firstName}!`}
+        </h1>
+        <div style="width:48px; height:4px; background:#facc15; border-radius:4px; margin:16px 0 24px;"></div>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 16px;">
+            ${isFr
+                ? `Nous avons bien reçu votre demande d'inscription pour <strong>${companyName}</strong>. Notre équipe examine actuellement votre dossier.`
+                : `We have received your registration request for <strong>${companyName}</strong>. Our team is currently reviewing your application.`}
+        </p>
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:16px 20px; margin:24px 0;">
+            <p style="color:#1e40af; font-size:13px; font-weight:600; margin:0;">
+                📧 ${isFr
+                    ? 'Vous recevrez un e-mail de confirmation dès que votre compte sera activé.'
+                    : 'You will receive a confirmation email as soon as your account is activated.'}
+            </p>
+        </div>
+        <p style="color:#94a3b8; font-size:12px; margin:16px 0 0;">
+            ${isFr
+                ? 'Temps de traitement habituel : 24 à 48 heures ouvrables.'
+                : 'Typical processing time: 24–48 business hours.'}
+        </p>
+    `, isFr
+        ? 'Vous recevez cet e-mail car une demande d\'inscription a été soumise avec cette adresse.'
+        : 'You are receiving this email because a registration request was submitted with this address.'
+    );
+
+    return sendEmail(userEmail, subject, body);
+};
+
+/**
+ * 5. VERIFICATION EMAIL — Legacy method (kept for compatibility)
+ */
+exports.sendVerificationEmail = async (userEmail, magicToken, languageCode = 'en') => {
+    const isFr = languageCode === 'fr';
+    const verifyUrl = `${appUrl}/verify?token=${magicToken}`;
+
+    const subject = isFr
+        ? 'Vérifiez votre compte KGMAO'
+        : 'Verify your KGMAO Account';
+
+    const body = wrapInTemplate(`
+        <h1 style="color:#0f172a; font-size:28px; font-weight:900; margin:0 0 8px; text-transform:uppercase; font-style:italic; letter-spacing:-0.5px;">
+            ${isFr ? 'Vérification du compte' : 'Account Verification'}
+        </h1>
+        <div style="width:48px; height:4px; background:#facc15; border-radius:4px; margin:16px 0 24px;"></div>
+        <p style="color:#475569; font-size:15px; line-height:1.8; margin:0 0 16px;">
+            ${isFr
+                ? 'Cliquez sur le bouton ci-dessous pour activer votre environnement SaaS.'
+                : 'Click the button below to activate your SaaS environment.'}
+        </p>
+        ${ctaButton(
+            isFr ? 'VÉRIFIER MON COMPTE' : 'VERIFY MY ACCOUNT',
+            verifyUrl,
+            '#6366f1'
+        )}
+    `, isFr
+        ? 'Si vous n\'avez pas créé de compte KGMAO, veuillez ignorer cet e-mail.'
+        : 'If you did not create a KGMAO account, please ignore this email.'
+    );
+
+    return sendEmail(userEmail, subject, body);
 };

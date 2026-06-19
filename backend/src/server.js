@@ -1,4 +1,17 @@
 const path = require('path');
+const fs = require('fs');
+
+// Catch startup errors before modules load
+process.on('uncaughtException', (err) => {
+    try {
+        const logDir = path.join(__dirname, '../logs');
+        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+        fs.appendFileSync(path.join(logDir, 'error.log'), `{"ts":"${new Date().toISOString()}","level":"error","message":"FATAL STARTUP CRASH","error":"${err.message}","stack":${JSON.stringify(err.stack)}}\n`);
+    } catch(e) {}
+    console.error('FATAL CRASH:', err);
+    process.exit(1);
+});
+
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const app = require('./app');

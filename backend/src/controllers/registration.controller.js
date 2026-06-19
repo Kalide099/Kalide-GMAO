@@ -1,5 +1,7 @@
 const registrationService = require('../services/registration.service');
+const mailService = require('../services/mail.service');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
+const logger = require('../config/logger');
 
 exports.submitRequest = async (req, res, next) => {
     try {
@@ -41,6 +43,17 @@ exports.submitRequest = async (req, res, next) => {
         };
 
         const result = await registrationService.createRequest(payload);
+
+        // Send "Registration Received" confirmation email
+        mailService.sendRegistrationReceivedEmail(
+            normalizedEmail,
+            payload.adminFirstName,
+            payload.companyName,
+            normalizedLanguage
+        ).catch(err => {
+            logger.error('Failed to send registration received email', { error: err, email: normalizedEmail });
+        });
+
         return successResponse(res, 201, 'Application submitted for review.', result);
     } catch (err) {
         next(err);
@@ -62,8 +75,26 @@ exports.handleApproval = async (req, res, next) => {
         const { status, notes } = req.body;
         const processorId = req.user.id;
         
+        // Fetch the registration request BEFORE processing so we have the email/name for the notification
+        const allRequests = await registrationService.getAllRequests();
+        const targetRequest = allRequests.find(r => r.id === id);
+
         const result = await registrationService.processRequest(id, status, processorId, notes);
         const msg = status === 'approved' ? 'Enterprise approved and activated.' : 'Application rejected.';
+
+        // Send "Account Approved" email when admin approves
+        if (status === 'approved' && targetRequest) {
+            mailService.sendAccountApprovedEmail(
+                targetRequest.admin_email,
+                targetRequest.admin_first_name,
+                targetRequest.company_name,
+                result.plan || targetRequest.requested_plan || 'basic',
+                targetRequest.preferred_language || 'en'
+            ).catch(err => {
+                logger.error('Failed to send account approved email', { error: err, email: targetRequest.admin_email });
+            });
+        }
+
         return successResponse(res, 200, msg, result);
     } catch (err) {
         next(err);
