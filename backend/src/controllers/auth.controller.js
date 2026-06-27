@@ -267,7 +267,7 @@ exports.forgotPassword = async (req, res, next) => {
             userAgent: req.headers['user-agent']
         });
 
-        await writeAuthAudit({
+        writeAuthAudit({
             action: 'auth_password_reset_requested',
             entityId: result.userId,
             userId: result.userId,
@@ -275,7 +275,7 @@ exports.forgotPassword = async (req, res, next) => {
             userAgent: req.headers['user-agent'],
             email: value.email,
             outcome: result.requested ? 'success' : 'accepted'
-        });
+        }).catch(auditErr => logger.warn('Password reset audit log failed (non-blocking)', { error: auditErr }));
 
         const payload = {};
         if (!config.isProd && result.token) {

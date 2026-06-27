@@ -330,10 +330,21 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
 };
 
 exports.issuePasswordReset = async (email, requestMeta = {}) => {
-    const [users] = await pool.query(
-        'SELECT id FROM users WHERE email = ? AND deleted_at IS NULL AND status = "active" LIMIT 1',
-        [email]
-    );
+    // Fetch preferred_language so the reset email is sent in the user's language.
+    // Fall back to id-only query for pre-v4-migration schemas.
+    let users;
+    try {
+        [users] = await pool.query(
+            'SELECT id, preferred_language FROM users WHERE email = ? AND deleted_at IS NULL AND status = "active" LIMIT 1',
+            [email]
+        );
+    } catch (columnError) {
+        if (columnError.code !== 'ER_BAD_FIELD_ERROR') throw columnError;
+        [users] = await pool.query(
+            'SELECT id FROM users WHERE email = ? AND deleted_at IS NULL AND status = "active" LIMIT 1',
+            [email]
+        );
+    }
 
     if (users.length === 0) {
         return { requested: false, userId: null };
@@ -344,34 +355,48 @@ exports.issuePasswordReset = async (email, requestMeta = {}) => {
     const tokenHash = hashResetToken(rawToken);
     const expiresAt = new Date(Date.now() + config.passwordResetTokenTtlMinutes * 60 * 1000);
 
-    try {
+    const insertToken = async () => {
         await pool.query(
             'UPDATE password_reset_tokens SET used_at = NOW() WHERE user_id = ? AND used_at IS NULL',
             [user.id]
         );
-
         await pool.query(
             `INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, requested_ip, requested_user_agent)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-                uuidv4(),
-                user.id,
-                tokenHash,
-                expiresAt,
-                requestMeta.ip || null,
-                requestMeta.userAgent || null
-            ]
+            [uuidv4(), user.id, tokenHash, expiresAt, requestMeta.ip || null, requestMeta.userAgent || null]
         );
+    };
+
+    try {
+        await insertToken();
     } catch (error) {
         if (!isMissingPasswordResetTokensTable(error)) {
             throw error;
         }
 
-        logger.warn('password_reset_tokens table not found; returning generic reset response', { error });
-        return { requested: false, userId: user.id };
+        // password_reset_tokens table hasn't been created yet (migration not applied).
+        // Auto-create it now and retry.
+        logger.warn('password_reset_tokens table missing — auto-creating and retrying', { userId: user.id });
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                id CHAR(36) PRIMARY KEY,
+                user_id CHAR(36) NOT NULL,
+                token_hash CHAR(64) NOT NULL,
+                expires_at DATETIME NOT NULL,
+                used_at DATETIME NULL,
+                requested_ip VARCHAR(45) NULL,
+                requested_user_agent VARCHAR(255) NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                UNIQUE INDEX idx_password_reset_token_hash (token_hash),
+                INDEX idx_password_reset_user_id (user_id),
+                INDEX idx_password_reset_expires_at (expires_at)
+            )
+        `);
+        await insertToken();
     }
 
-    // Dispatch Password Reset Email asynchronously
+    // Dispatch email asynchronously (non-blocking)
     mailService.sendPasswordResetEmail(email, rawToken, user.preferred_language || 'en').catch(err => {
         logger.error('Failed to send password reset email', { error: err, email });
     });
