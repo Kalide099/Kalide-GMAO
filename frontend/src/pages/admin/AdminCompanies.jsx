@@ -412,7 +412,6 @@ const AdminCompanies = () => {
                     </div>,
                     document.body
                 )}
-        </div>
 
             {/* Company Delete Confirmation Modal */}
             {deleteTarget && (
@@ -465,6 +464,7 @@ const AdminCompanies = () => {
                     </div>
                 </div>
             )}
+        </div>
     );
 };
 
