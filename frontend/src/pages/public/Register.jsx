@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import i18n from '../../i18n';
 import { Mail, User, Loader2, Building2, CheckCircle2, ChevronRight, Lock, Languages, Phone, Eye, EyeOff } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
@@ -21,7 +22,7 @@ const Register = () => {
         adminEmail: '',
         adminPhone: '',
         password: '',
-        preferredLanguage: 'en',
+        preferredLanguage: i18n.language?.startsWith('fr') ? 'fr' : 'en',
         plan: initialPlan
     });
 
@@ -61,6 +62,9 @@ const Register = () => {
         try {
             const res = await api.post('/registrations/apply', formData);
             if (res.data.success) {
+                // Persist the chosen language so login page and post-login UI match
+                localStorage.setItem('kgmao_language', formData.preferredLanguage);
+                i18n.changeLanguage(formData.preferredLanguage);
                 setStep(2);
             }
         } catch (err) {
@@ -72,7 +76,15 @@ const Register = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+        // When the user changes the language selector, immediately switch the entire UI
+        if (name === 'preferredLanguage') {
+            const lang = value === 'fr' ? 'fr' : 'en';
+            localStorage.setItem('kgmao_language', lang);
+            i18n.changeLanguage(lang);
+        }
     };
 
     return (
