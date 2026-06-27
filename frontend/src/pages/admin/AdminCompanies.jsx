@@ -5,7 +5,7 @@ import api from '../../services/api/axiosConfig';
 import { 
     Building2, Power, UserCheck, Settings2, ShieldAlert, Cpu, BrainCircuit, Globe,
     Package, Radio, Boxes, Link, Leaf, Eye, X, Award, DollarSign, Search, Layers, Thermometer, FileText, Box, Zap,
-    Bot, ShoppingCart, Wrench, Map
+    Bot, ShoppingCart, Wrench, Map, Trash2, AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -16,6 +16,9 @@ const AdminCompanies = () => {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCompany, setSelectedCompany] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
 
     const currentLang = i18n.language || 'en';
 
@@ -94,6 +97,24 @@ const AdminCompanies = () => {
             }
         } catch (e) {
             alert(t('admin.planUpdateError'));
+        }
+    };
+
+    const handleDeleteCompany = async () => {
+        if (!deleteTarget) return;
+        setDeleteLoading(true);
+        setDeleteError('');
+        try {
+            const response = await api.delete(`/admin/company/${deleteTarget.id}`);
+            if (response.data.success) {
+                setCompanies(companies.filter(c => c.id !== deleteTarget.id));
+                setDeleteTarget(null);
+                if (selectedCompany?.id === deleteTarget.id) setSelectedCompany(null);
+            }
+        } catch (err) {
+            setDeleteError(err.response?.data?.message || t('common.error'));
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -267,6 +288,13 @@ const AdminCompanies = () => {
                                                 >
                                                     <UserCheck size={20} />
                                                 </button>
+                                                <button
+                                                    onClick={() => { setDeleteTarget(c); setDeleteError(''); }}
+                                                    className="p-3 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                                    title={t('admin.deleteCompany')}
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -385,6 +413,58 @@ const AdminCompanies = () => {
                     document.body
                 )}
         </div>
+
+            {/* Company Delete Confirmation Modal */}
+            {deleteTarget && (
+                <div className="fixed inset-0 z-[10100] flex items-center justify-center p-6 bg-slate-900/70 backdrop-blur-md">
+                    <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden">
+                        <div className="p-10 flex flex-col items-center text-center gap-6">
+                            <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center">
+                                <AlertTriangle className="text-rose-500" size={36} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">
+                                    {t('admin.deleteCompanyConfirmTitle')}
+                                </h2>
+                                <p className="text-sm text-slate-500 font-bold mt-3">
+                                    {t('admin.deleteCompanyConfirmMsg')}{' '}
+                                    <span className="text-slate-900 font-black">
+                                        {currentLang === 'fr' ? deleteTarget.name_fr : deleteTarget.name_en}
+                                    </span>.
+                                </p>
+                                <p className="text-[11px] text-rose-500 font-black uppercase tracking-wider mt-4 bg-rose-50 rounded-xl px-4 py-3">
+                                    {t('admin.deleteCompanyWarning')}
+                                </p>
+                            </div>
+                            {deleteError && (
+                                <p className="text-[11px] text-rose-600 font-black bg-rose-50 rounded-xl px-4 py-3 w-full">
+                                    {deleteError}
+                                </p>
+                            )}
+                        </div>
+                        <div className="px-10 pb-10 flex gap-4">
+                            <button
+                                onClick={() => { setDeleteTarget(null); setDeleteError(''); }}
+                                disabled={deleteLoading}
+                                className="flex-1 py-4 bg-slate-100 text-slate-700 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-200 transition-all"
+                            >
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                onClick={handleDeleteCompany}
+                                disabled={deleteLoading}
+                                className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-rose-700 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                            >
+                                {deleteLoading ? (
+                                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> {t('common.loading')}</>
+                                ) : (
+                                    <><Trash2 size={14} /> {t('admin.deleteCompanyConfirmBtn')}</>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
     );
 };
 

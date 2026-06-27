@@ -355,6 +355,56 @@ exports.updateUserStatus = async (req, res, next) => {
     }
 };
 
+exports.deleteCompany = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const [companies] = await pool.query(
+            'SELECT id, name_en FROM companies WHERE id = ? LIMIT 1',
+            [id]
+        );
+        if (companies.length === 0) {
+            return errorResponse(res, 404, 'Company not found.');
+        }
+        const company = companies[0];
+
+        // Collect user emails before deletion so we can free them in registration_requests
+        const [companyUsers] = await pool.query(
+            'SELECT email FROM users WHERE company_id = ?',
+            [id]
+        );
+
+        // Audit log before deletion
+        await pool.query(
+            `INSERT INTO audit_logs (id, company_id, user_id, action, entity_type, entity_id, details)
+             VALUES (UUID(), ?, ?, 'admin_permanent_delete_company', 'companies', ?, ?)`,
+            [id, req.user.id, id, JSON.stringify({
+                deleted_company: company.name_en,
+                user_count: companyUsers.length
+            })]
+        );
+
+        // Hard delete — company FK cascades delete all users, assets, work orders, etc.
+        await pool.query('DELETE FROM companies WHERE id = ?', [id]);
+
+        // Free all associated emails so they can be re-used
+        if (companyUsers.length > 0) {
+            try {
+                for (const { email } of companyUsers) {
+                    await pool.query(
+                        "UPDATE registration_requests SET status = 'rejected', notes = CONCAT(IFNULL(notes, ''), ' | Email freed by super-admin company deletion') WHERE admin_email = ? AND status IN ('pending', 'approved')",
+                        [email]
+                    );
+                }
+            } catch (_) { /* not critical */ }
+        }
+
+        return successResponse(res, 200, `Company "${company.name_en}" and all associated data have been permanently deleted.`);
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.deleteUser = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -392,6 +442,14 @@ exports.deleteUser = async (req, res, next) => {
 
         // Hard delete — FK constraints (ON DELETE CASCADE / SET NULL) handle related data
         await pool.query('DELETE FROM users WHERE id = ?', [id]);
+
+        // Free the email so it can be re-used for new registrations
+        try {
+            await pool.query(
+                "UPDATE registration_requests SET status = 'rejected', notes = CONCAT(IFNULL(notes, ''), ' | Email freed by super-admin account deletion') WHERE admin_email = ? AND status IN ('pending', 'approved')",
+                [target.email]
+            );
+        } catch (_) { /* registration_requests table may not exist — not critical */ }
 
         return successResponse(res, 200, `Account for ${target.email} has been permanently deleted.`);
     } catch (err) {

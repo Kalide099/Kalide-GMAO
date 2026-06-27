@@ -184,7 +184,12 @@
     "deleteAccountConfirmMsg": "Vous êtes sur le point de supprimer définitivement le compte de",
     "deleteAccountWarning": "Cette action est irréversible. Toutes les données liées à ce compte seront effacées définitivement.",
     "deleteAccountConfirmBtn": "Supprimer définitivement",
-    "deleteAccountSuccess": "Le compte a été supprimé définitivement."
+    "deleteAccountSuccess": "Le compte a été supprimé définitivement.",
+    "deleteCompany": "Supprimer l'entreprise",
+    "deleteCompanyConfirmTitle": "Suppression définitive de l'entreprise",
+    "deleteCompanyConfirmMsg": "Vous êtes sur le point de supprimer définitivement l'entreprise",
+    "deleteCompanyWarning": "Cela effacera TOUTES les données : utilisateurs, actifs, bons de travail et tout l'historique. Action irréversible.",
+    "deleteCompanyConfirmBtn": "Tout supprimer définitivement"
   },
   "app": {
     "title": "KGMAO Entreprise",

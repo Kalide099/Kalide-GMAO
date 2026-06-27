@@ -184,7 +184,12 @@
     "deleteAccountConfirmMsg": "You are about to permanently delete the account for",
     "deleteAccountWarning": "This action cannot be undone. All data tied to this account will be erased forever.",
     "deleteAccountConfirmBtn": "Delete Permanently",
-    "deleteAccountSuccess": "Account has been permanently deleted."
+    "deleteAccountSuccess": "Account has been permanently deleted.",
+    "deleteCompany": "Delete Company",
+    "deleteCompanyConfirmTitle": "Permanently Delete Company",
+    "deleteCompanyConfirmMsg": "You are about to permanently delete the company",
+    "deleteCompanyWarning": "This will erase ALL company data: users, assets, work orders, and all history. This cannot be undone.",
+    "deleteCompanyConfirmBtn": "Delete Everything"
   },
   "app": {
     "title": "KGMAO Enterprise",

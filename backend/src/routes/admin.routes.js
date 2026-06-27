@@ -15,6 +15,7 @@ router.patch('/company/:id/status', adminController.updateCompanyStatus);
 router.patch('/company/:id/plan', adminController.updateCompanyPlan);
 router.patch('/company/:id/modules', adminController.updateCompanyModules);
 router.get('/company/:id/impersonate', adminController.impersonateCompany);
+router.delete('/company/:id', adminController.deleteCompany);
 router.get('/user/:userId/impersonate', adminController.impersonateUser);
 router.get('/logs', adminController.getGlobalAuditLogs);
 router.get('/users', adminController.getAllUsers);
