@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
+const logger = require('../config/logger');
 
 exports.idempotency = async (req, res, next) => {
     const idempotencyKey = req.headers['idempotency-key'] || req.headers['x-idempotency-key'];
@@ -52,7 +53,7 @@ exports.idempotency = async (req, res, next) => {
                  VALUES (?, ?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE id=id`, // Ignore race condition dupes
                 [uuidv4(), idempotencyKey, userId, req.originalUrl, JSON.stringify(parsedBody), status]
-            ).catch(err => console.error('Failed to save idempotency key:', err));
+            ).catch(err => logger.error('Failed to save idempotency key:', { error: err }));
 
             originalSend.call(this, body);
         };

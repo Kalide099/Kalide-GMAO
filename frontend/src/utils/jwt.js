@@ -11,7 +11,12 @@ export const decodeJWT = (token) => {
         while (base64.length % 4) {
             base64 += '=';
         }
-        const payload = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
+        const binaryStr = window.atob(base64);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+        }
+        const payload = JSON.parse(new TextDecoder().decode(bytes));
         
         // Expiration check (exp is in seconds)
         if (payload.exp && payload.exp < Date.now() / 1000) {

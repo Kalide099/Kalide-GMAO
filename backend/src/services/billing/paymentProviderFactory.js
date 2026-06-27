@@ -6,11 +6,12 @@
 
 const axios = require('axios');
 const { config } = require('../../config/env');
+const logger = require('../../config/logger');
 
 const getStripeClient = () => {
     if (!process.env.STRIPE_SECRET_KEY) {
         if (config.isProd) {
-            console.warn('STRIPE_SECRET_KEY is required in production.');
+            logger.warn('STRIPE_SECRET_KEY is required in production.');
         }
         return require('stripe')('sk_test_dummy');
     }
@@ -22,7 +23,7 @@ class StripeProvider {
     async createCheckoutSession(companyId, amount, currency, returnUrl) {
         const stripeClient = getStripeClient();
         if (!stripeClient) {
-            console.warn(`[STRIPE MOCK] No secret key. Returning mock URL.`);
+            logger.warn('[STRIPE MOCK] No secret key. Returning mock URL.');
             return { 
                 provider: 'stripe_mock',
                 sessionUrl: `https://checkout.stripe.com/pay/cs_test_${Math.random().toString(36).substring(7)}`,
@@ -50,14 +51,14 @@ class StripeProvider {
                 client_reference_id: companyId,
             });
 
-            console.log(`[STRIPE] Initiated real checkout session for ${companyId}`);
+            logger.info(`[STRIPE] Initiated real checkout session for ${companyId}`);
             return { 
                 provider: 'stripe',
                 sessionUrl: session.url,
                 transactionRef: session.id
             };
         } catch (error) {
-            console.error('[STRIPE ERROR]', error);
+            logger.error('[STRIPE ERROR]', { error });
             throw new Error('Failed to create Stripe checkout session');
         }
     }
@@ -70,7 +71,7 @@ class RazorpayProvider {
         }
 
         // Mock Razorpay API
-        console.log(`[RAZORPAY] Initiating Checkout for ${companyId} - ${amount} ${currency}`);
+        logger.info(`[RAZORPAY] Initiating Checkout for ${companyId} - ${amount} ${currency}`);
         return { 
             provider: 'razorpay',
             sessionUrl: `https://checkout.razorpay.com/v1/checkout_${Math.random().toString(36).substring(7)}`,
@@ -86,7 +87,7 @@ class MobileMoneyProvider {
                 throw new Error('PAYSTACK_SECRET_KEY is required in production for Mobile Money payments.');
             }
 
-            console.warn(`[PAYSTACK MOCK] No secret key. Returning mock URL for Mobile Money.`);
+            logger.warn('[PAYSTACK MOCK] No secret key. Returning mock URL for Mobile Money.');
             return { 
                 provider: 'paystack_mock',
                 sessionUrl: `https://checkout.paystack.com/mock_${Math.random().toString(36).substring(7)}`,
@@ -114,14 +115,14 @@ class MobileMoneyProvider {
                 }
             );
 
-            console.log(`[PAYSTACK] Initiated checkout for ${companyId}`);
+            logger.info(`[PAYSTACK] Initiated checkout for ${companyId}`);
             return {
                 provider: 'paystack',
                 sessionUrl: response.data.data.authorization_url,
                 transactionRef: response.data.data.reference
             };
         } catch (error) {
-            console.error('[PAYSTACK ERROR]', error?.response?.data || error.message);
+            logger.error('[PAYSTACK ERROR]', { error: error?.response?.data || error.message });
             throw new Error('Failed to create Paystack/MobileMoney checkout session');
         }
     }

@@ -272,10 +272,29 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
             ? JSON.parse(user.enabled_modules) 
             : (user.enabled_modules || []);
     } catch (e) {
-        console.error("Failed to parse modules for user", user.id);
+        logger.error('Failed to parse enabled_modules for user', { userId: user.id, error: e });
     }
 
     const tokenVersion = Number(user.token_version || 0);
+
+    // Resolve preferred language.
+    // Priority: user column → company default_language column → registration_requests record → 'en'
+    // The registration_requests fallback covers cases where v4 DB migration has not been applied yet.
+    let resolvedLanguage = user.preferred_language || user.company_default_language;
+    if (!resolvedLanguage) {
+        try {
+            const [regRows] = await pool.query(
+                'SELECT preferred_language FROM registration_requests WHERE admin_email = ? ORDER BY created_at DESC LIMIT 1',
+                [email]
+            );
+            if (regRows.length > 0 && ['en', 'fr'].includes(regRows[0].preferred_language)) {
+                resolvedLanguage = regRows[0].preferred_language;
+            }
+        } catch (_) {
+            // registration_requests table or preferred_language column may not exist — ignore
+        }
+    }
+    resolvedLanguage = resolvedLanguage || 'en';
 
     // Generate JWT Token
     const payload = {
@@ -285,7 +304,7 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
         industry: user.industry,
         plan: user.plan || 'enterprise', // Default for system admins
         enabled_modules: enabledModules,
-        preferred_language: user.preferred_language || user.company_default_language || 'en',
+        preferred_language: resolvedLanguage,
         mfa_enabled: Boolean(user.mfa_enabled),
         token_version: tokenVersion
     };
@@ -304,7 +323,7 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
             role: user.role,
             companyId: user.company_id,
             industry: user.industry,
-            preferredLanguage: user.preferred_language || user.company_default_language || 'en',
+            preferredLanguage: resolvedLanguage,
             mfaEnabled: Boolean(user.mfa_enabled)
         }
     };

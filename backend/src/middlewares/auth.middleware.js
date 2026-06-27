@@ -28,7 +28,7 @@ exports.authenticate = async (req, res, next) => {
         }
 
         const [users] = await pool.query(
-            'SELECT * FROM users WHERE id = ? LIMIT 1',
+            'SELECT id, company_id, role, status, deleted_at, token_version, mfa_enabled, preferred_language FROM users WHERE id = ? LIMIT 1',
             [decoded.id]
         );
 

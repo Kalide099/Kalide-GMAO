@@ -203,7 +203,8 @@ exports.login = async (req, res, next) => {
             timeoutPromise
         ]);
 
-        await writeAuthAudit({
+        // Audit log is fire-and-forget — must never block or fail the login response
+        writeAuthAudit({
             action: 'auth_login',
             entityId: result.user.id,
             companyId: result.user.companyId || null,
@@ -212,7 +213,7 @@ exports.login = async (req, res, next) => {
             userAgent: req.headers['user-agent'],
             email: value.email,
             outcome: 'success'
-        });
+        }).catch(auditErr => logger.warn('Login audit log failed (non-blocking)', { error: auditErr }));
 
         return successResponse(res, 200, t('auth.login_success', lang), result);
     } catch (err) {

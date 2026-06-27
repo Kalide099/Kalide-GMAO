@@ -1,0 +1,1 @@
+import{j as o}from"./index-BKCK_Iyb.js";import{P as s}from"./index-DaCQ_K6P.js";const e=({children:r,className:a=""})=>o.jsx("div",{className:`bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-6 shadow-lg animate-fade-in-up ${a}`,children:r});e.propTypes={children:s.node.isRequired,className:s.string};e.defaultProps={className:""};export{e as C};

@@ -19,7 +19,13 @@ export const AuthProvider = ({ children }) => {
             try {
                 const decodedToken = decodeJWT(token);
                 if (decodedToken) {
-                    const preferredLanguage = decodedToken.preferred_language || localStorage.getItem('kgmao_language') || 'en';
+                    // JWT preferred_language is the authoritative source (set by server from DB).
+                    // Fall back to localStorage only when JWT doesn't carry the field at all.
+                    const jwtLang = decodedToken.preferred_language;
+                    const storedLang = localStorage.getItem('kgmao_language');
+                    const preferredLanguage = (['en', 'fr'].includes(jwtLang) ? jwtLang : null)
+                        || (['en', 'fr'].includes(storedLang) ? storedLang : null)
+                        || 'en';
                     localStorage.setItem('kgmao_language', preferredLanguage);
                     i18n.changeLanguage(preferredLanguage);
                     setUser(decodedToken);
@@ -50,7 +56,13 @@ export const AuthProvider = ({ children }) => {
                 ...(options.backupCode ? { backupCode: options.backupCode } : {})
             });
             if (response.data.success) {
-                const preferredLanguage = response.data.data.user?.preferredLanguage || response.data.data.user?.preferred_language || 'en';
+                const serverLang = response.data.data.user?.preferredLanguage
+                    || response.data.data.user?.preferred_language;
+                // Server language is authoritative; fall back to what was stored during registration
+                const storedLang = localStorage.getItem('kgmao_language');
+                const preferredLanguage = (['en', 'fr'].includes(serverLang) ? serverLang : null)
+                    || (['en', 'fr'].includes(storedLang) ? storedLang : null)
+                    || 'en';
                 localStorage.setItem('kgmao_token', response.data.data.token);
                 localStorage.setItem('kgmao_language', preferredLanguage);
                 i18n.changeLanguage(preferredLanguage);
@@ -58,7 +70,6 @@ export const AuthProvider = ({ children }) => {
                 return true;
             }
         } catch (error) {
-            console.error("Login failed", error);
             throw error;
         }
         return false;

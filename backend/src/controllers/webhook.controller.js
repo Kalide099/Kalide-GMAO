@@ -1,13 +1,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy');
 const pool = require('../config/db');
 const { config } = require('../config/env');
+const logger = require('../config/logger');
 
 exports.stripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (!endpointSecret) {
-        console.warn('[STRIPE WEBHOOK] Secret not configured.');
+        logger.warn('[STRIPE WEBHOOK] Secret not configured.');
         return res.status(400).send('Webhook secret not configured.');
     }
 
@@ -17,7 +18,7 @@ exports.stripeWebhook = async (req, res) => {
         // req.body is the raw buffer thanks to express.raw()
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
-        console.error('[STRIPE WEBHOOK ERROR]', err.message);
+        logger.error('[STRIPE WEBHOOK ERROR]', { error: err.message });
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -47,10 +48,10 @@ exports.stripeWebhook = async (req, res) => {
 
                 await pool.query('UPDATE companies SET subscription_status = "active", plan = "pro" WHERE id = ?', [companyId]);
 
-                console.log(`[WEBHOOK] Successfully upgraded company ${companyId}`);
+                logger.info(`[WEBHOOK] Successfully upgraded company ${companyId}`);
             }
         } catch (err) {
-            console.error('[WEBHOOK DB ERROR]', err.message);
+            logger.error('[WEBHOOK DB ERROR]', { error: err.message });
             return res.status(500).send('Database error during webhook processing.');
         }
     }

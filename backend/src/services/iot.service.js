@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 const aiGateway = require('./ai_gateway.service');
 const { broadcastToCompany } = require('../config/socket');
+const logger = require('../config/logger');
 
 /**
  * Enterprise IoT Digital Twin Engine
@@ -114,7 +115,7 @@ exports.triggerAnomalyWorkOrder = async (assetId, companyId, sensorType, predict
                 [companyId, woId, '00000000-0000-0000-0000-000000000000', 'system_ai_anomaly_detected', 'pending']
             );
 
-            console.log(`🧠 [AI Copilot] Critical anomaly predicted on ${assetId}. Work order ${woId} drafted.`);
+            logger.info(`[AI Copilot] Critical anomaly predicted on ${assetId}. Work order ${woId} drafted.`);
             
             // Broadcast the drafted WO event
             broadcastToCompany(companyId, 'wo_auto_drafted', {
@@ -203,7 +204,7 @@ exports.simulateFleetTelemetry = async () => {
 let simInterval = null;
 exports.startContinuousSimulation = () => {
     if (simInterval) return;
-    console.log('🚀 [IoT Engine] Starting continuous background telemetry simulation...');
+    logger.info('[IoT Engine] Starting continuous background telemetry simulation...');
     simInterval = setInterval(() => {
         exports.simulateFleetTelemetry().catch(err => console.error('Simulation error:', err));
     }, 5000); // Every 5 seconds

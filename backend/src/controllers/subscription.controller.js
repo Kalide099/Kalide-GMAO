@@ -3,6 +3,7 @@ const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const axios = require('axios');
+const logger = require('../config/logger');
 
 exports.upgradeSubscription = async (req, res, next) => {
     try {
@@ -31,10 +32,10 @@ exports.upgradeSubscription = async (req, res, next) => {
                 if (rates && rates[companyCurrency]) {
                     amountToCharge = amountToCharge * rates[companyCurrency];
                     chargeCurrency = companyCurrency;
-                    console.log(`[EXCHANGE] Converted ${plan.price} ${plan.currency} to ${amountToCharge.toFixed(2)} ${chargeCurrency}`);
+                    logger.info(`[EXCHANGE] Converted ${plan.price} ${plan.currency} to ${amountToCharge.toFixed(2)} ${chargeCurrency}`);
                 }
             } catch (err) {
-                console.warn('[EXCHANGE API ERROR] Falling back to base plan currency', err.message);
+                logger.warn('[EXCHANGE API ERROR] Falling back to base plan currency', { error: err.message });
             }
         }
 
