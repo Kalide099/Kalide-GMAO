@@ -1,28 +1,32 @@
 /**
- * KGMAO Mail Service — Hostinger SMTP via Nodemailer
+ * KGMAO Mail Service
  * Sends transactional emails for: Registration, Password Reset, Account Approval.
  * Bilingual support (EN/FR) on all templates.
- * 
- * SMTP Config (via .env):
- *   SMTP_HOST=smtp.hostinger.com
- *   SMTP_PORT=465
- *   SMTP_USER=support@kgmao.com
- *   SMTP_PASS=<your_password>
+ *
+ * Provider priority:
+ *   1. Resend  — set RESEND_API_KEY=re_xxxx  (recommended)
+ *   2. SMTP    — set SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
+ *
+ * Common env vars (both providers):
  *   MAIL_FROM_ADDRESS=support@kgmao.com
  *   MAIL_FROM_NAME=KGMAO
  *   APP_URL=https://kgmao.com
  */
 
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 const logger = require('../config/logger');
 
 // ============================================================
-// SMTP TRANSPORTER (Hostinger)
+// PROVIDER CONFIGURATION
 // ============================================================
+const resendApiKey = process.env.RESEND_API_KEY || '';
+
 const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
 const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
 const smtpUser = process.env.SMTP_USER || 'support@kgmao.com';
 const smtpPass = process.env.SMTP_PASS || '';
+
 const mailFrom = process.env.MAIL_FROM_ADDRESS || 'support@kgmao.com';
 const mailFromName = process.env.MAIL_FROM_NAME || 'KGMAO';
 const appUrl = process.env.APP_URL || process.env.LIVE_PRODUCTION || 'https://kgmao.com';
@@ -35,15 +39,10 @@ const getTransporter = () => {
     transporter = nodemailer.createTransport({
         host: smtpHost,
         port: smtpPort,
-        secure: smtpPort === 465, // true for 465 (SSL), false for 587 (STARTTLS)
-        auth: {
-            user: smtpUser,
-            pass: smtpPass,
-        },
-        tls: {
-            rejectUnauthorized: false // Allow self-signed certs on Hostinger
-        },
-        pool: true,        // Use connection pooling
+        secure: smtpPort === 465,
+        auth: { user: smtpUser, pass: smtpPass },
+        tls: { rejectUnauthorized: false },
+        pool: true,
         maxConnections: 3,
         maxMessages: 50,
         connectionTimeout: 10000,
@@ -52,6 +51,27 @@ const getTransporter = () => {
     });
 
     return transporter;
+};
+
+// Send via Resend REST API (https://resend.com)
+const sendViaResend = async (to, subject, htmlBody) => {
+    const response = await axios.post(
+        'https://api.resend.com/emails',
+        {
+            from: `${mailFromName} <${mailFrom}>`,
+            to: [to],
+            subject,
+            html: htmlBody,
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${resendApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            timeout: 15000,
+        }
+    );
+    return { success: true, messageId: response.data.id };
 };
 
 // ============================================================
@@ -130,10 +150,23 @@ const ctaButton = (text, url, color = '#0f172a') => `
 // CORE SEND FUNCTION
 // ============================================================
 const sendEmail = async (to, subject, htmlBody) => {
+    // ── Provider 1: Resend ──────────────────────────────────
+    if (resendApiKey) {
+        try {
+            const result = await sendViaResend(to, subject, htmlBody);
+            logger.info('Email sent via Resend', { to, subject, messageId: result.messageId });
+            return result;
+        } catch (err) {
+            const detail = err.response?.data?.message || err.message;
+            logger.error('Resend email failed', { to, subject, error: detail });
+            return { success: false, error: detail };
+        }
+    }
+
+    // ── Provider 2: SMTP (Nodemailer) ───────────────────────
     if (!smtpPass) {
-        console.warn(`[MAIL] SMTP_PASS not configured. Skipping email to ${to} | Subject: ${subject}`);
-        logger.warn('SMTP_PASS not configured, email skipped', { to, subject });
-        return { success: false, reason: 'SMTP_PASS not configured' };
+        logger.warn('No email provider configured — set RESEND_API_KEY or SMTP_PASS', { to, subject });
+        return { success: false, reason: 'No email provider configured' };
     }
 
     try {
@@ -145,12 +178,10 @@ const sendEmail = async (to, subject, htmlBody) => {
             html: htmlBody,
         });
 
-        console.log(`[MAIL] ✅ Sent to: ${to} | Subject: ${subject} | MessageId: ${info.messageId}`);
-        logger.info('Email sent successfully', { to, subject, messageId: info.messageId });
+        logger.info('Email sent via SMTP', { to, subject, messageId: info.messageId });
         return { success: true, messageId: info.messageId };
     } catch (err) {
-        console.error(`[MAIL] ❌ Failed to send to: ${to} | Error: ${err.message}`);
-        logger.error('Email send failed', { to, subject, error: err.message });
+        logger.error('SMTP email failed', { to, subject, error: err.message });
         return { success: false, error: err.message };
     }
 };
