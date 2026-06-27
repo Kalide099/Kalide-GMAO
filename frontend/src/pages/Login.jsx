@@ -89,9 +89,11 @@ const Login = () => {
             } else if (errorCode === 'MFA_INVALID') {
                 setRequiresMfa(true);
                 setError(t('auth.mfaInvalidError'));
+            } else if (errorCode === 'UNAUTHORIZED') {
+                setError(t('auth.login_failed'));
             } else {
-            const msg = err.response?.data?.message || t('auth.login_failed');
-            setError(msg);
+                const msg = err.response?.data?.message || t('auth.login_failed');
+                setError(msg);
             }
         } finally {
             setIsLoading(false);

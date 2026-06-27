@@ -206,6 +206,7 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
     if (users.length === 0) {
         const err = new Error('Invalid email or password');
         err.statusCode = 401;
+        err.errorCode = 'UNAUTHORIZED';
         throw err;
     }
 
@@ -221,6 +222,7 @@ exports.loginUser = async (email, password, mfaOptions = {}) => {
     if (!isMatch) {
         const err = new Error('Invalid email or password');
         err.statusCode = 401;
+        err.errorCode = 'UNAUTHORIZED';
         throw err;
     }
 

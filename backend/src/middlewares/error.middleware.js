@@ -27,7 +27,9 @@ const globalErrorHandler = (err, req, res, next) => {
 
     // Standard Response
     const isDev = process.env.NODE_ENV === 'development';
-    const safeMessage = isDev ? err.message : 'internal_server_error';
+    // Allow 4xx client errors to retain their message (e.g. 401 Invalid credentials)
+    const isClientError = err.statusCode >= 400 && err.statusCode < 500;
+    const safeMessage = (isDev || isClientError) ? err.message : 'internal_server_error';
 
     return errorResponse(res, err.statusCode, safeMessage, err.errorCode || 'SERVER_ERROR');
 };
