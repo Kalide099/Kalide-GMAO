@@ -111,13 +111,42 @@ exports.registerCompanyAndAdmin = async (data) => {
     await connection.beginTransaction();
 
     try {
-        // 1. Check if user already exists
-        const [existing] = await connection.query('SELECT id FROM users WHERE email = ?', [email]);
+        // 1. Check if user already exists (active or soft-deleted)
+        const [existing] = await connection.query(
+            'SELECT id, deleted_at FROM users WHERE email = ? LIMIT 1',
+            [email]
+        );
         if (existing.length > 0) {
-            const err = new Error('Email is already registered');
+            const err = new Error(
+                existing[0].deleted_at
+                    ? 'This email belongs to a deactivated account. Please contact support.'
+                    : 'Email is already registered'
+            );
             err.statusCode = 409;
             err.isOperational = true;
             throw err;
+        }
+
+        // Also block if a pending or approved registration request already exists for this email
+        try {
+            const [pendingReqs] = await connection.query(
+                "SELECT id, status FROM registration_requests WHERE admin_email = ? AND status IN ('pending', 'approved') LIMIT 1",
+                [email]
+            );
+            if (pendingReqs.length > 0) {
+                const err = new Error(
+                    pendingReqs[0].status === 'approved'
+                        ? 'This email has already been approved. Please check your inbox for login details.'
+                        : 'A registration request with this email is already pending review.'
+                );
+                err.statusCode = 409;
+                err.isOperational = true;
+                throw err;
+            }
+        } catch (regCheckErr) {
+            // If registration_requests table doesn't exist yet, skip this check
+            if (regCheckErr.statusCode === 409) throw regCheckErr;
+            if (regCheckErr.code !== 'ER_NO_SUCH_TABLE') throw regCheckErr;
         }
 
         const companyId = uuidv4();

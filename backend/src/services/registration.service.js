@@ -90,6 +90,36 @@ exports.createRequest = async (data) => {
 
     await ensureRegistrationRequestsSchema();
 
+    // ── Duplicate-email guards ──────────────────────────────
+    // 1. Email already has an active user account
+    const [existingUsers] = await pool.query(
+        'SELECT id FROM users WHERE email = ? AND deleted_at IS NULL LIMIT 1',
+        [adminEmail]
+    );
+    if (existingUsers.length > 0) {
+        const err = new Error('An account with this email already exists. Please log in instead.');
+        err.statusCode = 409;
+        err.isOperational = true;
+        throw err;
+    }
+
+    // 2. A pending or approved registration request already exists for this email
+    const [existingRequests] = await pool.query(
+        "SELECT id, status FROM registration_requests WHERE admin_email = ? AND status IN ('pending', 'approved') LIMIT 1",
+        [adminEmail]
+    );
+    if (existingRequests.length > 0) {
+        const err = new Error(
+            existingRequests[0].status === 'approved'
+                ? 'This email has already been approved. Please check your inbox for login details.'
+                : 'A registration request with this email is already pending review.'
+        );
+        err.statusCode = 409;
+        err.isOperational = true;
+        throw err;
+    }
+    // ───────────────────────────────────────────────────────
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -157,6 +187,18 @@ exports.processRequest = async (id, status, processorId, notes = '') => {
             const approvedPlan = normalizePlan(r.requested_plan);
             const preferredLanguage = normalizeLanguage(r.preferred_language);
             const assignedModules = getModulesForPlan(r.industry, approvedPlan);
+
+            // Guard: ensure this email doesn't already have an active user account
+            const [emailTaken] = await connection.query(
+                'SELECT id FROM users WHERE email = ? AND deleted_at IS NULL LIMIT 1',
+                [r.admin_email]
+            );
+            if (emailTaken.length > 0) {
+                const err = new Error(`Email ${r.admin_email} is already registered to an active account.`);
+                err.statusCode = 409;
+                err.isOperational = true;
+                throw err;
+            }
 
             try {
                 await connection.query(
