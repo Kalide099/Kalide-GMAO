@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
-import { Search, Zap, Globe, ShieldCheck, Mail, Building2, UserCheck } from 'lucide-react';
+import { Search, Zap, Globe, ShieldCheck, Mail, Building2, UserCheck, Trash2, AlertTriangle } from 'lucide-react';
 
 const AdminUsers = () => {
     const { t } = useTranslation();
@@ -11,6 +11,9 @@ const AdminUsers = () => {
     const [selectedUserAudit, setSelectedUserAudit] = useState(null);
     const [auditLogs, setAuditLogs] = useState([]);
     const [auditLoading, setAuditLoading] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
 
     const parseDetails = (details) => {
         if (!details) return null;
@@ -93,6 +96,23 @@ const AdminUsers = () => {
             console.error('Failed to fetch user audit logs', err);
         } finally {
             setAuditLoading(false);
+        }
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteTarget) return;
+        setDeleteLoading(true);
+        setDeleteError('');
+        try {
+            const response = await api.delete(`/admin/user/${deleteTarget.id}`);
+            if (response.data.success) {
+                setDeleteTarget(null);
+                fetchUsers();
+            }
+        } catch (err) {
+            setDeleteError(err.response?.data?.message || t('common.error'));
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -218,6 +238,15 @@ const AdminUsers = () => {
                                                             {u.status === 'suspended' ? t('admin.restore') : t('admin.revoke')}
                                                         </button>
                                                     )}
+                                                    {u.role !== 'super_admin' && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setDeleteTarget(u); setDeleteError(''); }}
+                                                            className="w-10 h-10 rounded-xl bg-rose-50 text-rose-400 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                                                            title={t('admin.deleteAccount')}
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -289,6 +318,55 @@ const AdminUsers = () => {
                                 className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-indigo-600 transition-all"
                             >
                                 {t('common.close')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Delete Confirmation Modal */}
+            {deleteTarget && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/70 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in">
+                        <div className="p-10 flex flex-col items-center text-center gap-6">
+                            <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center">
+                                <AlertTriangle className="text-rose-500" size={36} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">
+                                    {t('admin.deleteAccountConfirmTitle')}
+                                </h2>
+                                <p className="text-sm text-slate-500 font-bold mt-3">
+                                    {t('admin.deleteAccountConfirmMsg')}{' '}
+                                    <span className="text-slate-900 font-black">{deleteTarget.email}</span>.
+                                </p>
+                                <p className="text-[11px] text-rose-500 font-black uppercase tracking-wider mt-4 bg-rose-50 rounded-xl px-4 py-3">
+                                    {t('admin.deleteAccountWarning')}
+                                </p>
+                            </div>
+                            {deleteError && (
+                                <p className="text-[11px] text-rose-600 font-black bg-rose-50 rounded-xl px-4 py-3 w-full text-center">
+                                    {deleteError}
+                                </p>
+                            )}
+                        </div>
+                        <div className="px-10 pb-10 flex gap-4">
+                            <button
+                                onClick={() => { setDeleteTarget(null); setDeleteError(''); }}
+                                disabled={deleteLoading}
+                                className="flex-1 py-4 bg-slate-100 text-slate-700 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-200 transition-all"
+                            >
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                disabled={deleteLoading}
+                                className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-rose-700 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                            >
+                                {deleteLoading ? (
+                                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> {t('common.loading')}</>
+                                ) : (
+                                    <><Trash2 size={14} /> {t('admin.deleteAccountConfirmBtn')}</>
+                                )}
                             </button>
                         </div>
                     </div>

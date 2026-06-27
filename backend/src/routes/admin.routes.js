@@ -19,6 +19,7 @@ router.get('/user/:userId/impersonate', adminController.impersonateUser);
 router.get('/logs', adminController.getGlobalAuditLogs);
 router.get('/users', adminController.getAllUsers);
 router.patch('/user/:id/status', adminController.updateUserStatus);
+router.delete('/user/:id', adminController.deleteUser);
 router.get('/user/:id/audit', adminController.getUserAuditLogs);
 router.get('/payments', adminController.getAllPayments);
 router.post('/seed', adminController.seedDemoData);

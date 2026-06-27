@@ -355,6 +355,50 @@ exports.updateUserStatus = async (req, res, next) => {
     }
 };
 
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Cannot delete your own account
+        if (id === req.user.id) {
+            return errorResponse(res, 400, 'You cannot delete your own account.');
+        }
+
+        const [users] = await pool.query(
+            'SELECT id, email, role, company_id FROM users WHERE id = ? LIMIT 1',
+            [id]
+        );
+        if (users.length === 0) {
+            return errorResponse(res, 404, 'User not found.');
+        }
+
+        const target = users[0];
+
+        // Cannot permanently delete another super_admin
+        if (target.role === 'super_admin') {
+            return errorResponse(res, 403, 'Super admin accounts cannot be permanently deleted.');
+        }
+
+        // Write audit record BEFORE deletion (audit_logs.user_id will be SET NULL by FK)
+        await pool.query(
+            `INSERT INTO audit_logs (id, company_id, user_id, action, entity_type, entity_id, details)
+             VALUES (UUID(), ?, ?, 'admin_permanent_delete_user', 'users', ?, ?)`,
+            [target.company_id, req.user.id, id, JSON.stringify({
+                deleted_email: target.email,
+                deleted_role: target.role,
+                deleted_company_id: target.company_id
+            })]
+        );
+
+        // Hard delete — FK constraints (ON DELETE CASCADE / SET NULL) handle related data
+        await pool.query('DELETE FROM users WHERE id = ?', [id]);
+
+        return successResponse(res, 200, `Account for ${target.email} has been permanently deleted.`);
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.getUserAuditLogs = async (req, res, next) => {
     try {
         const { id } = req.params;

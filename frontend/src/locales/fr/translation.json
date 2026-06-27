@@ -178,7 +178,13 @@
     "restore": "Restaurer l'accès",
     "confirmStatusUpdate": "Autorisation de sécurité requise : Procéder au configuration {{status}} du site utilisateur ?",
     "decodingStream": "Décodage du flow médico-légal de l'utilisateur...",
-    "noAuditRecords": "Aucun enregistrement médico-légal trouvé pour ce site."
+    "noAuditRecords": "Aucun enregistrement médico-légal trouvé pour ce site.",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountConfirmTitle": "Suppression définitive du compte",
+    "deleteAccountConfirmMsg": "Vous êtes sur le point de supprimer définitivement le compte de",
+    "deleteAccountWarning": "Cette action est irréversible. Toutes les données liées à ce compte seront effacées définitivement.",
+    "deleteAccountConfirmBtn": "Supprimer définitivement",
+    "deleteAccountSuccess": "Le compte a été supprimé définitivement."
   },
   "app": {
     "title": "KGMAO Entreprise",

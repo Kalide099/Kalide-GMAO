@@ -178,7 +178,13 @@
     "restore": "Restore Access",
     "confirmStatusUpdate": "Security Authorization Required: Proceed with user location {{status}} process?",
     "decodingStream": "Decoding User Diagnostic Stream...",
-    "noAuditRecords": "Zero diagnostic records found for this location."
+    "noAuditRecords": "Zero diagnostic records found for this location.",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirmTitle": "Permanently Delete Account",
+    "deleteAccountConfirmMsg": "You are about to permanently delete the account for",
+    "deleteAccountWarning": "This action cannot be undone. All data tied to this account will be erased forever.",
+    "deleteAccountConfirmBtn": "Delete Permanently",
+    "deleteAccountSuccess": "Account has been permanently deleted."
   },
   "app": {
     "title": "KGMAO Enterprise",
