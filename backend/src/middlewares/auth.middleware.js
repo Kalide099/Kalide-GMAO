@@ -27,10 +27,25 @@ exports.authenticate = async (req, res, next) => {
             return errorResponse(res, 401, t('auth.invalid_token', lang));
         }
 
-        const [users] = await pool.query(
-            'SELECT id, company_id, role, status, deleted_at, token_version, mfa_enabled, preferred_language FROM users WHERE id = ? LIMIT 1',
-            [decoded.id]
-        );
+        // Select only the columns actually used by this middleware.
+        // Use a fallback query if token_version column doesn't exist yet (pre-v5 migration).
+        let users;
+        try {
+            [users] = await pool.query(
+                'SELECT id, status, deleted_at, token_version FROM users WHERE id = ? LIMIT 1',
+                [decoded.id]
+            );
+        } catch (dbError) {
+            if (dbError.code === 'ER_BAD_FIELD_ERROR') {
+                // token_version column hasn't been migrated yet — proceed without version check
+                [users] = await pool.query(
+                    'SELECT id, status, deleted_at FROM users WHERE id = ? LIMIT 1',
+                    [decoded.id]
+                );
+            } else {
+                return next(dbError);
+            }
+        }
 
         if (users.length === 0) {
             return errorResponse(res, 401, t('auth.invalid_token', lang));
@@ -55,7 +70,11 @@ exports.authenticate = async (req, res, next) => {
         if (error.name === 'TokenExpiredError') {
             return errorResponse(res, 401, t('auth.token_expired', lang));
         }
-        return errorResponse(res, 401, t('auth.invalid_token', lang));
+        if (error.name === 'JsonWebTokenError' || error.name === 'NotBeforeError') {
+            return errorResponse(res, 401, t('auth.invalid_token', lang));
+        }
+        // DB connection or other unexpected errors go to the global error handler (500)
+        return next(error);
     }
 };
 
