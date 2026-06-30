@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { Zap, Activity, Battery, Leaf, TrendingUp } from 'lucide-react';
 
 const Energy = () => {
@@ -27,7 +28,7 @@ const Energy = () => {
                 setNodes(res.data.data.nodes);
             }
         } catch (error) {
-            console.error("Energy Intelligence Sync Failure", error);
+            toast.error(t('workOrders.fetchError') || 'Failed to load energy data.');
         } finally {
             setLoading(false);
         }

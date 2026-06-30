@@ -1,23 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Book, Cpu, ShieldCheck, Mail, MessageSquare, Zap, Globe, Radio } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import toast from 'react-hot-toast';
-import api from '../../services/api/axiosConfig';
 
 const HelpCenter = () => {
     const { t } = useTranslation();
-
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/helpcenter', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const navigate = useNavigate();
     };
         const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
@@ -102,11 +92,11 @@ const HelpCenter = () => {
                              <p className="text-slate-500 font-medium text-sm">{t('help.supportDesc')}</p>
                         </div>
                         <div className="space-y-4 pt-4">
-                            <button onClick={() => handleGenericAction()} className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
+                            <button onClick={() => navigate('/contact')} className="w-full h-16 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all">
                                 <MessageSquare size={18} className="text-yellow-400" />
                                 {t('help.startChat')}
                             </button>
-                            <button onClick={() => handleGenericAction()} className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
+                            <button onClick={() => navigate('/contact')} className="w-full h-16 bg-white border-2 border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:border-indigo-400 transition-all">
                                 <Mail size={18} className="text-indigo-600" />
                                 {t('help.openTicket')}
                             </button>

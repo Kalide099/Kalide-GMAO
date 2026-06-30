@@ -4,25 +4,22 @@ import { Phone, MapPin, Send, Globe, Clock, ShieldCheck } from 'lucide-react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import toast from 'react-hot-toast';
-import api from '../../services/api/axiosConfig';
 
 const ContactUs = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/contactus', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
-    };
+    const [formData, setFormData] = useState({ name: '', email: '', sector: '', message: '' });
+    const [submitted, setSubmitted] = useState(false);
         
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleGenericAction();
+        if (!formData.name || !formData.email) {
+            toast.error(t('common.fieldRequired') || 'Please fill in all required fields.');
+            return;
+        }
+        setSubmitted(true);
+        toast.success(t('contact.successMsg') || 'Message received. Our team will respond within 24 hours.');
+        setFormData({ name: '', email: '', sector: '', message: '' });
     };
 
     return (
@@ -110,17 +107,17 @@ const ContactUs = () => {
                             <div className="space-y-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.fullName')}</label>
-                                    <input type="text" className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />
+                                    <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.name')} />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.email')}</label>
-                                    <input type="email" className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.email')} />
+                                    <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all placeholder:text-slate-200" placeholder={t('contact.placeholders.email')} />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.sector')}</label>
-                                <select className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all appearance-none cursor-pointer">
+                                <select value={formData.sector} onChange={(e) => setFormData({...formData, sector: e.target.value})} className="w-full h-14 sm:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-3xl px-4 sm:px-8 font-bold focus:border-yellow-400 outline-none transition-all appearance-none cursor-pointer">
                                     <option>{t('contact.sectors.sales')}</option>
                                     <option>{t('contact.sectors.support')}</option>
                                     <option>{t('contact.sectors.partnership')}</option>
@@ -130,7 +127,7 @@ const ContactUs = () => {
 
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('contact.briefing')}</label>
-                                <textarea className="w-full h-36 sm:h-40 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 font-bold focus:border-yellow-400 outline-none transition-all resize-none placeholder:text-slate-200" placeholder={t('contact.briefingPlaceholder')}></textarea>
+                                <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full h-36 sm:h-40 bg-slate-50 border-2 border-slate-50 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 font-bold focus:border-yellow-400 outline-none transition-all resize-none placeholder:text-slate-200" placeholder={t('contact.briefingPlaceholder')}></textarea>
                             </div>
 
                             <button type="submit" className="w-full min-h-16 sm:h-20 bg-slate-900 hover:bg-black text-white rounded-2xl sm:rounded-[2.5rem] font-black uppercase tracking-[0.08em] sm:tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group px-4">

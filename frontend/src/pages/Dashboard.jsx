@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Wrench, Briefcase, Activity, Zap, TrendingUp, Globe, ArrowRight, Layers, Bot, Radio } from 'lucide-react';
 import useIndustryIndustry from '../hooks/useIndustryIndustry';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { getSocket } from '../utils/socketClient';
 
 const Dashboard = () => {
@@ -21,7 +22,7 @@ const Dashboard = () => {
                     setStats(res.data.data);
                 }
             } catch (err) {
-                console.error("Failed to load dashboard stats", err);
+                toast.error(t('workOrders.fetchError') || 'Failed to load dashboard data.');
             } finally {
                 setLoading(false);
             }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { 
     ShieldCheck, Key, Globe, Plus, Trash2, 
     Fingerprint, Lock
@@ -11,8 +12,6 @@ const SSOConfig = () => {
     const [configs, setConfigs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('');
-    const [statusTone, setStatusTone] = useState('');
     const [formData, setFormData] = useState({
         provider_name: '',
         idp_entity_id: '',
@@ -26,7 +25,8 @@ const SSOConfig = () => {
             const res = await api.get('/auth/sso-config');
             if (res.data.success) setConfigs(res.data.data);
         } catch (err) {
-            console.error("SSO Sync Failed.", err);
+            console.error('SSO Sync Failed.', err);
+            toast.error(err?.response?.data?.message || 'Failed to load SSO configurations.');
         } finally {
             setLoading(false);
         }
@@ -42,13 +42,11 @@ const SSOConfig = () => {
             const res = await api.post('/auth/sso-config', formData);
             if (res.data.success) {
                 setIsModalOpen(false);
-                setStatusTone('success');
-                setStatusMessage(res.data.message || 'SSO configuration created.');
+                toast.success(res.data.message || 'SSO configuration created.');
                 fetchData();
             }
         } catch (err) {
-            setStatusTone('error');
-            setStatusMessage(err?.response?.data?.message || 'Protocol Violation.');
+            toast.error(err?.response?.data?.message || 'Protocol Violation.');
         }
     };
 
@@ -59,19 +57,16 @@ const SSOConfig = () => {
             await api.delete(`/auth/sso-config/${id}`);
             await fetchData();
         } catch (err) {
-            setStatusTone('error');
-            setStatusMessage(err?.response?.data?.message || 'Delete failed.');
+            toast.error(err?.response?.data?.message || 'Delete failed.');
         }
     };
 
     const handleVerify = (url) => {
         if (!url) {
-            setStatusTone('error');
-            setStatusMessage('Missing SSO endpoint URL.');
+            toast.error(t('ssoConfig.missingUrl') || 'Missing SSO endpoint URL.');
             return;
         }
-        setStatusTone('success');
-        setStatusMessage('SSO endpoint opened in a new tab.');
+        toast.success(t('ssoConfig.endpointOpened') || 'SSO endpoint opened in a new tab.');
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -100,12 +95,6 @@ const SSOConfig = () => {
                     {t('marketing.sso.integrate')}
                 </button>
             </div>
-
-            {statusMessage && (
-                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
-                    {statusMessage}
-                </div>
-            )}
 
             {loading ? (
                 <div className="h-[40vh] flex flex-col items-center justify-center gap-4 text-slate-400">

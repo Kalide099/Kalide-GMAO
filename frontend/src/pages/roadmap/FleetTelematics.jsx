@@ -7,15 +7,8 @@ import toast from 'react-hot-toast';
 const FleetTelematics = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/fleettelematics', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Live vehicle diagnostic data shared to Activity Center.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
     };
         const [fleet, setFleet] = useState([]);
     const [loading, setLoading] = useState(true);

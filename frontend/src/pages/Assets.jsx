@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { Wrench, Search, Plus, Upload, MapPin, QrCode, Trash2, X, Globe, Hash, Printer, ExternalLink } from 'lucide-react';
 const Assets = () => {
     const { t, i18n } = useTranslation();
@@ -50,11 +51,12 @@ const Assets = () => {
             if (response.data.success) {
                 setIsModalOpen(false);
                 setFormData({ name: '', location: '', serialNumber: '', status: 'active' });
+                toast.success(t('assets.addAsset'));
                 fetchAssets();
             }
         } catch (error) {
             const backendError = error.response?.data?.message || t('common.error');
-            alert(`Error: ${backendError}`);
+            toast.error(backendError);
         } finally {
             setFormLoading(false);
         }
@@ -66,7 +68,7 @@ const Assets = () => {
             const response = await api.delete(`/assets/${id}`);
             if (response.data.success) fetchAssets();
         } catch (err) {
-            alert(t('assets.deletionFailed'));
+            toast.error(t('assets.deletionFailed'));
         }
     };
 
@@ -144,10 +146,10 @@ const Assets = () => {
                                         for (const asset of assetsToCreate) {
                                             await api.post('/assets', asset);
                                         }
-                                        alert(t('assets.sync_success'));
+                                        toast.success(t('assets.sync_success'));
                                         fetchAssets();
                                     } catch (err) {
-                                        alert(t('assets.sync_failed'));
+                                        toast.error(t('assets.sync_failed'));
                                         fetchAssets();
                                     }
                                 };

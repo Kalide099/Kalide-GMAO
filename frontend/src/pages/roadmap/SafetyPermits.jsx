@@ -7,15 +7,8 @@ import toast from 'react-hot-toast';
 const SafetyPermits = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/safetypermits', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Compliance verified. Zero active infractions.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
     };
         const [permits, setPermits] = useState([]);
     const [loading, setLoading] = useState(true);

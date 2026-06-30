@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { 
     PackageSearch, Plus, Package, X, Hash, Layers, 
     DollarSign, Globe, AlertCircle, Edit, Trash2, Search 
@@ -81,10 +82,11 @@ const Inventory = () => {
 
             if (response.data.success) {
                 setIsModalOpen(false);
+                toast.success(isEditMode ? t('inventory.updateSuccess') || 'Item updated.' : t('inventory.createSuccess') || 'Item added.');
                 fetchItems();
             }
         } catch (error) {
-            alert(`Error: ${error.response?.data?.message || t('common.error')}`);
+            toast.error(error.response?.data?.message || t('common.error'));
         } finally {
             setFormLoading(false);
         }
@@ -96,7 +98,7 @@ const Inventory = () => {
             const response = await api.delete(`/inventory/${id}`);
             if (response.data.success) fetchItems();
         } catch (error) {
-            alert(t('inventory.deletionFailed'));
+            toast.error(t('inventory.deletionFailed'));
         }
     };
 

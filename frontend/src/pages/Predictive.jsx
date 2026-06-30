@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { BrainCircuit, Activity, Clock, ShieldAlert, CheckCircle, TrendingUp, AlertTriangle, Cpu, WifiOff, Sparkles } from 'lucide-react';
 
 const AI_MODEL_LABELS = {
@@ -31,7 +32,7 @@ const Predictive = () => {
                 setAiStatus(aiRes.data.data);
             }
         } catch (error) {
-            console.error("Predictive Intelligence Fetch Failure.", error);
+            toast.error(t('workOrders.fetchError') || 'Failed to load predictive data.');
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { Activity, Zap, ShieldCheck, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
 
 const IoT = () => {
@@ -69,7 +70,7 @@ const IoT = () => {
             fetchTelemetry();
             fetchHistory();
         } catch (err) {
-            alert(t('iot.simulationFailed'));
+            toast.error(t('iot.simulationFailed'));
         } finally {
             setSimulating(false);
         }

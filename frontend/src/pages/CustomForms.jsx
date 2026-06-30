@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { 
     Plus, Search, Layers, 
     Trash2, Terminal, FileText, CheckCircle2
@@ -73,7 +74,7 @@ const CustomForms = () => {
             const res = await api.get('/custom-forms');
             if (res.data.success) setForms(res.data.data);
         } catch (err) {
-            console.error("Forms Sync Failed.", err);
+            toast.error(t('workOrders.fetchError') || 'Failed to load forms.');
         } finally {
             setLoading(false);
         }

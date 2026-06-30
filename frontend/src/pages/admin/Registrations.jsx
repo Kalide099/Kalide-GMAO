@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { 
     UserPlus, CheckCircle, XCircle, Clock, 
     Building2, Mail, Search, Zap, Eye, Phone, Lock
@@ -34,11 +35,11 @@ const AdminRegistrations = () => {
         try {
             const res = await api.post(`/registrations/${id}/process`, { status, notes });
             if (res.data.success) {
-                alert(res.data.message);
+                toast.success(res.data.message);
                 fetchRequests();
             }
         } catch (err) {
-            alert(t('admin_registrations.processingFailed'));
+            toast.error(t('admin_registrations.processingFailed'));
         }
     };
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { Wrench, MapPin, Hash, ShieldCheck, Clock, BrainCircuit, Activity, ChevronLeft, Plus, History, Paperclip, File, Upload, ExternalLink } from 'lucide-react';
 
 const AssetDetails = () => {
@@ -199,7 +200,7 @@ const AssetDetails = () => {
                                     await api.post('/attachments/upload', formData);
                                     fetchData();
                                 } catch (err) {
-                                    alert("Synchronization Failed.");
+                                    toast.error(t('assets.sync_failed') || 'Synchronization Failed.');
                                 }
                             }}
                         />

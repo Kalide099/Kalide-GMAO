@@ -858,7 +858,17 @@
     "dispatchIdPrefix": "DISPATCH-ID :",
     "searchPlaceholder": "Rechercher une expédition...",
     "initProtocol": "Démarrer la configuration d'expédition",
-    "scanAssetMatrix": "-- SCANNER LES ACTIFS --"
+    "scanAssetMatrix": "-- SCANNER LES ACTIFS --",
+    "changeStatus": "Changer le Statut",
+    "completedDate": "Date d'Achèvement",
+    "completedDateRequired": "Veuillez définir une date d'achèvement avant de marquer comme terminé.",
+    "statusUpdated": "Statut mis à jour.",
+    "comments": "Commentaires",
+    "commentPlaceholder": "Écrire un commentaire...",
+    "submitComment": "Publier",
+    "commentAdded": "Commentaire publié.",
+    "noComments": "Aucun commentaire pour l'instant.",
+    "history": "Historique des Activités"
   },
   "auth": {
     "welcome": "Bon retour",

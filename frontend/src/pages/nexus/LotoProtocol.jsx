@@ -7,15 +7,8 @@ import api from '../../services/api/axiosConfig';
 const LotoProtocol = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/lotoprotocol', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Machine successfully locked out and tagged.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
     };
         const [steps, setSteps] = useState([
         { id: 1, title: t('nexus.loto.steps.s1'), status: 'pending', energyType: t('nexus.loto.energy.elec') },

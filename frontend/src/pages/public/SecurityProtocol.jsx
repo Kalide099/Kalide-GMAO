@@ -1,24 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShieldCheck, Lock, EyeOff, Server, Globe, Key, AlertCircle, FileLock2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import toast from 'react-hot-toast';
-import api from '../../services/api/axiosConfig';
 
 const SecurityProtocol = () => {
     const { t } = useTranslation();
-
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/securityprotocol', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
-    };
+    const navigate = useNavigate();
         
     const protocols = [
         {
@@ -128,7 +117,7 @@ const SecurityProtocol = () => {
                     <Key className="text-slate-900 mx-auto mb-6" size={48} />
                     <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter italic mb-4">{t('legal.requestBlueprint')}</h2>
                     <p className="text-slate-900/70 font-bold mb-8 uppercase tracking-widest text-xs">{t('legal.blueprintDesc')}</p>
-                    <button onClick={() => handleGenericAction()} className="px-10 py-5 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                    <button onClick={() => navigate('/contact')} className="px-10 py-5 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
                         {t('legal.contactSecurity')}
                     </button>
                 </div>

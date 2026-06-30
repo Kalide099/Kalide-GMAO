@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { ShoppingCart, Plus, Search, Truck, CheckCircle2, Clock, XCircle } from 'lucide-react';
 const Procurement = () => {
     const { t } = useTranslation();
@@ -49,19 +50,21 @@ const Procurement = () => {
             if (res.data.success) {
                 setShowModal(false);
                 setNewOrder({ item_id: '', supplier_id: '', quantity: '', total_cost: '' });
+                toast.success(t('procurement.newOrder'));
                 fetchData();
             }
         } catch (error) {
-            alert(t('common.error'));
+            toast.error(t('common.error'));
         }
     };
 
     const handleUpdateStatus = async (id, status) => {
         try {
             await api.patch(`/procurement/${id}/status`, { status });
+            toast.success(t('common.update_success') || 'Status updated.');
             fetchData();
         } catch (error) {
-            console.error("Status Update Failed", error);
+            toast.error(t('common.error'));
         }
     };
 

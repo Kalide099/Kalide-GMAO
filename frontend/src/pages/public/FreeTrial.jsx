@@ -5,26 +5,15 @@ import { Shield, Rocket, Clock, Zap, CheckCircle2, ArrowRight, Sparkles } from '
 import { Link, useNavigate } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import api from '../../services/api/axiosConfig';
-import toast from 'react-hot-toast';
 const FreeTrial = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/freetrial', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
-    };
-        const navigate = useNavigate();
-    
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleGenericAction();
+        const params = email ? `?email=${encodeURIComponent(email)}` : '';
+        navigate(`/register${params}`);
     };
 
     return (
@@ -103,6 +92,9 @@ const FreeTrial = () => {
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">{t('freeTrialPage.enterpriseEmail')}</label>
                                         <input 
                                             type="email" 
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
                                             placeholder={t('freeTrialPage.emailPlaceholder')}
                                             className="w-full px-8 py-6 bg-slate-50 rounded-[2rem] border border-slate-100 focus:bg-white focus:ring-4 focus:ring-yellow-400/20 transition-all outline-none font-bold placeholder:text-slate-300"
                                         />

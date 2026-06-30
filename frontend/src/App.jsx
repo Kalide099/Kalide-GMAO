@@ -129,6 +129,7 @@ const AdminPayments = React.lazy(() => import('./pages/admin/AdminPayments'));
 const AdminLogs = React.lazy(() => import('./pages/admin/AdminLogs'));
 const AdminRegistrations = React.lazy(() => import('./pages/admin/Registrations'));
 const AICopilot = React.lazy(() => import('./pages/AICopilot'));
+const SSOConfig = React.lazy(() => import('./pages/SSOConfig'));
 
 const App = () => {
     const { t } = useTranslation();
@@ -250,6 +251,7 @@ const App = () => {
                 <Route path="ai-copilot" element={<AICopilot />} />
                 <Route path="settings" element={<TenantSettings />} />
                 <Route path="mfa-security" element={<MfaSecurity />} />
+                <Route path="sso-config" element={<SSOConfig />} />
                 <Route path="workflows" element={<WorkflowAutomation />} />
                 <Route path="reports" element={<ReportGenerator />} />
                 <Route path="drone-fleet" element={<DroneFleetCommander />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api/axiosConfig';
 import { 
@@ -116,10 +116,10 @@ const AdminDashboard = () => {
                             if (!cid) return;
                             try {
                                 const res = await api.post('/admin/seed', { companyId: cid });
-                                alert(res.data.message);
+                                toast.success(res.data.message);
                                 fetchAnalytics();
                             } catch (e) {
-                                alert(t('admin.seedFailed') + (e.response?.data?.message || e.message));
+                                toast.error(t('admin.seedFailed') + ' ' + (e.response?.data?.message || e.message));
                             }
                         }}
                         className="bg-slate-950 hover:bg-slate-900 text-yellow-400 px-10 py-5 rounded-[2.5rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-4 shadow-2xl transition-all hover:-translate-y-1 active:scale-95 border border-white/5"

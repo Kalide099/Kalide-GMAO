@@ -4,7 +4,7 @@ import api from '../services/api/axiosConfig';
 import { 
     ClipboardList, Plus, X, Wrench, AlertTriangle, Clock, ShieldCheck, 
     Globe, List, CheckCircle2, MoreHorizontal, Hammer, 
-    Trash2, Search, Kanban as KanbanIcon
+    Trash2, Search, Kanban as KanbanIcon, MessageSquare, History, Send, User, CalendarCheck
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -14,7 +14,7 @@ const WorkOrders = () => {
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-        const [viewMode, setViewMode] = useState('kanban'); 
+    const [viewMode, setViewMode] = useState('kanban');
     const [searchQuery, setSearchQuery] = useState('');
     
     // Form state
@@ -27,6 +27,16 @@ const WorkOrders = () => {
         scheduledDate: ''
     });
     const [formLoading, setFormLoading] = useState(false);
+
+    // Detail modal state
+    const [detailOrder, setDetailOrder] = useState(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [commentText, setCommentText] = useState('');
+    const [commentLoading, setCommentLoading] = useState(false);
+    const [statusChanging, setStatusChanging] = useState(false);
+    const [pendingStatus, setPendingStatus] = useState(null);
+    const [completedDate, setCompletedDate] = useState('');
 
     const fetchData = async () => {
         setLoading(true);
@@ -73,10 +83,11 @@ const WorkOrders = () => {
                     title: '', description: '',
                     scheduledDate: ''
                 });
+                toast.success(t('workOrders.submit'));
                 fetchData();
             }
         } catch (error) {
-            alert(`Error: ${error.response?.data?.message || t('workOrders.schemaViolation')}`);
+            toast.error(error.response?.data?.message || t('workOrders.schemaViolation'));
         } finally {
             setFormLoading(false);
         }
@@ -88,7 +99,7 @@ const WorkOrders = () => {
             const res = await api.delete(`/work-orders/${id}`);
             if (res.data.success) fetchData();
         } catch (err) {
-            alert(t('workOrders.deletionFailed'));
+            toast.error(t('workOrders.deletionFailed'));
         }
     };
 
@@ -100,10 +111,71 @@ const WorkOrders = () => {
         setOrders(updatedOrders);
 
         try {
-            const res = await api.put(`/work-orders/${orderId}/status`, { status: newStatus });
+            const payload = { status: newStatus };
+            if (newStatus === 'completed') payload.completedDate = new Date().toISOString();
+            const res = await api.put(`/work-orders/${orderId}/status`, payload);
             if (!res.data.success) fetchData();
         } catch (err) {
             fetchData();
+        }
+    };
+
+    const handleOpenDetail = async (order) => {
+        setIsDetailOpen(true);
+        setDetailLoading(true);
+        setDetailOrder(order);
+        setCommentText('');
+        setCompletedDate('');
+        try {
+            const res = await api.get(`/work-orders/${order.id}`);
+            if (res.data.success) setDetailOrder(res.data.data);
+        } catch (err) {
+            toast.error(t('workOrders.fetchError'));
+        } finally {
+            setDetailLoading(false);
+        }
+    };
+
+    const handleStatusChange = async (newStatus) => {
+        if (!detailOrder || statusChanging) return;
+        if (newStatus === 'completed' && !completedDate) {
+            toast.error(t('workOrders.completedDateRequired'));
+            return;
+        }
+        setPendingStatus(newStatus);
+        setStatusChanging(true);
+        try {
+            const payload = { status: newStatus };
+            if (newStatus === 'completed') payload.completedDate = completedDate;
+            const res = await api.put(`/work-orders/${detailOrder.id}/status`, payload);
+            if (res.data.success) {
+                setDetailOrder(res.data.data);
+                fetchData();
+                toast.success(t('workOrders.statusUpdated'));
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || t('workOrders.schemaViolation'));
+        } finally {
+            setStatusChanging(false);
+            setPendingStatus(null);
+        }
+    };
+
+    const handleAddComment = async (e) => {
+        e.preventDefault();
+        if (!commentText.trim() || commentLoading) return;
+        setCommentLoading(true);
+        try {
+            const res = await api.post(`/work-orders/${detailOrder.id}/comments`, { comment: commentText.trim() });
+            if (res.data.success) {
+                setDetailOrder(prev => ({ ...prev, comments: [res.data.data, ...(prev.comments || [])] }));
+                setCommentText('');
+                toast.success(t('workOrders.commentAdded'));
+            }
+        } catch (err) {
+            toast.error(t('workOrders.schemaViolation'));
+        } finally {
+            setCommentLoading(false);
         }
     };
 
@@ -241,7 +313,7 @@ const WorkOrders = () => {
                                                 </div>
                                                 <span className="text-[9px] font-black uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</span>
                                             </div>
-                                            <button onClick={() => handleGenericAction()} className="p-2 hover:bg-slate-100 rounded-xl transition-all opacity-40 hover:opacity-100">
+                                            <button onClick={() => handleOpenDetail(order)} className="p-2 hover:bg-slate-100 rounded-xl transition-all opacity-40 hover:opacity-100">
                                                 <MoreHorizontal size={18} />
                                             </button>
                                         </div>
@@ -304,7 +376,7 @@ const WorkOrders = () => {
                                             </td>
                                             <td className="px-12 py-10">
                                                 <div className="flex justify-end gap-4 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                                                    <button onClick={() => handleGenericAction()} className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                                    <button onClick={() => handleOpenDetail(order)} className="p-4 bg-white border border-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm">
                                                         <MoreHorizontal size={20} />
                                                     </button>
                                                     <button 
@@ -442,7 +514,178 @@ const WorkOrders = () => {
                 </div>
             )}
 
-            
+            {/* Detail / Edit Modal */}
+            {isDetailOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white rounded-[2rem] md:rounded-[3rem] w-full max-w-3xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-2xl border border-white/20 overflow-hidden animate-scale-in flex flex-col">
+
+                        {/* Header */}
+                        <div className="p-5 sm:p-8 md:p-10 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50 shrink-0">
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">
+                                    {t('workOrders.dispatchIdPrefix')} {detailOrder?.id?.slice(0, 8).toUpperCase()}
+                                </p>
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter uppercase italic leading-none truncate">
+                                    {detailOrder?.title || '...'}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-3 mt-3">
+                                    <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                        detailOrder?.priority === 'critical' ? 'bg-rose-50 text-rose-600' :
+                                        detailOrder?.priority === 'high' ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'
+                                    }`}>{detailOrder?.priority ? t(`workOrders.priorities.${detailOrder.priority}`) : ''}</span>
+                                    <span className="px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-600">
+                                        {detailOrder?.type}
+                                    </span>
+                                    <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                        detailOrder?.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                                        detailOrder?.status === 'in_progress' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'
+                                    }`}>{detailOrder?.status ? t(`common.${detailOrder.status}`) : ''}</span>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsDetailOpen(false)} className="p-4 hover:bg-slate-200 rounded-full transition-colors text-slate-400 shrink-0">
+                                <X size={28} />
+                            </button>
+                        </div>
+
+                        {detailLoading ? (
+                            <div className="flex-1 flex items-center justify-center py-24">
+                                <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        ) : (
+                            <div className="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-8 md:p-10 space-y-10">
+
+                                {/* Info grid */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="bg-slate-50 rounded-[1.5rem] p-6 space-y-1">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Wrench size={12} className="text-indigo-600" />{t('workOrders.field_asset')}</p>
+                                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                            {i18n.language === 'fr'
+                                                ? (detailOrder?.asset_name_fr || detailOrder?.asset_name_en || detailOrder?.asset_name)
+                                                : (detailOrder?.asset_name_en || detailOrder?.asset_name_fr || detailOrder?.asset_name)
+                                                || t('workOrders.genericAsset')}
+                                        </p>
+                                    </div>
+                                    <div className="bg-slate-50 rounded-[1.5rem] p-6 space-y-1">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Clock size={12} className="text-amber-500" />{t('workOrders.scheduledDate')}</p>
+                                        <p className="text-sm font-black text-slate-900">
+                                            {detailOrder?.scheduled_date ? new Date(detailOrder.scheduled_date).toLocaleString() : '—'}
+                                        </p>
+                                    </div>
+                                    {detailOrder?.description && (
+                                        <div className="sm:col-span-2 bg-slate-50 rounded-[1.5rem] p-6 space-y-1">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('workOrders.field_description')}</p>
+                                            <p className="text-xs font-medium text-slate-700 leading-relaxed">{detailOrder.description}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Status change */}
+                                <div className="space-y-4">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                                        <CalendarCheck size={14} className="text-emerald-500" />{t('workOrders.changeStatus')}
+                                    </p>
+                                    <div className="flex flex-wrap gap-3">
+                                        {['pending', 'in_progress', 'completed'].map(s => (
+                                            <button
+                                                key={s}
+                                                disabled={statusChanging || detailOrder?.status === s}
+                                                onClick={() => handleStatusChange(s)}
+                                                className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                                                    detailOrder?.status === s
+                                                        ? s === 'completed' ? 'bg-emerald-600 text-white border-emerald-600'
+                                                        : s === 'in_progress' ? 'bg-indigo-600 text-white border-indigo-600'
+                                                        : 'bg-amber-500 text-white border-amber-500'
+                                                        : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-400 hover:text-indigo-600'
+                                                } disabled:opacity-50`}
+                                            >
+                                                {pendingStatus === s ? '...' : t(`common.${s}`)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {/* completedDate required when switching to completed */}
+                                    {detailOrder?.status !== 'completed' && (
+                                        <div className="flex items-center gap-4 mt-3">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest shrink-0">{t('workOrders.completedDate')}</p>
+                                            <input
+                                                type="datetime-local"
+                                                value={completedDate}
+                                                onChange={(e) => setCompletedDate(e.target.value)}
+                                                className="flex-1 px-6 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-600 transition-all font-black text-slate-800 text-xs"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Comments */}
+                                <div className="space-y-6">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                                        <MessageSquare size={14} className="text-indigo-600" />{t('workOrders.comments')} ({detailOrder?.comments?.length || 0})
+                                    </p>
+                                    <form onSubmit={handleAddComment} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={commentText}
+                                            onChange={(e) => setCommentText(e.target.value)}
+                                            placeholder={t('workOrders.commentPlaceholder')}
+                                            className="flex-1 px-6 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-bold text-slate-800 text-xs"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={!commentText.trim() || commentLoading}
+                                            className="px-6 py-4 bg-slate-950 text-yellow-400 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all disabled:opacity-40 flex items-center gap-2"
+                                        >
+                                            <Send size={14} />
+                                            {commentLoading ? '...' : t('workOrders.submitComment')}
+                                        </button>
+                                    </form>
+                                    <div className="space-y-4 max-h-64 overflow-y-auto custom-scrollbar pr-2">
+                                        {(detailOrder?.comments?.length || 0) === 0 ? (
+                                            <p className="text-center text-[10px] font-black text-slate-300 uppercase tracking-widest py-8 italic">{t('workOrders.noComments')}</p>
+                                        ) : detailOrder.comments.map((c, idx) => (
+                                            <div key={c.id || idx} className="bg-slate-50 rounded-2xl p-5 flex gap-4">
+                                                <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                                    <User size={14} />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-bold text-slate-800 leading-relaxed">{c.comment}</p>
+                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">
+                                                        {c.created_at ? new Date(c.created_at).toLocaleString() : ''}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* History */}
+                                {(detailOrder?.history?.length || 0) > 0 && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                                            <History size={14} className="text-slate-400" />{t('workOrders.history')}
+                                        </p>
+                                        <div className="space-y-3 max-h-52 overflow-y-auto custom-scrollbar pr-2">
+                                            {detailOrder.history.map((h, idx) => (
+                                                <div key={h.id || idx} className="flex items-center gap-4 px-5 py-3 bg-slate-50 rounded-2xl">
+                                                    <div className="w-2 h-2 rounded-full bg-indigo-400 shrink-0"></div>
+                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex-1">
+                                                        {h.action?.replace(/_/g, ' ')}
+                                                        {h.old_value && h.new_value ? ` : ${h.old_value} → ${h.new_value}` : ''}
+                                                    </p>
+                                                    <p className="text-[9px] text-slate-300 font-black tracking-widest shrink-0">
+                                                        {h.created_at ? new Date(h.created_at).toLocaleDateString() : ''}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

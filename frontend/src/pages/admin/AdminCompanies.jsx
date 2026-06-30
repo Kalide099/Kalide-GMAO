@@ -73,7 +73,7 @@ const AdminCompanies = () => {
                 setCompanies(companies.map(c => c.id === companyId ? {...c, enabled_modules: updatedModules} : c));
             }
         } catch (e) {
-            alert(t('admin.moduleConfigError'));
+            toast.error(t('admin.moduleConfigError'));
         }
     };
 
@@ -96,7 +96,7 @@ const AdminCompanies = () => {
                 } : null);
             }
         } catch (e) {
-            alert(t('admin.planUpdateError'));
+            toast.error(t('admin.planUpdateError'));
         }
     };
 

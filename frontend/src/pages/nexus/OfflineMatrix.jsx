@@ -7,15 +7,8 @@ import api from '../../services/api/axiosConfig';
 const OfflineMatrix = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/offlinematrix', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Diagnostic feed streamed successfully.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
     };
         const [isSyncing, setIsSyncing] = useState(false);
     

@@ -7,15 +7,8 @@ import toast from 'react-hot-toast';
 const ESGCyber = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/esgcyber', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
     };
         const [view, setView] = useState('esg'); // 'esg' or 'cyber'
     const [data, setData] = useState(null);

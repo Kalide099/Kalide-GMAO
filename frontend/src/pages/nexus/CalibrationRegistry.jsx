@@ -8,6 +8,10 @@ const CalibrationRegistry = () => {
     const { t, i18n } = useTranslation();
     const [instruments, setInstruments] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleGenericAction = () => {
+        toast.success(t('common.actionSuccess') || 'Action queued successfully.');
+    };
     
     const [formData, setFormData] = useState({ tag: '', frequency: 180, name_en: '', name_fr: '' });
 

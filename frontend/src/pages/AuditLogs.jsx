@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
+import toast from 'react-hot-toast';
 import { ShieldCheck, User, Clock, Database } from 'lucide-react';
 
 const AuditLogs = () => {
@@ -13,7 +14,7 @@ const AuditLogs = () => {
             const res = await api.get('/audit');
             if (res.data.success) setLogs(res.data.data);
         } catch (err) {
-            console.error(err);
+            toast.error(t('workOrders.fetchError') || 'Failed to load audit logs.');
         } finally {
             setLoading(false);
         }

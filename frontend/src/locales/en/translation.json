@@ -858,7 +858,17 @@
     "initProtocol": "Initialize Dispatch Process",
     "scanAssetMatrix": "-- SCAN ASSETS --",
     "unknownAsset": "U-404",
-    "dispatchIdPrefix": "DISPATCH-ID :"
+    "dispatchIdPrefix": "DISPATCH-ID :",
+    "changeStatus": "Change Status",
+    "completedDate": "Completion Date",
+    "completedDateRequired": "Please set a completion date before marking as completed.",
+    "statusUpdated": "Status updated.",
+    "comments": "Comments",
+    "commentPlaceholder": "Write a comment...",
+    "submitComment": "Post",
+    "commentAdded": "Comment posted.",
+    "noComments": "No comments yet.",
+    "history": "Activity History"
   },
   "auth": {
     "welcome": "Welcome back",

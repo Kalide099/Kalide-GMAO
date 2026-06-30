@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api/axiosConfig';
 import { Users, TrendingUp, Clock, Medal, Award, MoreHorizontal } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const TeamPerformance = () => {
     const { t } = useTranslation();
@@ -34,12 +35,7 @@ const TeamPerformance = () => {
     }, []);
 
     const handleWorkerAction = (worker) => {
-        const details = [
-            `${worker.first_name} ${worker.last_name}`,
-            `Completed tasks: ${worker.completed_tasks}`,
-            `Average hours: ${worker.avg_hours ? parseFloat(worker.avg_hours).toFixed(1) : '--'}`
-        ].join('\n');
-        alert(details);
+        toast(`${worker.first_name} ${worker.last_name} — ${worker.completed_tasks} tasks · ${worker.avg_hours ? parseFloat(worker.avg_hours).toFixed(1) : '--'}h avg`, { icon: '👷' });
     };
 
     if (loading && workers.length === 0) return (

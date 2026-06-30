@@ -3,21 +3,13 @@ import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import { ScrollText, Shield, FileText, Gavel } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import toast from 'react-hot-toast';
-import api from '../../services/api/axiosConfig';
 
 const TermsOfUse = () => {
     const { t } = useTranslation();
 
-    const handleGenericAction = async () => {
-        try {
-            const res = await api.post('/n/termsofuse', { action: 'Generic Action Executed', timestamp: new Date() });
-            if(res.data.success) {
-                toast.success('Action synced to database.');
-            }
-        } catch (err) {
-            toast.error('Failed to communicate with Nexus Backend');
-        }
+    const handlePrint = () => {
+        window.print();
+    };
     };
         const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
@@ -102,8 +94,8 @@ const TermsOfUse = () => {
             <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 py-6 px-12 hidden md:flex justify-between items-center z-50">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">{t('legal.protocolDoc')}</p>
                 <div className="flex gap-4">
-                     <button onClick={() => handleGenericAction()} className="px-6 py-2 text-[10px] font-black text-slate-900 uppercase tracking-widest border border-slate-200 rounded-xl hover:bg-slate-50">{t('legal.downloadPdf')}</button>
-                     <button onClick={() => handleGenericAction()} className="px-6 py-2 text-[10px] font-black text-white bg-slate-900 uppercase tracking-widest rounded-xl hover:bg-black">{t('legal.printDoc')}</button>
+                     <button onClick={handlePrint} className="px-6 py-2 text-[10px] font-black text-slate-900 uppercase tracking-widest border border-slate-200 rounded-xl hover:bg-slate-50">{t('legal.downloadPdf')}</button>
+                     <button onClick={handlePrint} className="px-6 py-2 text-[10px] font-black text-white bg-slate-900 uppercase tracking-widest rounded-xl hover:bg-black">{t('legal.printDoc')}</button>
                 </div>
             </div>
             </div>

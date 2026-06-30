@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api/axiosConfig';
 import { useTranslation } from 'react-i18next';
 import { ShieldAlert, Map, Terminal, Siren } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const EHS = () => {
     const { t } = useTranslation();
@@ -12,8 +13,6 @@ const EHS = () => {
         permitsIssued: 0
     });
     const [loading, setLoading] = useState(true);
-    const [statusMessage, setStatusMessage] = useState('');
-    const [statusTone, setStatusTone] = useState('');
 
     const fetchStats = async () => {
         try {
@@ -34,8 +33,7 @@ const EHS = () => {
     }, []);
 
     const handleReportIncident = () => {
-        setStatusTone('success');
-        setStatusMessage('Incident routing opened in work orders.');
+        toast.success(t('ehs.incidentRouted') || 'Incident routing opened in work orders.');
         window.location.assign('/app/work-orders?priority=high&module=safety');
     };
 
@@ -43,11 +41,9 @@ const EHS = () => {
         try {
             const res = await api.get('/safety/pending');
             const count = Array.isArray(res?.data?.data) ? res.data.data.length : 0;
-            setStatusTone('success');
-            setStatusMessage(`Pending safety permits: ${count}`);
+            toast.success(`${t('ehs.pendingPermits') || 'Pending safety permits'}: ${count}`);
         } catch (error) {
-            setStatusTone('error');
-            setStatusMessage('Unable to load pending safety permits.');
+            toast.error(t('ehs.permitLoadFailed') || 'Unable to load pending safety permits.');
         }
     };
 
@@ -96,11 +92,6 @@ const EHS = () => {
                 ))}
             </div>
 
-            {statusMessage && (
-                <div className={`rounded-[2rem] px-6 py-4 font-bold text-xs uppercase tracking-widest border ${statusTone === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
-                    {statusMessage}
-                </div>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Hazard Map Mockup */}
