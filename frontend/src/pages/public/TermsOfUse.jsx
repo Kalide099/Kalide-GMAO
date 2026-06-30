@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import { ScrollText, Shield, FileText, Gavel } from 'lucide-react';
@@ -10,8 +9,6 @@ const TermsOfUse = () => {
     const handlePrint = () => {
         window.print();
     };
-    };
-        const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
     return (
         <div className="min-h-screen flex flex-col bg-white font-sans">

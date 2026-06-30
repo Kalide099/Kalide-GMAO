@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Book, Cpu, ShieldCheck, Mail, MessageSquare, Zap, Globe, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +8,6 @@ import PublicFooter from '../../components/PublicFooter';
 const HelpCenter = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    };
-        const [simModalOpen, setSimModalOpen] = useState({ isOpen: false, type: null });
 
     const categories = [
         { icon: <Zap className="text-yellow-400" />, title: t('help.categories.gettingStarted.title'), desc: t('help.categories.gettingStarted.desc') },
