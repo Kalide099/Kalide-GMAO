@@ -90,10 +90,10 @@ const Login = () => {
                 setRequiresMfa(true);
                 setError(t('auth.mfaInvalidError'));
             } else if (errorCode === 'UNAUTHORIZED') {
-                setError(t('auth.login_failed'));
+                setError(t('auth.error'));
             } else {
-                const msg = err.response?.data?.message || t('auth.login_failed');
-                setError(msg);
+                const msg = err.response?.data?.message;
+                setError(msg || t('auth.login_failed'));
             }
         } finally {
             setIsLoading(false);

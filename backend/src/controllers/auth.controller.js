@@ -236,6 +236,22 @@ exports.login = async (req, res, next) => {
             });
         }
 
+        if (err.errorCode === 'UNAUTHORIZED') {
+            return res.status(401).json({
+                success: false,
+                message: t('auth.login_failed', lang) || 'Invalid email or password.',
+                error_code: 'UNAUTHORIZED'
+            });
+        }
+
+        if (err.message && err.message.startsWith('DATABASE_TIMEOUT')) {
+            return res.status(503).json({
+                success: false,
+                message: lang === 'fr' ? 'Service temporairement indisponible. Veuillez réessayer.' : 'Service temporarily unavailable. Please try again.',
+                error_code: 'SERVICE_UNAVAILABLE'
+            });
+        }
+
         try {
             await writeAuthAudit({
                 action: 'auth_login',

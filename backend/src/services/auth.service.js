@@ -488,10 +488,19 @@ exports.resetPassword = async (token, newPassword) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(newPassword, salt);
 
-        await connection.query(
-            'UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?',
-            [passwordHash, resetToken.user_id]
-        );
+        try {
+            await connection.query(
+                'UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?',
+                [passwordHash, resetToken.user_id]
+            );
+        } catch (colErr) {
+            if (colErr.code !== 'ER_BAD_FIELD_ERROR') throw colErr;
+            // token_version column not yet migrated on this instance — update without it
+            await connection.query(
+                'UPDATE users SET password_hash = ? WHERE id = ?',
+                [passwordHash, resetToken.user_id]
+            );
+        }
 
         await connection.query(
             'UPDATE password_reset_tokens SET used_at = NOW() WHERE id = ?',
