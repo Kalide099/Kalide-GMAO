@@ -748,6 +748,7 @@
     "viewAuditLog": "View Diagnostic Audit Log",
     "loadingForensic": "Loading diagnostic streams...",
     "noRecentActivity": "No Recent Activity Found",
+    "liveEdgeStream": "Live Edge Intelligence Stream",
     "desc": {
       "global": "Cross-border site health data",
       "energy": "Business power & ESG variance",
@@ -1039,7 +1040,10 @@
     "hours": "Hours",
     "modelInit": "N/A - Model Initialization",
     "noDataTitle": "No Reliability Data Sampled",
-    "noDataDesc": "Complete at least two corrective work orders per asset to initialize predictive failure vector models."
+    "noDataDesc": "Complete at least two corrective work orders per asset to initialize predictive failure vector models.",
+    "aiEngineOnline": "AI Engine Online",
+    "aiEngineOffline": "AI Engine Offline — Using statistical MTBF/MTTR analysis as fallback.",
+    "aiPrediction": "AI Prediction"
   },
   "iot": {
     "title": "Business Digital Twins",
@@ -1696,7 +1700,14 @@
     "slaNote": "Current SLA for location authorization is 24 operating hours.",
     "pendingRequests": "Pending Cluster Requests",
     "processingNotes": "Add processing notes (optional):",
-    "processingFailed": "Processing failed."
+    "processingFailed": "Processing failed.",
+    "profileDetails": "Admin Profile Details",
+    "fullName": "Full Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "requestedPlan": "Requested Plan",
+    "passwordStatus": "Password Status",
+    "securedEncrypted": "Secured & Encrypted"
   },
   "warRoom": {
     "initializing": "Initializing Activity Center...",
@@ -1833,9 +1844,9 @@
     "secure_session": "Secure Enterprise Session Initialized",
     "parsing": "Parsing Business Data...",
     "placeholder": "Ask AI Copilot for diagnostics, ESG insights, or draft work orders...",
-    "disclaimer": "AI-generated insights must be verified before physical asset intervention."
+    "disclaimer": "AI-generated insights must be verified before physical asset intervention.",
+    "livePythonEngine": "Live Python Predictor Engine"
   },
-  "Industrial Evidence: Enter LOTO Photo URL (for demo):": "https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg",
   "compliance": {
     "cookieTitle": "We value your privacy",
     "cookieDesc": "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies.",
@@ -1845,5 +1856,8 @@
     "termsOfUse": "Terms of Use",
     "and": "and",
     "privacyPolicy": "Privacy Policy"
+  },
+  "droneFleet": {
+    "noDrones": "No Drones Online"
   }
 }

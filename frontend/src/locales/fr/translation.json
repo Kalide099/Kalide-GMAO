@@ -62,9 +62,9 @@
       "technician": "Technicien de Terrain",
       "manager": "Responsable des Opérations"
     },
-    "pending": "Pending",
-    "in_progress": "In Progress",
-    "completed": "Completed"
+    "pending": "En attente",
+    "in_progress": "En cours",
+    "completed": "Terminé"
   },
   "admin": {
     "title": "MAÎTRE KGMAO",
@@ -285,7 +285,7 @@
     "offlineMode": "Mode Hors Ligne"
   },
   "nexus": {
-    "title": "Business Center",
+    "title": "Centre d'Affaires",
     "subtitle": "Centre de Commande & Intelligence Spatiale",
     "version": "v3.0.1 Stable",
     "encrypted": "Chiffré",
@@ -748,6 +748,7 @@
     "viewAuditLog": "Voir le Log d'Audit Détaillé",
     "loadingForensic": "Chargement des flow forensiques...",
     "noRecentActivity": "Aucune activite recente",
+    "liveEdgeStream": "Flux d'Intelligence Edge en Direct",
     "desc": {
       "global": "Données en direct de santé des sites transfrontaliers",
       "energy": "Flow de puissance industrielle et ESG",
@@ -855,7 +856,7 @@
     "fetchError": "Échec de la récupération de la charge d'expédition.",
     "schemaViolation": "Violation de Schéma",
     "deletionFailed": "La suppression a échoué.",
-    "dispatchIdPrefix": "DISPATCH-ID :",
+    "dispatchIdPrefix": "N° EXPÉDITION :",
     "searchPlaceholder": "Rechercher une expédition...",
     "initProtocol": "Démarrer la configuration d'expédition",
     "scanAssetMatrix": "-- SCANNER LES ACTIFS --",
@@ -887,11 +888,11 @@
     "uptimeSla": "Temps de fonctionnement SLA",
     "securityCore": "Cœur Certifié",
     "enterpriseClass": "Classe Entreprise v2.5",
-    "recoverAccessDesc": "Identify your enterprise site to initiate recovery setup.",
-    "sendResetLink": "Send Recovery Link",
-    "recoverySent": "Recovery Setup Initiated",
-    "checkEmail": "Check your encrypted inbox for further instructions.",
-    "backToLogin": "Return to Headquarters",
+    "recoverAccessDesc": "Identifiez votre espace entreprise pour initier la récupération d'accès.",
+    "sendResetLink": "Envoyer le Lien de Récupération",
+    "recoverySent": "Récupération Initiée",
+    "checkEmail": "Vérifiez votre boîte de réception chiffrée pour la suite.",
+    "backToLogin": "Retour au Quartier Général",
     "rememberMe": "Se Souvenir de Moi",
     "signInRequired": "Connexion requise",
     "continueAfterAuth": "Continuer vers {{target}} apres authentification.",
@@ -1039,7 +1040,10 @@
     "hours": "Heures",
     "modelInit": "N/A - Initialisation du Modèle",
     "noDataTitle": "Aucune Donnée de Fiabilité échantillonnée",
-    "noDataDesc": "Complétez au moins deux ordres de travail correctifs par actif pour initialiser les modèles de vecteur de défaillance prédictive."
+    "noDataDesc": "Complétez au moins deux ordres de travail correctifs par actif pour initialiser les modèles de vecteur de défaillance prédictive.",
+    "aiEngineOnline": "Moteur IA En Ligne",
+    "aiEngineOffline": "Moteur IA Hors Ligne — Analyse statistique MTBF/MTTR en substitution.",
+    "aiPrediction": "Prédiction IA"
   },
   "iot": {
     "title": "Jumeaux Numériques Industriels",
@@ -1273,7 +1277,7 @@
     "globalMatrix": "Espace Maritime Mondiale",
     "enRoute": "En Route",
     "portRotterdam": "Port de Rotterdam",
-    "surgeSuffix": "+{{hours}}h Congestion",
+    "surgeSuffix": "+{{hours}}h Embouteillage",
     "hubSingapore": "Center de Singapour",
     "nominal": "Nominal",
     "noLiveTransits": "Aucun transit en direct détecté."
@@ -1719,7 +1723,14 @@
     "slaNote": "Le SLA actuel pour l'autorisation des nœuds est de 24 heures ouvrables.",
     "pendingRequests": "Demandes de Cluster en Attente",
     "processingNotes": "Ajouter des notes de traitement (optionnel) :",
-    "processingFailed": "Le traitement a échoué."
+    "processingFailed": "Le traitement a échoué.",
+    "profileDetails": "Détails du Profil Admin",
+    "fullName": "Nom Complet",
+    "emailAddress": "Adresse Email",
+    "phoneNumber": "Numéro de Téléphone",
+    "requestedPlan": "Offre Demandée",
+    "passwordStatus": "Statut du Mot de Passe",
+    "securedEncrypted": "Sécurisé & Chiffré"
   },
   "globalMatrix": {
     "visualizing": "Visualisation de la Espace Mondiale Active",
@@ -1826,14 +1837,15 @@
     "initButton": "Initialiser ma Espace"
   },
   "copilot": {
-    "title": "AI Copilot",
-    "subtitle": "Generative Center Engine",
-    "model": "Model: GPT-4.5 Center",
-    "telemetry": "Live Data: Active",
-    "secure_session": "Secure Enterprise Session Initialized",
-    "parsing": "Parsing Business Data...",
-    "placeholder": "Ask AI Copilot for diagnostics, ESG insights, or draft work orders...",
-    "disclaimer": "AI-generated insights must be verified before physical asset intervention."
+    "title": "Copilote IA",
+    "subtitle": "Moteur Génératif de Centre",
+    "model": "Modèle : GPT-4.5 Centre",
+    "telemetry": "Données en Direct : Actif",
+    "secure_session": "Session Entreprise Sécurisée Initialisée",
+    "parsing": "Analyse des Données en cours...",
+    "placeholder": "Interrogez le Copilote IA pour des diagnostics, insights ESG ou rédigez des ordres de travail...",
+    "disclaimer": "Les analyses générées par l'IA doivent être vérifiées avant toute intervention physique.",
+    "livePythonEngine": "Moteur Prédicteur Python en Direct"
   },
   "Industrial Evidence: Enter LOTO Photo URL (for demo):": "https://industrial-cdn.kgmao.com/evid/lockout_v12.jpg",
   "compliance": {
@@ -1845,5 +1857,8 @@
     "termsOfUse": "Conditions d'utilisation",
     "and": "et la",
     "privacyPolicy": "Politique de confidentialité"
+  },
+  "droneFleet": {
+    "noDrones": "Aucun Drone En Ligne"
   }
 }

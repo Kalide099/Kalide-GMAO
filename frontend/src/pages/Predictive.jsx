@@ -72,7 +72,7 @@ const Predictive = () => {
                             <Cpu className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <p className="text-xs font-black text-indigo-600 uppercase tracking-[0.2em]">AI Engine Online</p>
+                            <p className="text-xs font-black text-indigo-600 uppercase tracking-[0.2em]">{t('predictive.aiEngineOnline')}</p>
                             <p className="text-sm font-bold text-slate-600">
                                 {aiStatus.models_loaded}/{aiStatus.models_total} models active — ML predictions enabled
                             </p>
@@ -92,7 +92,7 @@ const Predictive = () => {
                 <div className="bg-slate-50 p-5 rounded-[2rem] border border-slate-100 flex items-center gap-4">
                     <WifiOff className="w-5 h-5 text-slate-400 shrink-0" />
                     <p className="text-sm font-bold text-slate-500">
-                        AI Engine Offline — Using statistical MTBF/MTTR analysis as fallback.
+                        {t('predictive.aiEngineOffline')}
                     </p>
                 </div>
             )}
@@ -148,7 +148,7 @@ const Predictive = () => {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Sparkles className="w-4 h-4 text-indigo-500" />
-                                                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">AI Prediction</span>
+                                                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">{t('predictive.aiPrediction')}</span>
                                             </div>
                                             {modelInfo && (
                                                 <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black text-white uppercase tracking-wider ${modelInfo.color}`}>

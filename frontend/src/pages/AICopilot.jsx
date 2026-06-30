@@ -94,7 +94,7 @@ const AICopilot = () => {
                     </div>
                     <div>
                         <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">{t('copilot.title', 'AI Copilot')}</h1>
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">Live Python Predictor Engine</p>
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold mt-1">{t('copilot.livePythonEngine')}</p>
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-4 text-slate-400 z-10">

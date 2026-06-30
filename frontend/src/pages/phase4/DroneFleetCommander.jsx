@@ -139,7 +139,7 @@ const DroneFleetCommander = () => {
                                     </div>
                                 </div>
                             )) : (
-                                <div className="text-[10px] font-black text-slate-500 uppercase text-center py-10">No Drones Online</div>
+                                <div className="text-[10px] font-black text-slate-500 uppercase text-center py-10">{t('droneFleet.noDrones')}</div>
                             )}
                         </div>
                     </Card>

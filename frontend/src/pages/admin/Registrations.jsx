@@ -244,32 +244,32 @@ const AdminRegistrations = () => {
                         </div>
                         <div className="p-5 sm:p-8 md:p-10 space-y-8 overflow-y-auto custom-scrollbar">
                             <div className="space-y-6">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Admin Profile Details</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t('admin_registrations.profileDetails')}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Full Name</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('admin_registrations.fullName')}</div>
                                         <div className="text-sm font-bold text-slate-700">{selectedRequest.admin_first_name} {selectedRequest.admin_last_name}</div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Email Address</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('admin_registrations.emailAddress')}</div>
                                         <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                             <Mail size={14} className="text-slate-400" /> {selectedRequest.admin_email}
                                         </div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Phone Number</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('admin_registrations.phoneNumber')}</div>
                                         <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                             <Phone size={14} className="text-slate-400" /> {selectedRequest.admin_phone || 'N/A'}
                                         </div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Requested Plan</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('admin_registrations.requestedPlan')}</div>
                                         <div className="text-sm font-bold text-slate-700">{formatPlan(selectedRequest.requested_plan)}</div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 border-l-4 border-l-emerald-500">
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">Password Status</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">{t('admin_registrations.passwordStatus')}</div>
                                         <div className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                            <Lock size={14} className="text-emerald-500" /> Secured & Encrypted
+                                            <Lock size={14} className="text-emerald-500" /> {t('admin_registrations.securedEncrypted')}
                                         </div>
                                     </div>
                                 </div>

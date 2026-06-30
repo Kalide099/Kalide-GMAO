@@ -169,7 +169,7 @@ const Dashboard = () => {
                 <div className="p-12 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
                     <div className="flex items-center gap-4">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.8)]"></div>
-                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Live Edge Intelligence Stream</h3>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">{t('dashboard.liveEdgeStream')}</h3>
                     </div>
                     <button 
                         onClick={() => navigate('/app/ai-copilot')}
