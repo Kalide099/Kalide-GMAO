@@ -473,3 +473,79 @@ exports.getUserAuditLogs = async (req, res, next) => {
         next(err);
     }
 };
+
+/**
+ * List all company plan requests (pending first).
+ */
+exports.listPlanRequests = async (req, res, next) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT pr.id, pr.requested_plan, pr.message, pr.status, pr.admin_notes,
+                    pr.created_at, pr.processed_at,
+                    c.id AS company_id, c.name_en AS company_name,
+                    c.plan AS current_plan, c.subscription_status
+             FROM plan_requests pr
+             JOIN companies c ON c.id = pr.company_id
+             ORDER BY FIELD(pr.status, 'pending', 'rejected', 'approved'), pr.created_at DESC`
+        );
+        return successResponse(res, 200, 'Plan requests retrieved.', rows);
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * Approve or reject a plan request.
+ * On approval, updates company plan + subscription_status to 'active'.
+ */
+exports.processPlanRequest = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status, admin_notes } = req.body;
+
+        if (!['approved', 'rejected'].includes(status)) {
+            return errorResponse(res, 400, 'Status must be "approved" or "rejected".');
+        }
+
+        const [rows] = await pool.query(
+            'SELECT id, status, requested_plan, company_id FROM plan_requests WHERE id = ? LIMIT 1',
+            [id]
+        );
+        if (rows.length === 0) return errorResponse(res, 404, 'Plan request not found.');
+
+        const request = rows[0];
+        if (request.status !== 'pending') {
+            return errorResponse(res, 409, 'This request has already been processed.');
+        }
+
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            await connection.query(
+                `UPDATE plan_requests
+                 SET status = ?, admin_notes = ?, processed_by = ?, processed_at = NOW()
+                 WHERE id = ?`,
+                [status, admin_notes || null, req.user.id, id]
+            );
+
+            if (status === 'approved') {
+                await connection.query(
+                    `UPDATE companies SET plan = ?, subscription_status = 'active' WHERE id = ?`,
+                    [request.requested_plan, request.company_id]
+                );
+            }
+
+            await connection.commit();
+        } catch (err) {
+            await connection.rollback();
+            throw err;
+        } finally {
+            connection.release();
+        }
+
+        return successResponse(res, 200, `Plan request ${status} successfully.`);
+    } catch (err) {
+        next(err);
+    }
+};

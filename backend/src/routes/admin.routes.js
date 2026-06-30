@@ -25,4 +25,8 @@ router.get('/user/:id/audit', adminController.getUserAuditLogs);
 router.get('/payments', adminController.getAllPayments);
 router.post('/seed', adminController.seedDemoData);
 
+// Plan request management
+router.get('/plan-requests', adminController.listPlanRequests);
+router.patch('/plan-request/:id/process', adminController.processPlanRequest);
+
 module.exports = router;

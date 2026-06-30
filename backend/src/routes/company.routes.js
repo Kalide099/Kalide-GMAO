@@ -9,4 +9,8 @@ router.get('/my-company', authenticate, companyController.getCompanyDetails);
 // Get dashboard statistics for the authenticated user's tenant
 router.get('/my-company/dashboard-stats', authenticate, companyController.getDashboardStats);
 
+// Plan request flow (no subscription check — accessible even without active plan)
+router.post('/request-plan', authenticate, companyController.requestPlan);
+router.get('/my-plan-request', authenticate, companyController.getMyPlanRequest);
+
 module.exports = router;

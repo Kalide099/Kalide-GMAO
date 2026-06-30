@@ -282,7 +282,9 @@
     "inflationSync": "Sync Prix Inflation",
     "antiPoaching": "IoT Anti-Braconnage",
     "lowBandwidth": "Jumeaux Faible Bande Passante",
-    "offlineMode": "Mode Hors Ligne"
+    "offlineMode": "Mode Hors Ligne",
+    "companyProfile": "Mon Entreprise",
+    "planRequests": "Demandes d'Abonnement"
   },
   "nexus": {
     "title": "Centre d'Affaires",
@@ -1860,5 +1862,54 @@
   },
   "droneFleet": {
     "noDrones": "Aucun Drone En Ligne"
+  },
+  "companyProfile": {
+    "title": "Profil de l'Entreprise",
+    "subtitle": "Identité et détails d'abonnement de votre organisation",
+    "companyInfo": "Informations sur l'Entreprise",
+    "subscriptionStatus": "Statut de l'Abonnement",
+    "requestPlan": "Demander un Abonnement",
+    "currentPlan": "Abonnement Actuel",
+    "status": "Statut du Compte",
+    "noActivePlan": "Aucun Abonnement Actif",
+    "noActivePlanDesc": "Votre entreprise n'a pas d'abonnement actif. Sélectionnez un forfait et soumettez une demande.",
+    "selectPlan": "Veuillez sélectionner un forfait avant de soumettre.",
+    "messageOptional": "Notes Supplémentaires (Optionnel)",
+    "messagePlaceholder": "Parlez-nous des besoins de votre entreprise...",
+    "submitRequest": "Soumettre la Demande",
+    "requestPending": "Demande en Attente de Révision",
+    "requestPendingDesc": "Votre demande d'abonnement est en cours de révision. Vous serez notifié une fois traitée.",
+    "requestApproved": "Abonnement Actif",
+    "requestApprovedDesc": "Votre abonnement est actif. Profitez de toutes les fonctionnalités !",
+    "requestRejected": "Demande Non Approuvée",
+    "requestRejectedDesc": "Votre demande n'a pas été approuvée. Vous pouvez soumettre une nouvelle demande.",
+    "adminNotes": "Notes Admin",
+    "resubmit": "Soumettre une Nouvelle Demande",
+    "requestSubmitted": "Demande soumise ! L'admin la révisera sous peu.",
+    "requestFailed": "Échec de la soumission. Veuillez réessayer.",
+    "alreadyPending": "Vous avez déjà une demande en attente. Veuillez patienter.",
+    "industry": "Secteur",
+    "timezone": "Fuseau Horaire",
+    "currency": "Devise",
+    "memberSince": "Membre Depuis",
+    "planBasic": "Basique",
+    "planPro": "Professionnel",
+    "planEnterprise": "Entreprise",
+    "requestedPlan": "Forfait Demandé"
+  },
+  "planRequests": {
+    "title": "Demandes d'Abonnement",
+    "subtitle": "Demandes de mise à niveau en attente de révision",
+    "noneFound": "Aucune demande d'abonnement trouvée.",
+    "syncing": "Chargement des demandes...",
+    "approve": "Approuver",
+    "reject": "Refuser",
+    "notesPrompt": "Notes admin (optionnel) :",
+    "processFailed": "Échec du traitement de la demande.",
+    "company": "Entreprise",
+    "currentPlan": "Abonnement Actuel",
+    "requestedPlan": "Forfait Demandé",
+    "submitted": "Soumis",
+    "processed": "Traité"
   }
 }

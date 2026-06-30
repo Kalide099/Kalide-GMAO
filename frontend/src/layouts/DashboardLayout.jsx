@@ -7,7 +7,7 @@ import {
   Globe, ShieldAlert, DollarSign, Map, Truck, Award, Radio, Boxes, 
   Link, Leaf, Eye, Siren, Ship, FileText, Users, Layers, Fingerprint,
   Sprout, Droplets, Factory, Wind, Sun, Waves, Laptop, Snowflake, Tractor, Bot, Coffee, Presentation, Combine, Route, Search,
-  BatteryCharging, PhoneCall, Droplet, MessageSquare, Smartphone, TrendingDown, Crosshair
+  BatteryCharging, PhoneCall, Droplet, MessageSquare, Smartphone, TrendingDown, Crosshair, Building2
 } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import CommandPalette from '../components/CommandPalette';
@@ -62,6 +62,7 @@ const DashboardLayout = () => {
   const menuItems = [
     { id: 'core', items: [
       { icon: <LayoutDashboard size={20} />, label: t('nav.dashboard'), path: '/app' },
+      { icon: <Building2 size={20} />, label: t('nav.companyProfile'), path: '/app/company-profile' },
       { icon: <Wrench size={20} />, label: t('nav.assets'), path: '/app/assets' },
       { icon: <ArrowRightLeft size={20} />, label: t('nav.workOrders'), path: '/app/work-orders' },
       { icon: <Package size={20} />, label: t('nav.inventory'), path: '/app/inventory' },

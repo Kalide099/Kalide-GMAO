@@ -128,8 +128,10 @@ const ReportGenerator = React.lazy(() => import('./pages/nexus/ReportGenerator')
 const AdminPayments = React.lazy(() => import('./pages/admin/AdminPayments'));
 const AdminLogs = React.lazy(() => import('./pages/admin/AdminLogs'));
 const AdminRegistrations = React.lazy(() => import('./pages/admin/Registrations'));
+const AdminPlanRequests = React.lazy(() => import('./pages/admin/AdminPlanRequests'));
 const AICopilot = React.lazy(() => import('./pages/AICopilot'));
 const SSOConfig = React.lazy(() => import('./pages/SSOConfig'));
+const CompanyProfile = React.lazy(() => import('./pages/CompanyProfile'));
 
 const App = () => {
     const { t } = useTranslation();
@@ -272,6 +274,7 @@ const App = () => {
                 <Route path="inflation-sync" element={<InflationPricingSync />} />
                 <Route path="anti-poaching" element={<AntiPoachingIoT />} />
                 <Route path="low-bandwidth-twin" element={<LowBandwidthTwin />} />
+                <Route path="company-profile" element={<CompanyProfile />} />
               </Route>
             </Route>
 
@@ -284,6 +287,7 @@ const App = () => {
                 <Route path="/admin/payments" element={<AdminPayments />} />
                 <Route path="/admin/logs" element={<AdminLogs />} />
                 <Route path="/admin/registrations" element={<AdminRegistrations />} />
+                <Route path="/admin/plan-requests" element={<AdminPlanRequests />} />
                 <Route path="/admin/ai-copilot" element={<AICopilot />} />
                 <Route path="/admin/mfa-security" element={<MfaSecurity />} />
                 <Route path="/admin/settings" element={<TenantSettings />} />

@@ -282,7 +282,9 @@
     "inflationSync": "Inflation Pricing Sync",
     "antiPoaching": "Anti-Poaching IoT",
     "lowBandwidth": "Low-Bandwidth Twins",
-    "offlineMode": "Offline Mode"
+    "offlineMode": "Offline Mode",
+    "companyProfile": "My Company",
+    "planRequests": "Plan Requests"
   },
   "nexus": {
     "title": "Business Center",
@@ -1859,5 +1861,54 @@
   },
   "droneFleet": {
     "noDrones": "No Drones Online"
+  },
+  "companyProfile": {
+    "title": "Company Profile",
+    "subtitle": "Your organisation's identity and subscription details",
+    "companyInfo": "Company Information",
+    "subscriptionStatus": "Subscription Status",
+    "requestPlan": "Request a Plan",
+    "currentPlan": "Current Plan",
+    "status": "Account Status",
+    "noActivePlan": "No Active Subscription",
+    "noActivePlanDesc": "Your company does not have an active subscription. Select a plan below and submit a request.",
+    "selectPlan": "Please select a plan before submitting.",
+    "messageOptional": "Additional Notes (Optional)",
+    "messagePlaceholder": "Tell us about your company's needs...",
+    "submitRequest": "Submit Plan Request",
+    "requestPending": "Request Pending Review",
+    "requestPendingDesc": "Your plan request is being reviewed. You will be notified once processed.",
+    "requestApproved": "Plan Active",
+    "requestApprovedDesc": "Your subscription is active. Enjoy all platform features!",
+    "requestRejected": "Request Not Approved",
+    "requestRejectedDesc": "Your request was not approved. You may submit a new request below.",
+    "adminNotes": "Admin Notes",
+    "resubmit": "Submit New Request",
+    "requestSubmitted": "Plan request submitted! Admin will review it shortly.",
+    "requestFailed": "Failed to submit plan request. Please try again.",
+    "alreadyPending": "You already have a pending request. Please wait for admin review.",
+    "industry": "Industry",
+    "timezone": "Timezone",
+    "currency": "Currency",
+    "memberSince": "Member Since",
+    "planBasic": "Basic",
+    "planPro": "Professional",
+    "planEnterprise": "Enterprise",
+    "requestedPlan": "Requested Plan"
+  },
+  "planRequests": {
+    "title": "Plan Requests",
+    "subtitle": "Company plan upgrade requests awaiting review",
+    "noneFound": "No plan requests found.",
+    "syncing": "Loading plan requests...",
+    "approve": "Approve",
+    "reject": "Reject",
+    "notesPrompt": "Add admin notes (optional):",
+    "processFailed": "Failed to process the request.",
+    "company": "Company",
+    "currentPlan": "Current Plan",
+    "requestedPlan": "Requested Plan",
+    "submitted": "Submitted",
+    "processed": "Processed"
   }
 }

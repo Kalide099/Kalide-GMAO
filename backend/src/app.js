@@ -208,4 +208,29 @@ app.get('*', (req, res, next) => {
 // Global Error Handler
 app.use(globalErrorHandler);
 
+// Auto-create plan_requests table if it doesn't exist yet (idempotent migration for shared hosting)
+;(async () => {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS plan_requests (
+                id CHAR(36) PRIMARY KEY,
+                company_id CHAR(36) NOT NULL,
+                requested_plan ENUM('basic','pro','enterprise') NOT NULL,
+                message TEXT,
+                status ENUM('pending','approved','rejected') DEFAULT 'pending',
+                admin_notes TEXT,
+                processed_by CHAR(36) NULL,
+                processed_at TIMESTAMP NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
+                INDEX idx_pr_company (company_id),
+                INDEX idx_pr_status (status)
+            )
+        `);
+    } catch (e) {
+        logger.warn('plan_requests auto-migration skipped', { error: e.message });
+    }
+})();
+
 module.exports = app;

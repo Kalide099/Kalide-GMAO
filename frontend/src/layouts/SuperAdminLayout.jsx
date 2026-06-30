@@ -33,6 +33,7 @@ const SuperAdminLayout = () => {
         { path: '/admin/payments', icon: <CreditCard size={20} />, label: t('admin.payments') },
         { path: '/admin/logs', icon: <ShieldAlert size={20} />, label: t('admin.logs') },
         { path: '/admin/registrations', icon: <UserPlus size={20} />, label: t('admin.onboarding') },
+        { path: '/admin/plan-requests', icon: <CreditCard size={20} />, label: t('nav.planRequests') },
         { path: '/admin/mfa-security', icon: <ShieldAlert size={20} />, label: t('nav.mfaSecurity') },
         { path: '/admin/ai-copilot', icon: <Bot size={20} />, label: t('nav.aiCopilot') },
         { path: '/admin/settings', icon: <Settings size={20} />, label: t('nav.settings') || 'Settings' },

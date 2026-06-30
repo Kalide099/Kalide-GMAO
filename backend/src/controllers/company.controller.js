@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Get company details for the authenticated user's own tenant.
@@ -70,6 +71,56 @@ exports.getDashboardStats = async (req, res, next) => {
             },
             recentActivity
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Submit a plan upgrade request (company -> admin review).
+ */
+exports.requestPlan = async (req, res, next) => {
+    try {
+        const { requested_plan, message } = req.body;
+        const companyId = req.user.company_id;
+
+        const validPlans = ['basic', 'pro', 'enterprise'];
+        if (!validPlans.includes(requested_plan)) {
+            return errorResponse(res, 400, 'Invalid plan selected.');
+        }
+
+        // Only one pending request allowed at a time
+        const [existing] = await pool.query(
+            'SELECT id FROM plan_requests WHERE company_id = ? AND status = "pending" LIMIT 1',
+            [companyId]
+        );
+        if (existing.length > 0) {
+            return errorResponse(res, 409, 'You already have a pending plan request awaiting admin review.');
+        }
+
+        const id = uuidv4();
+        await pool.query(
+            'INSERT INTO plan_requests (id, company_id, requested_plan, message) VALUES (?, ?, ?, ?)',
+            [id, companyId, requested_plan, message || null]
+        );
+
+        return successResponse(res, 201, 'Plan request submitted. Admin will review shortly.', { id });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get the company's most recent plan request.
+ */
+exports.getMyPlanRequest = async (req, res, next) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, requested_plan, message, status, admin_notes, created_at, processed_at
+             FROM plan_requests WHERE company_id = ? ORDER BY created_at DESC LIMIT 1`,
+            [req.user.company_id]
+        );
+        return successResponse(res, 200, 'Plan request retrieved.', rows[0] || null);
     } catch (error) {
         next(error);
     }
